@@ -43,6 +43,7 @@ use App\Http\Controllers\form_elements\InputGroups;
 use App\Http\Controllers\form_layouts\VerticalForm;
 use App\Http\Controllers\form_layouts\HorizontalForm;
 use App\Http\Controllers\tables\Basic as TablesBasic;
+use App\Http\Controllers\BookEventController;
 
 // Front-Office
 Route::get('/home', function () {
@@ -54,6 +55,9 @@ Route::get('/auth', function () {
 })->name('auth');
 
 
+// controlleur book event 
+
+Route::resource('book-events', BookEventController::class);
 
 // Main Page Route
 // Set the root URL to the current /home view
