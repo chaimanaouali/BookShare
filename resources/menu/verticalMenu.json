@@ -50,6 +50,18 @@
       "menuHeader": "Apps & Pages"
     },
     {
+      "name": "Accueil",
+      "icon": "menu-icon tf-icons bx bx-home",
+      "slug": "home",
+      "url": "/"
+    },
+    {
+      "name": "Emprunts",
+      "icon": "menu-icon tf-icons bx bx-book-reader",
+      "slug": "emprunts",
+      "url": "emprunts"
+    },
+    {
       "name": "Account Settings",
       "icon": "menu-icon tf-icons bx bx bx-dock-top",
       "slug": "pages-account-settings",
@@ -291,6 +303,15 @@
       "icon": "menu-icon tf-icons bx bx-table",
       "name": "Tables",
       "slug": "tables-basic"
+    },
+    {
+      "menuHeader": "Administration"
+    },
+    {
+      "name": "Historique Emprunts",
+      "icon": "menu-icon tf-icons bx bx-history",
+      "slug": "historique-emprunts",
+      "url": "historique-emprunts"
     },
     {
       "menuHeader": "Misc"
