@@ -12,7 +12,7 @@
             <!-- ***** Menu Start ***** -->
             <ul class="nav">
               <li class="scroll-to-section"><a href="#top" class="active">Home</a></li>
-              <li><a href="{{ route('livres') }}">Livres</a></li>
+              <li><a href="{{ route('livres') }}">Books</a></li>
               <li class="scroll-to-section"><a href="#about">About Us</a></li>
               <li class="scroll-to-section"><a href="#services">Services</a></li>
               <li class="scroll-to-section"><a href="#portfolio">Portfolio</a></li>
