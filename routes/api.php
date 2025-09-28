@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\AvisController;
 
 // Authentication Routes
 Route::post('/auth/signup', [AuthController::class, 'signup']);
@@ -20,4 +21,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/users/get/{user}', [UserController::class, 'show']);
     Route::put('/users/update/{user}', [UserController::class, 'update']);
     Route::delete('/users/delete/{user}', [UserController::class, 'destroy']);
+    
+    // Avis Management API Routes
+    Route::get('/avis/all', [AvisController::class, 'index']);
+    Route::post('/avis/create', [AvisController::class, 'store']);
+    Route::get('/avis/get/{avi}', [AvisController::class, 'show']);
+    Route::put('/avis/update/{avi}', [AvisController::class, 'update']);
+    Route::delete('/avis/delete/{avi}', [AvisController::class, 'destroy']);
 });
