@@ -16,6 +16,7 @@ use App\Http\Controllers\authentications\LoginBasic;
 use App\Http\Controllers\authentications\RegisterBasic;
 use App\Http\Controllers\authentications\ForgotPasswordBasic;
 use App\Http\Controllers\LivresController;
+use App\Http\Controllers\Admin\AvisController;
 use App\Http\Controllers\cards\CardBasic;
 use App\Http\Controllers\user_interface\Accordion;
 use App\Http\Controllers\user_interface\Alerts;
@@ -132,3 +133,15 @@ Route::get('/form/layouts-horizontal', [HorizontalForm::class, 'index'])->name('
 
 // tables
 Route::get('/tables/basic', [TablesBasic::class, 'index'])->name('tables-basic');
+
+// Admin routes (read-only)
+Route::prefix('admin')->name('admin.')->group(function () {
+    Route::get('avis', [AvisController::class, 'index'])->name('avis.index');
+    Route::get('avis/{avis}', [AvisController::class, 'show'])->name('avis.show');
+    // Disabled routes for create, store, edit, update, destroy
+    Route::get('avis/create', [AvisController::class, 'create'])->name('avis.create');
+    Route::post('avis', [AvisController::class, 'store'])->name('avis.store');
+    Route::get('avis/{avis}/edit', [AvisController::class, 'edit'])->name('avis.edit');
+    Route::put('avis/{avis}', [AvisController::class, 'update'])->name('avis.update');
+    Route::delete('avis/{avis}', [AvisController::class, 'destroy'])->name('avis.destroy');
+});
