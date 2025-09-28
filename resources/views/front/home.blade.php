@@ -34,6 +34,87 @@
     </div>
   </div>
 
+  <div id="livres" class="our-livres section">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-6 offset-lg-3">
+          <div class="section-heading wow bounceIn" data-wow-duration="1s" data-wow-delay="0.2s">
+            <h2>Our <em>Book</em> Collection</h2>
+            <p>Discover our curated selection of amazing books</p>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-lg-12">
+          <div class="livres-grid">
+            <div class="row">
+              <div class="col-lg-3 col-md-6 col-sm-6">
+                <div class="livre-item wow fadeInUp" data-wow-duration="1s" data-wow-delay="0.3s">
+                  <div class="livre-content">
+                    <h4>The Great Gatsby</h4>
+                    <p>Classic American novel by F. Scott Fitzgerald</p>
+                    <div class="livre-rating">
+                      <span class="stars">★★★★★</span>
+                      <span class="rating-text">4.5/5</span>
+                    </div>
+                    <div class="livre-actions">
+                      <a href="#" class="main-button">View Details</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-3 col-md-6 col-sm-6">
+                <div class="livre-item wow fadeInUp" data-wow-duration="1s" data-wow-delay="0.4s">
+                  <div class="livre-content">
+                    <h4>To Kill a Mockingbird</h4>
+                    <p>Harper Lee's masterpiece about justice and morality</p>
+                    <div class="livre-rating">
+                      <span class="stars">★★★★★</span>
+                      <span class="rating-text">4.8/5</span>
+                    </div>
+                    <div class="livre-actions">
+                      <a href="#" class="main-button">View Details</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-3 col-md-6 col-sm-6">
+                <div class="livre-item wow fadeInUp" data-wow-duration="1s" data-wow-delay="0.5s">
+                  <div class="livre-content">
+                    <h4>1984</h4>
+                    <p>George Orwell's dystopian masterpiece</p>
+                    <div class="livre-rating">
+                      <span class="stars">★★★★☆</span>
+                      <span class="rating-text">4.2/5</span>
+                    </div>
+                    <div class="livre-actions">
+                      <a href="#" class="main-button">View Details</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-3 col-md-6 col-sm-6">
+                <div class="livre-item wow fadeInUp" data-wow-duration="1s" data-wow-delay="0.6s">
+                  <div class="livre-content">
+                    <h4>Pride and Prejudice</h4>
+                    <p>Jane Austen's romantic classic</p>
+                    <div class="livre-rating">
+                      <span class="stars">★★★★★</span>
+                      <span class="rating-text">4.6/5</span>
+                    </div>
+                    <div class="livre-actions">
+                      <a href="#" class="main-button">View Details</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div id="about" class="about-us section">
     <div class="container">
       <div class="row">

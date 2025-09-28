@@ -15,6 +15,7 @@ use App\Http\Controllers\pages\MiscUnderMaintenance;
 use App\Http\Controllers\authentications\LoginBasic;
 use App\Http\Controllers\authentications\RegisterBasic;
 use App\Http\Controllers\authentications\ForgotPasswordBasic;
+use App\Http\Controllers\LivresController;
 use App\Http\Controllers\cards\CardBasic;
 use App\Http\Controllers\user_interface\Accordion;
 use App\Http\Controllers\user_interface\Alerts;
@@ -52,6 +53,13 @@ Route::get('/home', function () {
 Route::get('/auth', function () {
     return view('auth.register');
 })->name('auth');
+
+// Livres routes
+Route::get('/livres', [LivresController::class, 'index'])->name('livres');
+Route::get('/livres/{livreId}/avis', [LivresController::class, 'getAvis']);
+Route::post('/avis', [LivresController::class, 'storeAvis']);
+Route::put('/avis/{avisId}', [LivresController::class, 'updateAvis']);
+Route::delete('/avis/{avisId}', [LivresController::class, 'deleteAvis']);
 
 
 
