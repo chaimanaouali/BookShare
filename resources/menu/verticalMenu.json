@@ -50,6 +50,12 @@
       "menuHeader": "Apps & Pages"
     },
     {
+      "url": "/admin/avis",
+      "name": "Reviews Management",
+      "icon": "menu-icon tf-icons bx bx-star",
+      "slug": "admin-avis"
+    },
+    {
       "name": "Account Settings",
       "icon": "menu-icon tf-icons bx bx bx-dock-top",
       "slug": "pages-account-settings",

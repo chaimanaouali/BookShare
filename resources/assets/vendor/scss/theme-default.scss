@@ -25,18 +25,18 @@ $primary-color: #696cff;
 // ---------------------------------------------------------------------------
 @include template-menu-style(
   '.bg-menu-theme',
-  $white,
-  $color: $headings-color,
-  $active-color: $headings-color,
+  #FE3F40,
+  $color: $white,
+  $active-color: $white,
   $border: transparent,
-  $active-bg: $white
+  $active-bg: rgba($white, 0.16)
 );
 .bg-menu-theme {
   // Menu header
   .menu-header {
-    color: $text-muted;
+    color: rgba($white, 0.7);
     &:before {
-      background-color: $text-muted !important;
+      background-color: rgba($white, 0.3) !important;
     }
   }
 
@@ -50,38 +50,38 @@ $primary-color: #696cff;
   .menu-inner .menu-item .menu-link:not(.active):hover {
     html:not(.layout-menu-collapsed) &,
     .layout-menu-hover.layout-menu-collapsed & {
-      background-color: $gray-60;
+      background-color: rgba($white, 0.1);
     }
   }
   // menu item open(horizontal)
   .menu-inner .menu-sub > .menu-item.active {
     > .menu-link.menu-toggle {
-      background-color: $gray-80 !important;
+      background-color: rgba($white, 0.15) !important;
     }
     &:not(:has(.menu-sub)) {
       .menu-icon {
-        color: $primary-color;
+        color: $white;
       }
     }
   }
   // menu item active
   .menu-inner > .menu-item.active > .menu-link {
-    color: $primary-color;
-    background-color: rgba($primary-color, 0.16) !important;
+    color: $white;
+    background-color: rgba($white, 0.2) !important;
   }
 
   .menu-inner > .menu-item.active:before {
-    background: $primary-color;
+    background: $white;
   }
 
   // Sub menu item link bullet
   .menu-sub > .menu-item > .menu-link:before {
-    background-color: rgba-to-hex($gray-400, $rgba-to-hex-bg) !important;
+    background-color: rgba($white, 0.5) !important;
   }
   // Sub menu item link active bullet
   .menu-sub > .menu-item.active > .menu-link:not(.menu-toggle):before {
-    background-color: $primary-color !important;
-    border: 3px solid rgba-to-hex(rgba($primary-color, 0.16), $rgba-to-hex-bg) !important;
+    background-color: $white !important;
+    border: 3px solid rgba($white, 0.2) !important;
   }
 }
 

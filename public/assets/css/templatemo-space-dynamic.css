@@ -1575,3 +1575,263 @@ responsive
     margin-left: 0px;
   }
 }
+
+/* 
+---------------------------------------------
+Livres Section Styles
+--------------------------------------------- 
+*/
+.our-livres {
+  padding: 120px 0px;
+  background-color: #f7f7f7;
+}
+
+.our-livres .section-heading h2 {
+  font-size: 36px;
+  font-weight: 700;
+  color: #1f1f1f;
+  margin-bottom: 20px;
+}
+
+.our-livres .section-heading p {
+  font-size: 16px;
+  color: #7a7a7a;
+  margin-bottom: 60px;
+}
+
+.livres-grid {
+  margin-top: 60px;
+}
+
+.livre-item {
+  background: #fff;
+  border-radius: 10px;
+  padding: 30px 20px;
+  text-align: center;
+  box-shadow: 0px 0px 15px rgba(0,0,0,0.1);
+  transition: all 0.3s ease;
+  margin-bottom: 30px;
+  height: 100%;
+}
+
+.livre-item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0px 10px 30px rgba(0,0,0,0.15);
+}
+
+.livre-content h4 {
+  font-size: 20px;
+  font-weight: 600;
+  color: #1f1f1f;
+  margin-bottom: 15px;
+}
+
+.livre-content p {
+  font-size: 14px;
+  color: #7a7a7a;
+  margin-bottom: 20px;
+  line-height: 1.6;
+}
+
+.livre-rating {
+  margin-bottom: 20px;
+}
+
+.livre-rating .stars {
+  color: #ff6b35;
+  font-size: 18px;
+  margin-right: 10px;
+}
+
+.livre-rating .rating-text {
+  font-size: 14px;
+  color: #7a7a7a;
+  font-weight: 500;
+}
+
+.livre-actions .main-button {
+  background: #ff6b35;
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 25px;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  display: inline-block;
+}
+
+.livre-actions .main-button:hover {
+  background: #e55a2b;
+  color: #fff;
+  text-decoration: none;
+  transform: translateY(-2px);
+}
+
+@media (max-width: 991px) {
+  .our-livres {
+    padding: 80px 0px;
+  }
+  
+  .livre-item {
+    margin-bottom: 20px;
+  }
+}
+
+@media (max-width: 767px) {
+  .our-livres .section-heading h2 {
+    font-size: 28px;
+  }
+  
+  .livre-item {
+    padding: 20px 15px;
+  }
+  
+  .livre-content h4 {
+    font-size: 18px;
+  }
+}
+
+/* 
+---------------------------------------------
+Review Modal Styles
+--------------------------------------------- 
+*/
+.review-item {
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+}
+
+.review-actions {
+  display: flex;
+  gap: 5px;
+}
+
+.livre-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.livre-actions .main-button.secondary {
+  background: #6c757d;
+  color: #fff;
+}
+
+.livre-actions .main-button.secondary:hover {
+  background: #5a6268;
+  color: #fff;
+}
+
+.stars {
+  color: #ff6b35;
+  font-size: 16px;
+}
+
+.review-count {
+  font-size: 12px;
+  color: #6c757d;
+  margin-left: 5px;
+}
+
+.modal-header {
+  background: #f8f9fa;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.modal-title {
+  color: #1f1f1f;
+  font-weight: 600;
+}
+
+.btn-outline-primary {
+  border-color: #ff6b35;
+  color: #ff6b35;
+}
+
+.btn-outline-primary:hover {
+  background-color: #ff6b35;
+  border-color: #ff6b35;
+  color: #fff;
+}
+
+.btn-outline-danger {
+  border-color: #dc3545;
+  color: #dc3545;
+}
+
+.btn-outline-danger:hover {
+  background-color: #dc3545;
+  border-color: #dc3545;
+  color: #fff;
+}
+
+.btn-primary {
+  background-color: #ff6b35;
+  border-color: #ff6b35;
+}
+
+.btn-primary:hover {
+  background-color: #e55a2b;
+  border-color: #e55a2b;
+}
+
+.form-control:focus {
+  border-color: #ff6b35;
+  box-shadow: 0 0 0 0.2rem rgba(255, 107, 53, 0.25);
+}
+
+.form-select:focus {
+  border-color: #ff6b35;
+  box-shadow: 0 0 0 0.2rem rgba(255, 107, 53, 0.25);
+}
+
+/* 
+---------------------------------------------
+Star Rating Styles
+--------------------------------------------- 
+*/
+.star-rating {
+  display: flex;
+  gap: 5px;
+  margin-bottom: 10px;
+}
+
+.star {
+  font-size: 24px;
+  color: #ddd;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.star:hover,
+.star.active {
+  color: #ff6b35;
+  transform: scale(1.1);
+}
+
+.star:hover ~ .star {
+  color: #ddd;
+}
+
+.rating-text {
+  font-size: 14px;
+  color: #6c757d;
+  margin-top: 5px;
+  font-style: italic;
+}
+
+/* Star rating labels */
+.rating-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: #6c757d;
+  margin-top: 5px;
+}
+
+.rating-labels span {
+  flex: 1;
+  text-align: center;
+}

@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class Avis extends Model
 {
     protected $fillable = [
-        'user_id',
+        'utilisateur_id',
         'livre_id',
         'note',
         'commentaire',
@@ -27,9 +27,9 @@ class Avis extends Model
         parent::boot();
 
         static::creating(function ($avis) {
-            if (empty($avis->date_publication)) {
-                $avis->date_publication = now()->toDateString();
-            }
+            // Always set the current date for new reviews
+            // Try to get the correct date by using a different approach
+            $avis->date_publication = now()->toDateString();
         });
     }
 
@@ -38,7 +38,7 @@ class Avis extends Model
      */
     public function utilisateur(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'user_id');
+        return $this->belongsTo(User::class, 'utilisateur_id');
     }
 
     /**
@@ -49,3 +49,4 @@ class Avis extends Model
         return $this->belongsTo(Livre::class, 'livre_id');
     }
 }
+

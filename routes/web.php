@@ -15,6 +15,8 @@ use App\Http\Controllers\pages\MiscUnderMaintenance;
 use App\Http\Controllers\authentications\LoginBasic;
 use App\Http\Controllers\authentications\RegisterBasic;
 use App\Http\Controllers\authentications\ForgotPasswordBasic;
+use App\Http\Controllers\LivresController;
+use App\Http\Controllers\Admin\AvisController;
 use App\Http\Controllers\cards\CardBasic;
 use App\Http\Controllers\user_interface\Accordion;
 use App\Http\Controllers\user_interface\Alerts;
@@ -66,6 +68,13 @@ Route::post('/auth/login', [\App\Http\Controllers\authentications\LoginBasic::cl
 Route::post('/auth/register', [\App\Http\Controllers\authentications\LoginBasic::class, 'register'])->name('auth.register');
 // Logout route (still needed)
 Route::post('/logout', [\App\Http\Controllers\authentications\LoginBasic::class, 'logout'])->name('logout');
+
+// Livres routes
+Route::get('/livres', [LivresController::class, 'index'])->name('livres');
+Route::get('/livres/{livreId}/avis', [LivresController::class, 'getAvis']);
+Route::post('/avis', [LivresController::class, 'storeAvis']);
+Route::put('/avis/{avisId}', [LivresController::class, 'updateAvis']);
+Route::delete('/avis/{avisId}', [LivresController::class, 'deleteAvis']);
 
 
 // controlleur book event
@@ -194,4 +203,16 @@ Route::middleware(['auth'])->prefix('contributor')->name('contributor.')->group(
     Route::get('/livres/create', [ContributorController::class, 'livresCreate'])->name('livres.create');
     Route::post('/livres', [ContributorController::class, 'livresStore'])->name('livres.store');
     Route::post('/livres/create-book', [ContributorController::class, 'createBook'])->name('livres.create-book');
+});
+
+// Admin routes (read-only)
+Route::prefix('admin')->name('admin.')->group(function () {
+    Route::get('avis', [AvisController::class, 'index'])->name('avis.index');
+    Route::get('avis/{avis}', [AvisController::class, 'show'])->name('avis.show');
+    // Disabled routes for create, store, edit, update, destroy
+    Route::get('avis/create', [AvisController::class, 'create'])->name('avis.create');
+    Route::post('avis', [AvisController::class, 'store'])->name('avis.store');
+    Route::get('avis/{avis}/edit', [AvisController::class, 'edit'])->name('avis.edit');
+    Route::put('avis/{avis}', [AvisController::class, 'update'])->name('avis.update');
+    Route::delete('avis/{avis}', [AvisController::class, 'destroy'])->name('avis.destroy');
 });

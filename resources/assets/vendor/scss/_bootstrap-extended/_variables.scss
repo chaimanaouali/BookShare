@@ -38,23 +38,23 @@ $grays: (
 // scss-docs-end gray-colors-map
 
 // scss-docs-start color-variables
-$blue: #007bff !default;
+$blue: #03A4ED !default;
 $indigo: #6610f2 !default;
 $purple: #696cff !default;
 $pink: #e83e8c !default;
-$red: #ff3e1d !default;
+$red: #FE3F40 !default;
 $orange: #fd7e14 !default;
 $yellow: #ffab00 !default;
 $green: #71dd37 !default;
 $teal: #20c997 !default;
-$cyan: #03c3ec !default;
+$cyan: #03A4ED !default;
 // scss-docs-end color-variables
 
 // scss-docs-start theme-color-variables
-$primary: $purple !default;
+$primary: #FE3F40 !default;
 $secondary: #8592a3 !default;
 $success: $green !default;
-$info: $cyan !default;
+$info: #03A4ED !default;
 $warning: $yellow !default;
 $danger: $red !default;
 $light: #dbdee0 !default;

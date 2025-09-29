@@ -26,3 +26,4 @@ class LivreSeeder extends Seeder
         }
     }
 }
+

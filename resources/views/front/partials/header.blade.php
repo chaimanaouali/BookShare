@@ -13,6 +13,11 @@
           <!-- ***** Menu Start ***** -->
           <ul class="nav">
             <li class="scroll-to-section"><a href="#top" class="active">Home</a></li>
+             @auth
+                  @if(Auth::user()->role === 'user')
+            <li><a href="{{ route('livres') }}">Books</a></li>
+            @endif
+                  @endauth
             <li class="scroll-to-section"><a href="#about">About Us</a></li>
             <li class="scroll-to-section"><a href="#services">How It Works</a></li>
             <li class="scroll-to-section"><a href="#portfolio">Categories</a></li>
@@ -24,7 +29,7 @@
               @endif
             @endauth
             <li class="scroll-to-section"><div class="main-red-button"><a href="{{ route('auth') }}">Join Us</a></div></li>
-          </ul>        
+          </ul>
           <a class='menu-trigger'>
               <span>Menu</span>
           </a>
