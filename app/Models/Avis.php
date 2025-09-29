@@ -12,6 +12,7 @@ class Avis extends Model
         'livre_id',
         'note',
         'commentaire',
+        'date_publication',
     ];
 
     protected $casts = [
@@ -26,9 +27,9 @@ class Avis extends Model
         parent::boot();
 
         static::creating(function ($avis) {
-            if (empty($avis->date_publication)) {
-                $avis->date_publication = now()->toDateString();
-            }
+            // Always set the current date for new reviews
+            // Try to get the correct date by using a different approach
+            $avis->date_publication = now()->toDateString();
         });
     }
 
