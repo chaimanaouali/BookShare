@@ -25,6 +25,57 @@ class ContributorController extends Controller
     }
 
     /**
+     * Show the form to create new book metadata
+     */
+    public function livresNew()
+    {
+        return view('contributor.livres.new');
+    }
+
+    /**
+     * Handle the new book metadata form
+     */
+    public function livresStoreMetadata(Request $request)
+    {
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'author' => 'required|string|max:255',
+            'isbn' => 'nullable|string|max:20',
+            'description' => 'nullable|string|max:1000',
+            'cover_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'publication_date' => 'nullable|date',
+            'genre' => 'nullable|string|max:100',
+        ]);
+        // Handle cover image upload if present
+        if ($request->hasFile('cover_image')) {
+            $validated['cover_image'] = $request->file('cover_image')->store('covers', 'public');
+        }
+        $livre = \App\Models\Livre::create($validated);
+        return redirect()->route('contributor.livres.create')->with('success', 'Book created! You can now upload your file.');
+    }
+
+    /**
+     * Update a user's book (livre utilisateur)
+     */
+    public function livresUpdate(Request $request, \App\Models\LivreUtilisateur $livreUtilisateur)
+    {
+        if ($livreUtilisateur->user_id !== auth()->id()) {
+            abort(403);
+        }
+        $validated = $request->validate([
+            'format' => 'nullable|string|max:50',
+            'visibilite' => 'required|in:public,private',
+            'description' => 'nullable|string|max:1000',
+            'fichier_livre' => 'nullable|file|mimes:pdf,epub,mobi,txt|max:10240',
+        ]);
+        if ($request->hasFile('fichier_livre')) {
+            $validated['fichier_livre'] = $request->file('fichier_livre')->store('livres', 'public');
+        }
+        $livreUtilisateur->update($validated);
+        return redirect()->route('contributor.livres.show', $livreUtilisateur->id)->with('success', 'Book updated successfully!');
+    }
+
+    /**
      * Show the edit form for a user's book (livre utilisateur).
      */
     public function livresEdit(\App\Models\LivreUtilisateur $livreUtilisateur)

@@ -16,6 +16,7 @@
             <th>Author</th>
             <th>File</th>
             <th>Uploaded</th>
+            <th>Download</th>
           </tr>
         </thead>
         <tbody>
@@ -25,6 +26,18 @@
               <td>{{ $lu->livre->auteur ?? 'Unknown' }}</td>
               <td><span class="badge bg-label-secondary">{{ $lu->fichier_livre }}</span></td>
               <td>{{ $lu->created_at->diffForHumans() }}</td>
+              <td>
+                @php
+                  $fileUrl = $lu->fichier_livre ? Storage::url($lu->fichier_livre) : null;
+                @endphp
+                @if($fileUrl)
+                  <a href="{{ $fileUrl }}" class="btn btn-sm btn-outline-success" download>
+                    <i class="bx bx-download"></i> Download
+                  </a>
+                @else
+                  <span class="text-muted">N/A</span>
+                @endif
+              </td>
             </tr>
           @empty
             <tr><td colspan="4" class="text-muted">No public books in this library.</td></tr>

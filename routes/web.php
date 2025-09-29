@@ -87,8 +87,16 @@ Route::get('/contributor', function () {
     return redirect()->route('contributor.dashboard');
 })->middleware(['auth', 'role:contributor']);
 
+// Contributor Livres New (Book Metadata)
+Route::get('/contributor/livres/new', [\App\Http\Controllers\ContributorController::class, 'livresNew'])->name('contributor.livres.new')->middleware(['auth', 'role:contributor']);
+Route::post('/contributor/livres/new', [\App\Http\Controllers\ContributorController::class, 'livresStoreMetadata'])->name('contributor.livres.store-metadata')->middleware(['auth', 'role:contributor']);
+
 // Contributor Livres Index
 Route::get('/contributor/livres', [\App\Http\Controllers\ContributorController::class, 'livresIndex'])->name('contributor.livres.index')->middleware(['auth', 'role:contributor']);
+
+Route::get('/contributor/livres/create', [\App\Http\Controllers\ContributorController::class, 'livresCreate'])
+    ->name('contributor.livres.create')
+    ->middleware(['auth', 'role:contributor']);
 
 // Contributor Livres Show
 Route::get('/contributor/livres/{livreUtilisateur}', [\App\Http\Controllers\ContributorController::class, 'livresShow'])->name('contributor.livres.show')->middleware(['auth', 'role:contributor']);
@@ -96,12 +104,12 @@ Route::get('/contributor/livres/{livreUtilisateur}', [\App\Http\Controllers\Cont
 // Contributor Livres Edit
 Route::get('/contributor/livres/{livreUtilisateur}/edit', [\App\Http\Controllers\ContributorController::class, 'livresEdit'])->name('contributor.livres.edit')->middleware(['auth', 'role:contributor']);
 
+Route::put('/contributor/livres/{livreUtilisateur}', [\App\Http\Controllers\ContributorController::class, 'livresUpdate'])->name('contributor.livres.update')->middleware(['auth', 'role:contributor']);
+
 // Contributor Livres Create (AJAX)
 Route::post('/contributor/livres/create-book', [\App\Http\Controllers\ContributorController::class, 'createBook'])->name('contributor.livres.create-book')->middleware(['auth', 'role:contributor']);
 
-Route::get('/contributor/livres/create', [\App\Http\Controllers\ContributorController::class, 'livresCreate'])
-    ->name('contributor.livres.create')
-    ->middleware(['auth', 'role:contributor']);
+
 
 // layout
 Route::get('/layouts/without-menu', [WithoutMenu::class, 'index'])->name('layouts-without-menu');

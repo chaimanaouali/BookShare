@@ -2,6 +2,8 @@
 
 @section('title', 'Upload Book - BookShare')
 
+{{-- IMPORTANT: Make sure you have this in your <head> section of your main layout: --}}
+{{-- <meta name="csrf-token" content="{{ csrf_token() }}"> --}}
 @section('content')
 <!-- Page Header -->
 <div class="row mb-4">
@@ -215,6 +217,8 @@
         <h5 class="modal-title">Create New Book Entry</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
+      <!-- Error display for AJAX -->
+      <div id="createBookError" class="alert alert-danger" style="display:none;"></div>
       <form id="createBookForm">
         <div class="modal-body">
           <div class="mb-3">
@@ -318,7 +322,14 @@ document.getElementById('createBookForm').addEventListener('submit', function(e)
       this.reset();
     }
   })
-  .catch(error => console.error('Error:', error));
+  .catch(error => {
+  const errorDiv = document.getElementById('createBookError');
+  if (errorDiv) {
+    errorDiv.textContent = 'Error creating book. Please try again.';
+    errorDiv.style.display = 'block';
+  }
+  console.error('Error:', error);
+});
 });
 </script>
 @endsection
