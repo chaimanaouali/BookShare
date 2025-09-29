@@ -44,6 +44,7 @@ use App\Http\Controllers\form_layouts\VerticalForm;
 use App\Http\Controllers\form_layouts\HorizontalForm;
 use App\Http\Controllers\tables\Basic as TablesBasic;
 use App\Http\Controllers\ContributorController;
+use App\Http\Controllers\BookEventController;
 
 // Front-Office
 Route::middleware(['auth'])->group(function () {
@@ -67,6 +68,9 @@ Route::post('/auth/register', [\App\Http\Controllers\authentications\LoginBasic:
 Route::post('/logout', [\App\Http\Controllers\authentications\LoginBasic::class, 'logout'])->name('logout');
 
 
+// controlleur book event
+
+Route::resource('book-events', BookEventController::class);
 
 // Main Page Route
 // Set the root URL to the current /home view
@@ -176,7 +180,7 @@ Route::get('/tables/basic', [TablesBasic::class, 'index'])->name('tables-basic')
 Route::middleware(['auth'])->prefix('contributor')->name('contributor.')->group(function () {
     // Dashboard
     Route::get('/dashboard', [ContributorController::class, 'dashboard'])->name('dashboard');
-    
+
     // Bibliotheques Management
     Route::get('/bibliotheques', [ContributorController::class, 'bibliothequesIndex'])->name('bibliotheques.index');
     Route::get('/bibliotheques/create', [ContributorController::class, 'bibliothequesCreate'])->name('bibliotheques.create');
@@ -185,7 +189,7 @@ Route::middleware(['auth'])->prefix('contributor')->name('contributor.')->group(
     Route::get('/bibliotheques/{bibliotheque}/edit', [ContributorController::class, 'bibliothequesEdit'])->name('bibliotheques.edit');
     Route::put('/bibliotheques/{bibliotheque}', [ContributorController::class, 'bibliothequesUpdate'])->name('bibliotheques.update');
     Route::delete('/bibliotheques/{bibliotheque}', [ContributorController::class, 'bibliothequesDestroy'])->name('bibliotheques.destroy');
-    
+
     // Livres Management
     Route::get('/livres/create', [ContributorController::class, 'livresCreate'])->name('livres.create');
     Route::post('/livres', [ContributorController::class, 'livresStore'])->name('livres.store');

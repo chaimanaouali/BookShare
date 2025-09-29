@@ -97,6 +97,12 @@
       ]
     },
     {
+      "name": "Book Events",
+      "icon": "menu-icon tf-icons bx bx-book",
+      "slug": "book-events",
+      "url": "book-events"
+    },
+    {
       "name": "Misc",
       "icon": "menu-icon tf-icons bx bx-cube-alt",
       "slug": "pages-misc",
