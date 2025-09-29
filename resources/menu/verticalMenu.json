@@ -103,6 +103,12 @@
       "url": "book-events"
     },
     {
+      "name": "Library",
+      "icon": "menu-icon tf-icons bx bx-book",
+      "slug": "library",
+      "url": "admin"
+    },
+    {
       "name": "Misc",
       "icon": "menu-icon tf-icons bx bx-cube-alt",
       "slug": "pages-misc",

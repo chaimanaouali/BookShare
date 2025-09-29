@@ -70,7 +70,7 @@ Route::post('/logout', [\App\Http\Controllers\authentications\LoginBasic::class,
 
 // controlleur book event
 
-Route::resource('book-events', BookEventController::class);
+Route::resource('book-events', BookEventController::class)->middleware(['auth', 'admin']);
 
 // Main Page Route
 // Set the root URL to the current /home view
@@ -84,7 +84,7 @@ Route::get('/admin', [\App\Http\Controllers\AdminController::class, 'dashboard']
 Route::get('/admin/bibliotheques/{id}', [\App\Http\Controllers\AdminController::class, 'bibliothequeShow'])->name('admin.bibliotheques.show')->middleware(['auth', 'admin']);
 
 // Move the dashboard analytics to /dashboard
-Route::get('/dashboard', [Analytics::class, 'index'])->name('dashboard-analytics');
+Route::get('/dashboard', [Analytics::class, 'index'])->name('dashboard-analytics')->middleware(['auth', 'admin']);
 
 // Contributor Dashboard (accessible to authenticated users)
 Route::get('/contributor', function () {
