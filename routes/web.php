@@ -185,6 +185,10 @@ Route::get('/form/layouts-horizontal', [HorizontalForm::class, 'index'])->name('
 // tables
 Route::get('/tables/basic', [TablesBasic::class, 'index'])->name('tables-basic');
 
+// Emprunts and HistoriqueEmprunts CRUD routes
+Route::resource('emprunts', App\Http\Controllers\EmpruntController::class);
+Route::resource('historique-emprunts', App\Http\Controllers\HistoriqueEmpruntController::class);
+
 // Contributor Routes (Protected)
 Route::middleware(['auth'])->prefix('contributor')->name('contributor.')->group(function () {
     // Dashboard

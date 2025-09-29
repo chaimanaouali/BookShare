@@ -22,6 +22,7 @@ class Livre extends Model
     ];
 
     /**
+     * Get the emprunts for the livre.
      * Get the avis for the livre.
      */
     public function avis(): HasMany
@@ -32,8 +33,10 @@ class Livre extends Model
     /**
      * Get the livre utilisateurs (book instances) for this livre.
      */
+    public function emprunts(): HasMany
     public function livreUtilisateurs(): HasMany
     {
+        return $this->hasMany(Emprunt::class);
         return $this->hasMany(LivreUtilisateur::class);
     }
 }

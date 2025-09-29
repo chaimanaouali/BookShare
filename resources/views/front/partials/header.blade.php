@@ -28,6 +28,11 @@
                 <li class="scroll-to-section"><a href="{{ url('/explore') }}">Explore</a></li>
               @endif
             @endauth
+            @auth
+                 @if(Auth::user()->role === 'user')
+            <li><a href="{{ route('emprunts.index') }}">Emprunts</a></li>
+                  @endif
+            @endauth
             <li class="scroll-to-section"><div class="main-red-button"><a href="{{ route('auth') }}">Join Us</a></div></li>
           </ul>
           <a class='menu-trigger'>

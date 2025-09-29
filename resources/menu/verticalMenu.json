@@ -50,6 +50,18 @@
       "menuHeader": "Apps & Pages"
     },
     {
+      "name": "Accueil",
+      "icon": "menu-icon tf-icons bx bx-home",
+      "slug": "home",
+      "url": "/"
+    },
+    {
+      "name": "Emprunts",
+      "icon": "menu-icon tf-icons bx bx-book-reader",
+      "slug": "emprunts",
+      "url": "emprunts"
+    },
+    {
       "url": "/admin/avis",
       "name": "Reviews Management",
       "icon": "menu-icon tf-icons bx bx-star",
@@ -311,6 +323,15 @@
       "slug": "tables-basic"
     },
     {
+      "menuHeader": "Administration"
+    },
+    {
+      "name": "Historique Emprunts",
+      "icon": "menu-icon tf-icons bx bx-history",
+      "slug": "historique-emprunts",
+      "url": "historique-emprunts"
+    },
+    {
       "menuHeader": "Misc"
     },
     {
@@ -329,3 +350,4 @@
     }
   ]
 }
+
