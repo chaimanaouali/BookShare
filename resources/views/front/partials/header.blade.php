@@ -13,21 +13,25 @@
           <!-- ***** Menu Start ***** -->
           <ul class="nav">
             <li class="scroll-to-section"><a href="#top" class="active">Home</a></li>
-             @auth
-                  @if(Auth::user()->role === 'user')
-            <li><a href="{{ route('livres') }}">Books</a></li>
-            @endif
-                  @endauth
+            <li>
+              @auth
+                @if(Auth::user()->role === 'user')
+                  <a href="{{ url('/livres') }}">Books</a>
+                @endif
+              @endauth
+            </li>
             <li class="scroll-to-section"><a href="#about">About Us</a></li>
             <li class="scroll-to-section"><a href="#services">How It Works</a></li>
             <li class="scroll-to-section"><a href="#portfolio">Categories</a></li>
             <li class="scroll-to-section"><a href="#blog">Community</a></li>
             <li class="scroll-to-section"><a href="#contact">Contact</a></li>
-            @auth
-              @if(Auth::user()->role === 'user')
-                <li class="scroll-to-section"><a href="{{ url('/explore') }}">Explore</a></li>
-              @endif
-            @endauth
+            <li class="scroll-to-section">
+              @auth
+                @if(Auth::user()->role === 'user')
+                  <a href="{{ url('/explore') }}">Explore</a>
+                @endif
+              @endauth
+            </li>
             @auth
                  @if(Auth::user()->role === 'user')
             <li><a href="{{ route('emprunts.index') }}">Emprunts</a></li>

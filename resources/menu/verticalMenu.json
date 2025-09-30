@@ -68,6 +68,12 @@
       "slug": "admin-avis"
     },
     {
+      "name": "Contributor",
+      "icon": "menu-icon tf-icons bx bx-book-reader",
+      "slug": "contributor",
+      "url": "contributor/dashboard"
+    },
+    {
       "name": "Account Settings",
       "icon": "menu-icon tf-icons bx bx bx-dock-top",
       "slug": "pages-account-settings",
@@ -350,4 +356,3 @@
     }
   ]
 }
-

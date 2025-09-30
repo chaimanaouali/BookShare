@@ -34,9 +34,12 @@ class Livre extends Model
      * Get the livre utilisateurs (book instances) for this livre.
      */
     public function emprunts(): HasMany
+    {
+      return $this->hasMany(Emprunt::class);
+    }
     public function livreUtilisateurs(): HasMany
     {
-        return $this->hasMany(Emprunt::class);
+
         return $this->hasMany(LivreUtilisateur::class);
     }
 }

@@ -187,12 +187,12 @@ Route::get('/tables/basic', [TablesBasic::class, 'index'])->name('tables-basic')
 
 // Emprunts and HistoriqueEmprunts CRUD routes
 Route::resource('emprunts', App\Http\Controllers\EmpruntController::class);
-Route::resource('historique-emprunts', App\Http\Controllers\HistoriqueEmpruntController::class);
+Route::resource('historique-emprunts', App\Http\Controllers\HistoriqueEmpruntController::class)->middleware(['auth', 'admin']);
 
 // Contributor Routes (Protected)
 Route::middleware(['auth'])->prefix('contributor')->name('contributor.')->group(function () {
     // Dashboard
-    Route::get('/dashboard', [ContributorController::class, 'dashboard'])->name('dashboard');
+    Route::get('/dashboard', [ContributorController::class, 'dashboard'])->name('dashboard')->middleware('role:contributor');
 
     // Bibliotheques Management
     Route::get('/bibliotheques', [ContributorController::class, 'bibliothequesIndex'])->name('bibliotheques.index');
@@ -210,7 +210,7 @@ Route::middleware(['auth'])->prefix('contributor')->name('contributor.')->group(
 });
 
 // Admin routes (read-only)
-Route::prefix('admin')->name('admin.')->group(function () {
+Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(function () {
     Route::get('avis', [AvisController::class, 'index'])->name('avis.index');
     Route::get('avis/{avis}', [AvisController::class, 'show'])->name('avis.show');
     // Disabled routes for create, store, edit, update, destroy
