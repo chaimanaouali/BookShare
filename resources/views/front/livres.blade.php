@@ -80,6 +80,36 @@
     </div>
 </div>
 
+<!-- Recommendations Section -->
+@auth
+<div id="recommendations" class="our-livres section">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-6 offset-lg-3">
+                <div class="section-heading wow bounceIn" data-wow-duration="1s" data-wow-delay="0.2s">
+                    <h2>Your <em>Recommendations</em></h2>
+                    <p>Personalized suggestions based on your reviews</p>
+                    <div class="text-center mt-2">
+                        <button id="generateRecsBtn" class="main-button">Generate Recommendations</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12">
+                <div id="recommendationsList" class="row"></div>
+            </div>
+        </div>
+    </div>
+    <div class="container" id="recsEmptyState" style="display:none">
+        <div class="alert alert-info text-center">No recommendations yet. Rate books with 4 or 5 stars and click Generate.</div>
+    </div>
+    <div class="container" id="recsLoading" style="display:none">
+        <div class="text-center"><div class="spinner-border" role="status"><span class="visually-hidden">Loading...</span></div></div>
+    </div>
+</div>
+@endauth
+
 <!-- Reviews Modal -->
 <div class="modal fade" id="reviewsModal" tabindex="-1" aria-labelledby="reviewsModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
@@ -496,5 +526,63 @@ function deleteReview(avisId) {
         });
     }
 }
+
+// ------------------- Recommendations (Front) -------------------
+@auth
+document.getElementById('generateRecsBtn').addEventListener('click', function() {
+    document.getElementById('recsLoading').style.display = 'block';
+    fetch('{{ route('recommendations.generate.ajax') }}', {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': getCSRFToken()
+        }
+    }).then(() => loadRecommendations());
+});
+
+function loadRecommendations() {
+    document.getElementById('recsLoading').style.display = 'block';
+    fetch('{{ route('recommendations.list') }}')
+        .then(r => r.json())
+        .then(data => {
+            document.getElementById('recsLoading').style.display = 'none';
+            const list = document.getElementById('recommendationsList');
+            list.innerHTML = '';
+            if (!data.success || data.data.length === 0) {
+                document.getElementById('recsEmptyState').style.display = 'block';
+                return;
+            }
+            document.getElementById('recsEmptyState').style.display = 'none';
+            data.data.forEach(rec => {
+                const col = document.createElement('div');
+                col.className = 'col-lg-4 col-md-6 mb-4';
+                const percent = Math.round(rec.score * 100);
+                const category = rec.category_name || (rec.livre && rec.livre.categorie ? rec.livre.categorie.nom : '');
+                col.innerHTML = `
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="badge bg-info">${rec.source || 'AI'}</span>
+                                <div class="d-flex align-items-center gap-2">
+                                    ${category ? `<span class=\"badge bg-secondary\">${category}</span>` : ''}
+                                    <small class="text-muted">${percent}% match</small>
+                                </div>
+                            </div>
+                            <h5 class="card-title">${rec.livre?.title || 'Book'}</h5>
+                            <p class="card-text small text-muted">${rec.livre?.author || ''}</p>
+                            ${category ? `<div class=\"small text-muted mb-2\"><strong>Category:</strong> ${category}</div>` : ''}
+                            <a class="btn btn-sm btn-outline-primary" href="{{ route('livres') }}?search=${encodeURIComponent(rec.livre?.title || '')}">View Book</a>
+                        </div>
+                    </div>`;
+                list.appendChild(col);
+            });
+        })
+        .catch(() => {
+            document.getElementById('recsLoading').style.display = 'none';
+        });
+}
+
+// Auto-load recommendations on page load
+document.addEventListener('DOMContentLoaded', loadRecommendations);
+@endauth
 </script>
 @endsection

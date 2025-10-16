@@ -7,44 +7,65 @@
     <div class="forms-auth-container">
         <div class="signin-signup">
             <!-- Sign In Form -->
-            <form action="#" class="sign-in-form">
-                <h2 class="title">Sign in</h2>
-                <div class="input-field">
-                    <i class="fas fa-user"></i>
-                    <input type="email" name="email" placeholder="Email" />
-                </div>
-                <div class="input-field">
-                    <i class="fas fa-lock"></i>
-                    <input type="password" name="password" placeholder="Password" />
-                </div>
-                <input type="submit" value="Login" class="btn solid" />
-                <p class="social-text">Or Sign in with social platforms</p>
-                <div class="social-media">
-                    <a href="#" class="social-icon"><i class="fab fa-facebook-f"></i></a>
-                    <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
-                    <a href="#" class="social-icon"><i class="fab fa-google"></i></a>
-                    <a href="#" class="social-icon"><i class="fab fa-linkedin-in"></i></a>
-                </div>
-            </form>
+            @if ($errors->any())
+    <div class="alert alert-danger">
+        <ul class="mb-0">
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
+<form action="{{ url('/auth/login') }}" method="POST" class="sign-in-form">
+    @csrf
+    <h2 class="title">Sign in</h2>
+    <div class="input-field">
+        <i class="fas fa-user"></i>
+        <input type="email" name="email" placeholder="Email" required />
+    </div>
+    <div class="input-field">
+        <i class="fas fa-lock"></i>
+        <input type="password" name="password" placeholder="Password" required />
+    </div>
+
+    <input type="submit" value="Login" class="btn solid" />
+    <p class="social-text">Or Sign in with social platforms</p>
+    <div class="social-media">
+        <a href="#" class="social-icon"><i class="fab fa-facebook-f"></i></a>
+        <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
+        <a href="#" class="social-icon"><i class="fab fa-google"></i></a>
+        <a href="#" class="social-icon"><i class="fab fa-linkedin-in"></i></a>
+    </div>
+</form>
 
             <!-- Sign Up Form -->
-            <form action="#" class="sign-up-form">
+            @if ($errors->any())
+                <div class="alert alert-danger">
+                    <ul class="mb-0">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+            <form action="{{ url('/auth/register') }}" method="POST" class="sign-up-form">
+                @csrf
                 <h2 class="title">Sign up</h2>
                 <div class="input-field">
                     <i class="fas fa-user"></i>
-                    <input type="text" name="name" placeholder="Name" />
+                    <input type="text" name="name" placeholder="Name" required />
                 </div>
                 <div class="input-field">
                     <i class="fas fa-envelope"></i>
-                    <input type="email" name="email" placeholder="Email" />
+                    <input type="email" name="email" placeholder="Email" required />
                 </div>
                 <div class="input-field">
                     <i class="fas fa-lock"></i>
-                    <input type="password" name="password" placeholder="Password" />
+                    <input type="password" name="password" placeholder="Password" required />
                 </div>
                 <div class="input-field">
                     <i class="fas fa-lock"></i>
-                    <input type="password" name="password_confirmation" placeholder="Confirm Password" />
+                    <input type="password" name="password_confirmation" placeholder="Confirm Password" required />
                 </div>
                 <input type="submit" class="btn" value="Sign up" />
                 <p class="social-text">Or Sign up with social platforms</p>
@@ -103,73 +124,6 @@
             container.classList.remove("sign-up-mode");
         });
 
-        async function api(url = '', method = 'GET', data = null) {
-            const token = localStorage.getItem('auth_token');
-            const headers = { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' };
-            if (token) headers['Authorization'] = `Bearer ${token}`;
-            const opts = { method, headers };
-            if (data) opts.body = JSON.stringify(data);
-            const res = await fetch(`/api${url}`, opts);
-            const text = await res.text();
-            try { return { ok: res.ok, status: res.status, json: JSON.parse(text) }; } catch { return { ok: res.ok, status: res.status, json: { message: text } }; }
-        }
-
-        if (signupForm) {
-            signupForm.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const form = e.currentTarget;
-                const payload = {
-                    name: form.querySelector('input[name="name"]').value,
-                    email: form.querySelector('input[name="email"]').value,
-                    password: form.querySelector('input[name="password"]').value,
-                    password_confirmation: form.querySelector('input[name="password_confirmation"]').value
-                };
-                const { ok, status, json } = await api('/auth/signup', 'POST', payload);
-                const msg = document.getElementById('signup-message');
-                const errs = document.getElementById('signup-errors');
-                errs.innerHTML = '';
-                if (ok) {
-                    msg.style.color = 'green';
-                    msg.textContent = 'Signed up!';
-                    if (json?.data?.token) localStorage.setItem('auth_token', json.data.token);
-                    const role = json?.data?.user?.role || 'user';
-                    window.location.href = role === 'admin' ? '/dashboard' : '/';
-                } else {
-                    msg.style.color = 'red';
-                    if (status === 422 && json?.errors) {
-                        msg.textContent = 'Please fix the errors below:';
-                        const list = document.createElement('ul');
-                        for (const [field, messages] of Object.entries(json.errors)) {
-                            const li = document.createElement('li');
-                            li.textContent = `${field}: ${messages.join(', ')}`;
-                            list.appendChild(li);
-                        }
-                        errs.appendChild(list);
-                    } else {
-                        msg.textContent = json?.message || 'Signup failed';
-                    }
-                }
-            });
-        }
-
-        if (signinForm) {
-            signinForm.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const form = e.currentTarget;
-                const payload = {
-                    email: form.querySelector('input[name="email"]').value,
-                    password: form.querySelector('input[name="password"]').value
-                };
-                const { ok, json } = await api('/auth/login', 'POST', payload);
-                if (ok && json?.data?.token) {
-                    localStorage.setItem('auth_token', json.data.token);
-                    const role = json?.data?.user?.role || 'user';
-                    window.location.href = role === 'admin' ? '/dashboard' : '/';
-                } else {
-                    alert(json?.message || 'Login failed');
-                }
-            });
-        }
     });
 </script>
 @endsection

@@ -11,13 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('avis', function (Blueprint $table) {
+        Schema::create('historique_emprunts', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('emprunt_id')->constrained('emprunts')->onDelete('cascade');
             $table->foreignId('utilisateur_id')->constrained('users')->onDelete('cascade');
-            $table->foreignId('livre_id')->constrained('livres')->onDelete('cascade');
-            $table->integer('note');
-            $table->text('commentaire');
-            $table->date('date_publication');
+            $table->string('action');
+            $table->date('date_action');
+            $table->text('details')->nullable();
             $table->timestamps();
         });
     }
@@ -27,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('avis');
+        Schema::dropIfExists('historique_emprunts');
     }
 };
