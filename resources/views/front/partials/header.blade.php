@@ -23,7 +23,7 @@
             @auth
               @if(Auth::user()->role === 'user')
             <li>
-              <a href="{{ route('recommendations.generate.get', ['redirect' => 'home']) }}">Recommendations</a>
+              <a href="{{ url('/livres') }}#recommendations">Recommendations</a>
             </li>
               @endif
             @endauth
