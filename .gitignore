@@ -1,0 +1,33 @@
+# Environment
+.env
+.env.*
+!.env.example
+
+# Dependencies
+/vendor/
+/node_modules/
+
+# Laravel storage and build artifacts
+/storage/*.key
+/storage/app/public
+/storage/framework/cache/data
+/storage/framework/sessions
+/storage/framework/testing
+/storage/framework/views
+/storage/logs
+/public/hot
+/public/storage
+/public/build
+/bootstrap/cache/*.php
+
+# IDE/OS
+/.idea/
+/.vscode/
+.DS_Store
+Thumbs.db
+
+# Misc
+.phpunit.result.cache
+npm-debug.log*
+yarn-error.log*
+pnpm-debug.log*
