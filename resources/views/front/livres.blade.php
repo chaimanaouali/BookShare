@@ -3,28 +3,55 @@
 @section('title', 'Our Books Collection')
 
 @section('content')
-<div class="main-banner wow fadeIn" id="top" data-wow-duration="1s" data-wow-delay="0.5s">
+<!-- Recommendations Hero Section -->
+@auth
+<div class="main-banner wow fadeIn" id="recommendations" data-wow-duration="1s" data-wow-delay="0.5s" style="background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); padding: 100px 0;">
     <div class="container">
         <div class="row">
             <div class="col-lg-12">
                 <div class="row">
                     <div class="col-lg-6 align-self-center">
                         <div class="left-content header-text wow fadeInLeft" data-wow-duration="1s" data-wow-delay="1s">
-                            <h6>Welcome to BookShare</h6>
-                            <h2>Discover Our <em>Book</em> Collection & <span>Reviews</span></h2>
-                            <p>Explore our curated selection of amazing books and read reviews from our community. Share your thoughts and discover new favorites!</p>
+                            <h6 style="color: #FF3B30; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">WELCOME TO BOOKSHARE</h6>
+                            <h2 style="font-size: 3rem; font-weight: 700; line-height: 1.2; margin: 20px 0;">
+                                Discover Our <span style="color: #007bff;">Book</span> Collection & <span style="color: #FF3B30;">Reviews</span>
+                            </h2>
+                            <p style="font-size: 1.2rem; color: #6c757d; margin-bottom: 30px; line-height: 1.6;">
+                                Explore our curated selection of amazing books and read reviews from our community. Share your thoughts and discover new favorites!
+                            </p>
+                            <button id="generateRecsBtn" class="btn btn-lg px-5 py-3" 
+                                    style="background-color: #FF3B30; border: 1px solid #FF3B30; color: white; border-radius: 8px; font-weight: 600; font-size: 1.1rem;">
+                                Generate Recommendations
+                            </button>
                         </div>
                     </div>
                     <div class="col-lg-6">
                         <div class="right-image wow fadeInRight" data-wow-duration="1s" data-wow-delay="0.5s">
-                            <img src="{{ asset('assets/images/banner-right-image.png') }}" alt="book collection">
+                            <div id="recommendationsList" class="row g-3" style="max-height: 400px; overflow-y: auto;"></div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+    <div class="container" id="recsEmptyState" style="display:none">
+        <div class="text-center py-5">
+            <div class="mb-4">
+                <i class="bx bx-book-open display-1 text-muted"></i>
+            </div>
+            <h4 class="text-muted mb-3">No recommendations yet</h4>
+            <p class="text-muted mb-4">Rate books with 4 or 5 stars and click Generate.</p>
+        </div>
+    </div>
+    <div class="container" id="recsLoading" style="display:none">
+        <div class="text-center py-5">
+            <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+    </div>
 </div>
+@endauth
 
 <div id="livres" class="our-livres section">
     <div class="container">
@@ -80,48 +107,6 @@
     </div>
 </div>
 
-<!-- Recommendations Section -->
-@auth
-<div id="recommendations" class="our-livres section" style="background-color: #f8f9fa; padding: 80px 0;">
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-8 offset-lg-2">
-                <div class="text-center mb-5">
-                    <h2 class="display-5 fw-bold mb-3">
-                        Your <span style="color: #007bff;">Recommendations</span>
-                    </h2>
-                    <p class="lead text-muted mb-4">Personalized suggestions based on your reviews</p>
-                    <button id="generateRecsBtn" class="btn btn-lg px-4 py-2" 
-                            style="background-color: #FF3B30; border: 1px solid #FF3B30; color: white;">
-                        Generate Recommendations
-                    </button>
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-lg-12">
-                <div id="recommendationsList" class="row g-4"></div>
-            </div>
-        </div>
-    </div>
-    <div class="container" id="recsEmptyState" style="display:none">
-        <div class="text-center py-5">
-            <div class="mb-4">
-                <i class="bx bx-book-open display-1 text-muted"></i>
-            </div>
-            <h4 class="text-muted mb-3">No recommendations yet</h4>
-            <p class="text-muted mb-4">Rate books with 4 or 5 stars and click Generate.</p>
-        </div>
-    </div>
-    <div class="container" id="recsLoading" style="display:none">
-        <div class="text-center py-5">
-            <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
-                <span class="visually-hidden">Loading...</span>
-            </div>
-        </div>
-    </div>
-</div>
-@endauth
 
 <!-- Reviews Modal -->
 <div class="modal fade" id="reviewsModal" tabindex="-1" aria-labelledby="reviewsModalLabel" aria-hidden="true">
@@ -567,32 +552,32 @@ function loadRecommendations() {
             document.getElementById('recsEmptyState').style.display = 'none';
              data.data.forEach(rec => {
                  const col = document.createElement('div');
-                 col.className = 'col-lg-4 col-md-6';
+                 col.className = 'col-lg-6 col-md-6';
                  const percent = Math.round(rec.score * 100);
                  const category = rec.category_name || (rec.livre && rec.livre.categorie ? rec.livre.categorie.nom : '');
                  col.innerHTML = `
-                     <div class="card h-100 shadow-sm border-0" style="border-radius: 12px; transition: transform 0.2s ease;">
-                         <div class="card-body p-4">
-                             <div class="d-flex justify-content-between align-items-start mb-3">
-                                 <span class="badge bg-primary text-white px-3 py-2" style="border-radius: 8px; font-size: 0.75rem;">
+                     <div class="card h-100 shadow-sm border-0" style="border-radius: 12px; transition: transform 0.2s ease; background: white;">
+                         <div class="card-body p-3">
+                             <div class="d-flex justify-content-between align-items-start mb-2">
+                                 <span class="badge bg-primary text-white px-2 py-1" style="border-radius: 6px; font-size: 0.7rem;">
                                      ${rec.source || 'AI'}
                                  </span>
-                                 <small class="text-muted fw-medium">${percent}% match</small>
+                                 <small class="text-muted fw-medium" style="font-size: 0.8rem;">${percent}% match</small>
                              </div>
                              
-                             <h5 class="card-title fw-bold mb-2" style="color: #333; line-height: 1.3;">
+                             <h6 class="card-title fw-bold mb-2" style="color: #333; line-height: 1.3; font-size: 0.9rem;">
                                  ${rec.livre?.title || 'Book'}
-                             </h5>
+                             </h6>
                              
-                             ${category ? `<span class="badge bg-dark text-white mb-3" style="border-radius: 6px; font-size: 0.7rem;">${category}</span>` : ''}
+                             ${category ? `<span class="badge bg-dark text-white mb-2" style="border-radius: 4px; font-size: 0.6rem;">${category}</span>` : ''}
                              
                              <div class="d-flex justify-content-between align-items-center">
-                                 <small class="text-muted">
+                                 <small class="text-muted" style="font-size: 0.7rem;">
                                      ${new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                                  </small>
                                  <a href="{{ route('livres') }}?search=${encodeURIComponent(rec.livre?.title || '')}" 
-                                    class="btn btn-sm px-3 py-2" 
-                                    style="background-color: #ff6b35; border: 1px solid #ff6b35; color: white; border-radius: 6px; font-weight: 500;">
+                                    class="btn btn-sm px-2 py-1" 
+                                    style="background-color: #ff6b35; border: 1px solid #ff6b35; color: white; border-radius: 4px; font-weight: 500; font-size: 0.7rem;">
                                      View Book
                                  </a>
                              </div>
@@ -623,3 +608,4 @@ document.addEventListener('DOMContentLoaded', loadRecommendations);
 }
 </style>
 @endsection
+
