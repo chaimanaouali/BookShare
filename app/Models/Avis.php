@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class Avis extends Model
 {
     protected $fillable = [
-        'utilisateur_id',
+        'user_id',
         'livre_id',
         'note',
         'commentaire',
@@ -38,7 +38,7 @@ class Avis extends Model
      */
     public function utilisateur(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'utilisateur_id');
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     /**

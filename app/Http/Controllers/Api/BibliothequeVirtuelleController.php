@@ -73,9 +73,9 @@ class BibliothequeVirtuelleController extends Controller
 
         $request->validate([
             'nom_bibliotheque' => [
-                'required', 
-                'string', 
-                'max:255', 
+                'required',
+                'string',
+                'max:255',
                 Rule::unique('bibliotheque_virtuelles', 'nom_bibliotheque')
                     ->where('user_id', Auth::id())
                     ->ignore($bibliotheque->id)
@@ -99,10 +99,10 @@ class BibliothequeVirtuelleController extends Controller
     public function destroy(string $id)
     {
         $bibliotheque = Auth::user()->bibliotheques()->findOrFail($id);
-        
+
         // Delete all associated livre utilisateurs first
-        $bibliotheque->livreUtilisateurs()->delete();
-        
+        $bibliotheque->livres()->delete();
+
         // Delete the bibliotheque
         $bibliotheque->delete();
 

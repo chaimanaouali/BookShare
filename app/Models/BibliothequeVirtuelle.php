@@ -31,10 +31,19 @@ class BibliothequeVirtuelle extends Model
     }
 
     /**
+     * Get the livres (books) in this bibliotheque.
+     */
+    public function livres(): HasMany
+    {
+        return $this->hasMany(Livre::class, 'bibliotheque_id');
+    }
+
+    /**
      * Get the livre utilisateurs (book instances) in this bibliotheque.
+     * @deprecated Use livres() instead
      */
     public function livreUtilisateurs(): HasMany
     {
-        return $this->hasMany(LivreUtilisateur::class, 'bibliotheque_id');
+        return $this->hasMany(Livre::class, 'bibliotheque_id');
     }
 }

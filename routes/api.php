@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\BibliothequeVirtuelleController;
 use App\Http\Controllers\Api\LivreUtilisateurController;
 use App\Http\Controllers\Api\AvisController;
+use App\Http\Controllers\Api\CategorieController;
 
 // (Removed API login/signup routes to avoid conflict with web login)
 
@@ -38,4 +39,13 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/avis/get/{avi}', [AvisController::class, 'show']);
     Route::put('/avis/update/{avi}', [AvisController::class, 'update']);
     Route::delete('/avis/delete/{avi}', [AvisController::class, 'destroy']);
+
+    // Categories Management API Routes
+    Route::get('/categories/all', [CategorieController::class, 'index']);
+    Route::post('/categories/create', [CategorieController::class, 'store']);
+    Route::get('/categories/get/{categorie}', [CategorieController::class, 'show']);
+    Route::put('/categories/update/{categorie}', [CategorieController::class, 'update']);
+    Route::delete('/categories/delete/{categorie}', [CategorieController::class, 'destroy']);
+    Route::get('/categories/{categorie}/books', [CategorieController::class, 'books']);
+    Route::get('/categories/popular', [CategorieController::class, 'popular']);
 });

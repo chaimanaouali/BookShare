@@ -212,8 +212,8 @@
                           </div>
                         </div>
                         <div>
-                          <h6 class="mb-0">{{ $livre->livre->title }}</h6>
-                          <small class="text-muted">{{ $livre->livre->author }}</small>
+                          <h6 class="mb-0">{{ $livre->title }}</h6>
+                          <small class="text-muted">{{ $livre->author }}</small>
                         </div>
                       </div>
                     </td>

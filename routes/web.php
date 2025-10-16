@@ -17,6 +17,7 @@ use App\Http\Controllers\authentications\RegisterBasic;
 use App\Http\Controllers\authentications\ForgotPasswordBasic;
 use App\Http\Controllers\LivresController;
 use App\Http\Controllers\Admin\AvisController;
+use App\Http\Controllers\CategorieController;
 use App\Http\Controllers\cards\CardBasic;
 use App\Http\Controllers\user_interface\Accordion;
 use App\Http\Controllers\user_interface\Alerts;
@@ -112,12 +113,15 @@ Route::get('/contributor/livres/create', [\App\Http\Controllers\ContributorContr
     ->middleware(['auth', 'role:contributor']);
 
 // Contributor Livres Show
-Route::get('/contributor/livres/{livreUtilisateur}', [\App\Http\Controllers\ContributorController::class, 'livresShow'])->name('contributor.livres.show')->middleware(['auth', 'role:contributor']);
+Route::get('/contributor/livres/{livre}', [\App\Http\Controllers\ContributorController::class, 'livresShow'])->name('contributor.livres.show')->middleware(['auth', 'role:contributor']);
 
 // Contributor Livres Edit
-Route::get('/contributor/livres/{livreUtilisateur}/edit', [\App\Http\Controllers\ContributorController::class, 'livresEdit'])->name('contributor.livres.edit')->middleware(['auth', 'role:contributor']);
+Route::get('/contributor/livres/{livre}/edit', [\App\Http\Controllers\ContributorController::class, 'livresEdit'])->name('contributor.livres.edit')->middleware(['auth', 'role:contributor']);
 
-Route::put('/contributor/livres/{livreUtilisateur}', [\App\Http\Controllers\ContributorController::class, 'livresUpdate'])->name('contributor.livres.update')->middleware(['auth', 'role:contributor']);
+Route::put('/contributor/livres/{livre}', [\App\Http\Controllers\ContributorController::class, 'livresUpdate'])->name('contributor.livres.update')->middleware(['auth', 'role:contributor']);
+
+// Contributor Livres Delete
+Route::delete('/contributor/livres/{livre}', [\App\Http\Controllers\ContributorController::class, 'livresDestroy'])->name('contributor.livres.destroy')->middleware(['auth', 'role:contributor']);
 
 // Contributor Livres Create (AJAX)
 Route::post('/contributor/livres/create-book', [\App\Http\Controllers\ContributorController::class, 'createBook'])->name('contributor.livres.create-book')->middleware(['auth', 'role:contributor']);
@@ -142,6 +146,11 @@ Route::get('/pages/misc-under-maintenance', [MiscUnderMaintenance::class, 'index
 Route::get('/auth/login-basic', [LoginBasic::class, 'index'])->name('auth-login-basic');
 Route::get('/auth/register-basic', [RegisterBasic::class, 'index'])->name('auth-register-basic');
 Route::get('/auth/forgot-password-basic', [ForgotPasswordBasic::class, 'index'])->name('auth-reset-password-basic');
+
+// Add login route alias for authentication redirects
+Route::get('/login', function () {
+    return redirect()->route('auth-login-basic');
+})->name('login');
 
 // cards
 Route::get('/cards/basic', [CardBasic::class, 'index'])->name('cards-basic');
@@ -219,4 +228,22 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::get('avis/{avis}/edit', [AvisController::class, 'edit'])->name('avis.edit');
     Route::put('avis/{avis}', [AvisController::class, 'update'])->name('avis.update');
     Route::delete('avis/{avis}', [AvisController::class, 'destroy'])->name('avis.destroy');
+    
+    // Categories Management
+    Route::resource('categories', CategorieController::class);
+});
+
+// Recommendation routes
+Route::middleware(['auth'])->prefix('recommendations')->name('recommendations.')->group(function () {
+    Route::get('/', [App\Http\Controllers\RecommendationController::class, 'index'])->name('index');
+    Route::post('/generate', [App\Http\Controllers\RecommendationController::class, 'generate'])->name('generate');
+    // Allow GET for convenience when triggering from a link
+    Route::get('/generate', [App\Http\Controllers\RecommendationController::class, 'generate'])->name('generate.get');
+    // Front/AJAX endpoints
+    Route::post('/generate-ajax', [App\Http\Controllers\RecommendationController::class, 'generateAjax'])->name('generate.ajax');
+    Route::get('/list', [App\Http\Controllers\RecommendationController::class, 'listForUser'])->name('list');
+    Route::get('/source/{source}', [App\Http\Controllers\RecommendationController::class, 'bySource'])->name('by-source');
+    Route::post('/{recommendation}/mark-viewed', [App\Http\Controllers\RecommendationController::class, 'markAsViewed'])->name('mark-viewed');
+    Route::get('/unviewed-count', [App\Http\Controllers\RecommendationController::class, 'unviewedCount'])->name('unviewed-count');
+    Route::delete('/{recommendation}', [App\Http\Controllers\RecommendationController::class, 'destroy'])->name('destroy');
 });

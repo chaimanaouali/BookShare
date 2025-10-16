@@ -24,20 +24,20 @@
             </tr>
           </thead>
           <tbody>
-            @foreach($bibliotheque->livreUtilisateurs as $lu)
+            @foreach($bibliotheque->livres as $livre)
             <tr>
               <td>
                 <div class="d-flex align-items-center">
                   <div class="avatar avatar-sm me-2">
                     <span class="avatar-initial rounded bg-label-warning"><i class="bx bx-book"></i></span>
                   </div>
-                  <span>{{ $lu->livre->titre ?? 'Untitled' }}</span>
+                  <span>{{ $livre->title ?? 'Untitled' }}</span>
                 </div>
               </td>
-              <td>{{ $lu->livre->auteur ?? 'Unknown' }}</td>
-              <td><span class="badge bg-label-secondary">{{ $lu->fichier_livre }}</span></td>
-              <td><span class="badge bg-label-{{ $lu->visibilite == 'public' ? 'success' : 'danger' }}">{{ ucfirst($lu->visibilite) }}</span></td>
-              <td>{{ $lu->created_at->diffForHumans() }}</td>
+              <td>{{ $livre->author ?? 'Unknown' }}</td>
+              <td><span class="badge bg-label-secondary">{{ $livre->fichier_livre }}</span></td>
+              <td><span class="badge bg-label-{{ $livre->visibilite == 'public' ? 'success' : 'danger' }}">{{ ucfirst($livre->visibilite) }}</span></td>
+              <td>{{ $livre->created_at->diffForHumans() }}</td>
             </tr>
             @endforeach
           </tbody>

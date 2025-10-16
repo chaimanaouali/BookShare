@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Models\Avis;
+use App\Observers\AvisObserver;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -19,6 +21,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        // Register the Avis observer
+        Avis::observe(AvisObserver::class);
     }
 }

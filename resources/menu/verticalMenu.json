@@ -68,6 +68,12 @@
       "slug": "admin-avis"
     },
     {
+      "url": "/admin/categories",
+      "name": "Categories Management",
+      "icon": "menu-icon tf-icons bx bx-category",
+      "slug": "admin-categories"
+    },
+    {
       "name": "Contributor",
       "icon": "menu-icon tf-icons bx bx-book-reader",
       "slug": "contributor",
@@ -125,6 +131,12 @@
       "icon": "menu-icon tf-icons bx bx-book",
       "slug": "book-events",
       "url": "book-events"
+    },
+    {
+      "name": "Recommendations",
+      "icon": "menu-icon tf-icons bx bx-star",
+      "slug": "recommendations",
+      "url": "recommendations"
     },
     {
       "name": "Library",

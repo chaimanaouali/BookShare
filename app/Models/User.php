@@ -79,10 +79,27 @@ class User extends Authenticatable
     }
 
     /**
+     * Get the livres (books) owned by the user.
+     */
+    public function livres(): HasMany
+    {
+        return $this->hasMany(Livre::class);
+    }
+
+    /**
      * Get the livre utilisateurs (book instances) for the user.
+     * @deprecated Use livres() instead
      */
     public function livreUtilisateurs(): HasMany
     {
-        return $this->hasMany(LivreUtilisateur::class);
+        return $this->hasMany(Livre::class);
+    }
+
+    /**
+     * Get the recommendations for the user.
+     */
+    public function recommendations(): HasMany
+    {
+        return $this->hasMany(Recommendation::class);
     }
 }

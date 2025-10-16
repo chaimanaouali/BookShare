@@ -70,9 +70,9 @@
           <!-- Book Details -->
           <div class="row mb-3">
             <div class="col-md-6">
-              <label for="livre_id" class="form-label">Book Title <span class="text-danger">*</span></label>
-              <select class="form-select @error('livre_id') is-invalid @enderror" id="livre_id" name="livre_id" required>
-                <option value="">Select or create a book</option>
+              <label for="livre_id" class="form-label">Existing Book (Optional)</label>
+              <select class="form-select @error('livre_id') is-invalid @enderror" id="livre_id" name="livre_id">
+                <option value="">Create new book</option>
                 @foreach($livres as $livre)
                   <option value="{{ $livre->id }}" {{ old('livre_id') == $livre->id ? 'selected' : '' }}>
                     {{ $livre->title }} - {{ $livre->author }}
@@ -83,7 +83,7 @@
                 <div class="invalid-feedback">{{ $message }}</div>
               @enderror
               <div class="form-text">
-                <a href="#" data-bs-toggle="modal" data-bs-target="#createBookModal">Create new book entry</a>
+                <small class="text-muted">Select an existing book or create a new one below</small>
               </div>
             </div>
             <div class="col-md-6">
@@ -98,6 +98,55 @@
                 @endforeach
               </select>
               @error('bibliotheque_id')
+                <div class="invalid-feedback">{{ $message }}</div>
+              @enderror
+            </div>
+          </div>
+          
+          <!-- New Book Details (shown when no existing book is selected) -->
+          <div id="newBookFields" class="row mb-3" style="display: none;">
+            <div class="col-md-6">
+              <label for="title" class="form-label">Book Title <span class="text-danger">*</span></label>
+              <input type="text" class="form-control @error('title') is-invalid @enderror" 
+                     id="title" name="title" value="{{ old('title') }}" 
+                     placeholder="Enter book title">
+              @error('title')
+                <div class="invalid-feedback">{{ $message }}</div>
+              @enderror
+            </div>
+            <div class="col-md-6">
+              <label for="author" class="form-label">Author <span class="text-danger">*</span></label>
+              <input type="text" class="form-control @error('author') is-invalid @enderror" 
+                     id="author" name="author" value="{{ old('author') }}" 
+                     placeholder="Enter author name">
+              @error('author')
+                <div class="invalid-feedback">{{ $message }}</div>
+              @enderror
+            </div>
+          </div>
+          
+          <div id="newBookFields2" class="row mb-3" style="display: none;">
+            <div class="col-md-6">
+              <label for="isbn" class="form-label">ISBN</label>
+              <input type="text" class="form-control @error('isbn') is-invalid @enderror" 
+                     id="isbn" name="isbn" value="{{ old('isbn') }}" 
+                     placeholder="Enter ISBN (optional)">
+              @error('isbn')
+                <div class="invalid-feedback">{{ $message }}</div>
+              @enderror
+            </div>
+            <div class="col-md-6">
+              <label for="categorie_id" class="form-label">Category</label>
+              <select class="form-select @error('categorie_id') is-invalid @enderror" 
+                      id="categorie_id" name="categorie_id">
+                <option value="">Select a category (optional)</option>
+                @foreach(\App\Models\Categorie::orderBy('nom')->get() as $categorie)
+                  <option value="{{ $categorie->id }}" {{ old('categorie_id') == $categorie->id ? 'selected' : '' }}>
+                    {{ $categorie->nom }}
+                  </option>
+                @endforeach
+              </select>
+              @error('categorie_id')
                 <div class="invalid-feedback">{{ $message }}</div>
               @enderror
             </div>
@@ -140,7 +189,7 @@
             <a href="{{ request('bibliotheque') ? route('contributor.bibliotheques.show', request('bibliotheque')) : route('contributor.livres.index') }}" class="btn btn-outline-secondary">
               Cancel
             </a>
-            <button type="submit" class="btn btn-primary">
+            <button type="submit" class="btn btn-primary" onclick="return validateForm()">
               <i class="bx bx-upload me-1"></i> Upload Book
             </button>
           </div>
@@ -196,7 +245,7 @@
                 </div>
               </div>
               <div class="flex-grow-1">
-                <h6 class="mb-0 small">{{ $upload->livre->title }}</h6>
+                <h6 class="mb-0 small">{{ $upload->title }}</h6>
                 <small class="text-muted">{{ $upload->created_at->diffForHumans() }}</small>
               </div>
             </div>
@@ -280,15 +329,82 @@ fileInput.addEventListener('change', (e) => {
 
 function updateFileDisplay(file) {
   const dropZone = document.getElementById('dropZone');
+  const fileInput = document.getElementById('fichier_livre');
+  
+  // Hide the original file input
+  fileInput.style.display = 'none';
+  
+  // Update the display without replacing the file input
   dropZone.innerHTML = `
     <div class="card-body text-center py-4">
       <i class="bx bx-file display-4 text-success mb-3"></i>
       <h5 class="text-success">${file.name}</h5>
       <p class="text-muted small">${(file.size / 1024 / 1024).toFixed(2)} MB</p>
-      <input type="file" class="form-control" id="fichier_livre" name="fichier_livre" 
-             accept=".pdf,.epub,.mobi,.txt" required style="display: none;">
+      <button type="button" class="btn btn-sm btn-outline-secondary mt-2" onclick="document.getElementById('fichier_livre').click()">
+        Change File
+      </button>
     </div>
   `;
+  
+  // Re-add the original file input (hidden) to preserve the selected file
+  dropZone.appendChild(fileInput);
+}
+
+// Show/hide new book fields based on livre_id selection
+const livreSelect = document.getElementById('livre_id');
+const newBookFields = document.getElementById('newBookFields');
+const newBookFields2 = document.getElementById('newBookFields2');
+
+function toggleNewBookFields() {
+  if (livreSelect.value === '') {
+    // No existing book selected, show new book fields
+    newBookFields.style.display = 'block';
+    newBookFields2.style.display = 'block';
+    // Make title and author required
+    document.getElementById('title').required = true;
+    document.getElementById('author').required = true;
+  } else {
+    // Existing book selected, hide new book fields
+    newBookFields.style.display = 'none';
+    newBookFields2.style.display = 'none';
+    // Make title and author not required
+    document.getElementById('title').required = false;
+    document.getElementById('author').required = false;
+  }
+}
+
+livreSelect.addEventListener('change', toggleNewBookFields);
+// Initialize on page load
+toggleNewBookFields();
+
+// Form validation before submit
+function validateForm() {
+  const fileInput = document.getElementById('fichier_livre');
+  const livreSelect = document.getElementById('livre_id');
+  const titleInput = document.getElementById('title');
+  const authorInput = document.getElementById('author');
+  
+  // Check if file is selected
+  if (!fileInput.files || fileInput.files.length === 0) {
+    alert('Please select a file to upload.');
+    return false;
+  }
+  
+  // Check if creating new book and required fields are filled
+  if (!livreSelect.value) {
+    if (!titleInput.value.trim()) {
+      alert('Please enter a book title.');
+      titleInput.focus();
+      return false;
+    }
+    if (!authorInput.value.trim()) {
+      alert('Please enter an author name.');
+      authorInput.focus();
+      return false;
+    }
+  }
+  
+  return true;
 }
 
 // Create book form

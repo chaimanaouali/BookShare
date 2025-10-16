@@ -20,15 +20,15 @@
           </tr>
         </thead>
         <tbody>
-          @forelse($bibliotheque->livreUtilisateurs as $lu)
+          @forelse($bibliotheque->livres as $livre)
             <tr>
-              <td><i class="bx bx-book me-1 text-warning"></i> {{ $lu->livre->titre ?? 'Untitled' }}</td>
-              <td>{{ $lu->livre->auteur ?? 'Unknown' }}</td>
-              <td><span class="badge bg-label-secondary">{{ $lu->fichier_livre }}</span></td>
-              <td>{{ $lu->created_at->diffForHumans() }}</td>
+              <td><i class="bx bx-book me-1 text-warning"></i> {{ $livre->title ?? 'Untitled' }}</td>
+              <td>{{ $livre->author ?? 'Unknown' }}</td>
+              <td><span class="badge bg-label-secondary">{{ $livre->fichier_livre }}</span></td>
+              <td>{{ $livre->created_at->diffForHumans() }}</td>
               <td>
                 @php
-                  $fileUrl = $lu->fichier_livre ? Storage::url($lu->fichier_livre) : null;
+                  $fileUrl = $livre->fichier_livre ? Storage::url($livre->fichier_livre) : null;
                 @endphp
                 @if($fileUrl)
                   <a href="{{ $fileUrl }}" class="btn btn-sm btn-outline-success" download>

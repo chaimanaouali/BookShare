@@ -101,7 +101,7 @@
             <small class="text-muted">Libraries</small>
           </div>
           <div class="col-6">
-            <div class="h4 text-success mb-0">{{ auth()->user()->livreUtilisateurs()->count() }}</div>
+            <div class="h4 text-success mb-0">{{ auth()->user()->livres()->count() }}</div>
             <small class="text-muted">Books</small>
           </div>
         </div>

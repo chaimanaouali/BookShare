@@ -20,6 +20,13 @@
                 @endif
               @endauth
             </li>
+            @auth
+              @if(Auth::user()->role === 'user')
+            <li>
+              <a href="{{ route('recommendations.generate.get', ['redirect' => 'home']) }}">Recommendations</a>
+            </li>
+              @endif
+            @endauth
             <li class="scroll-to-section"><a href="#about">About Us</a></li>
             <li class="scroll-to-section"><a href="#services">How It Works</a></li>
             <li class="scroll-to-section"><a href="#portfolio">Categories</a></li>

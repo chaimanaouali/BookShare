@@ -138,14 +138,14 @@
                           </div>
                         </div>
                         <div>
-                          <h6 class="mb-0">{{ $livre->livre->title }}</h6>
+                          <h6 class="mb-0">{{ $livre->title }}</h6>
                           @if($livre->description)
                             <small class="text-muted">{{ Str::limit($livre->description, 50) }}</small>
                           @endif
                         </div>
                       </div>
                     </td>
-                    <td>{{ $livre->livre->auteur }}</td>
+                    <td>{{ $livre->author }}</td>
                     <td>
                       <span class="badge bg-label-info">{{ strtoupper($livre->format) }}</span>
                     </td>

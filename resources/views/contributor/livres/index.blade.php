@@ -22,8 +22,8 @@
             <tbody>
               @foreach($livres as $livre)
               <tr>
-                <td>{{ $livre->livre->title ?? '-' }}</td>
-                <td>{{ $livre->livre->author ?? '-' }}</td>
+                <td>{{ $livre->title ?? '-' }}</td>
+                <td>{{ $livre->author ?? '-' }}</td>
                 <td>{{ $livre->bibliotheque->nom_bibliotheque ?? '-' }}</td>
                 <td>{{ strtoupper($livre->format ?? '-') }}</td>
                 <td>
@@ -33,7 +33,11 @@
                 <td>
                   <a href="{{ route('contributor.livres.show', $livre->id) }}" class="btn btn-sm btn-outline-primary">View</a>
                   <a href="{{ route('contributor.livres.edit', $livre->id) }}" class="btn btn-sm btn-outline-warning">Edit</a>
-                  <!-- Optionally add delete button here -->
+                  <form action="{{ route('contributor.livres.destroy', $livre->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this book? This action cannot be undone.')">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                  </form>
                 </td>
               </tr>
               @endforeach

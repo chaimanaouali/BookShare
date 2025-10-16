@@ -52,10 +52,20 @@ class LivresController extends Controller
             'commentaire' => ['required', 'string', 'max:1000'],
         ]);
 
-        // For now, we'll use a default user ID (you can modify this based on your auth system)
-        $validated['utilisateur_id'] = 1; // This should be the authenticated user's ID
+        // Use authenticated user if available; fallback to 1 for legacy
+        $validated['user_id'] = auth()->id() ?? 1;
 
-        $avis = Avis::create($validated);
+        // If a review by this user for this book exists, update it instead of failing
+        $avis = Avis::updateOrCreate(
+            [
+                'user_id' => $validated['user_id'],
+                'livre_id' => $validated['livre_id'],
+            ],
+            [
+                'note' => $validated['note'],
+                'commentaire' => $validated['commentaire'],
+            ]
+        );
         $avis->load('utilisateur');
 
         return response()->json([

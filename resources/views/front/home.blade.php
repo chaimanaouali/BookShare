@@ -21,6 +21,18 @@
                                     <button type="submit" class="main-button">Rechercher</button>
                                 </fieldset>
                             </form>
+                            @auth
+                            <div class="mt-3">
+                                <a href="{{ route('recommendations.generate.get') }}" class="main-button" style="margin-right:10px">Générer des recommandations</a>
+                                <a href="{{ route('recommendations.index') }}" class="main-button bordered">Voir mes recommandations</a>
+                            </div>
+                            @endauth
+                            @guest
+                            <div class="mt-3">
+                                <a href="{{ route('login') }}" class="main-button" style="margin-right:10px">Se connecter pour générer</a>
+                                <a href="{{ route('login') }}" class="main-button bordered">Voir mes recommandations</a>
+                            </div>
+                            @endguest
                         </div>
                     </div>
                     <div class="col-lg-6">
