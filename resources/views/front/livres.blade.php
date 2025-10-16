@@ -82,30 +82,43 @@
 
 <!-- Recommendations Section -->
 @auth
-<div id="recommendations" class="our-livres section">
+<div id="recommendations" class="our-livres section" style="background-color: #f8f9fa; padding: 80px 0;">
     <div class="container">
         <div class="row">
-            <div class="col-lg-6 offset-lg-3">
-                <div class="section-heading wow bounceIn" data-wow-duration="1s" data-wow-delay="0.2s">
-                    <h2>Your <em>Recommendations</em></h2>
-                    <p>Personalized suggestions based on your reviews</p>
-                    <div class="text-center mt-2">
-                        <button id="generateRecsBtn" class="main-button">Generate Recommendations</button>
-                    </div>
+            <div class="col-lg-8 offset-lg-2">
+                <div class="text-center mb-5">
+                    <h2 class="display-5 fw-bold mb-3">
+                        Your <span style="color: #007bff;">Recommendations</span>
+                    </h2>
+                    <p class="lead text-muted mb-4">Personalized suggestions based on your reviews</p>
+                    <button id="generateRecsBtn" class="btn btn-lg px-4 py-2" 
+                            style="background-color: #FF3B30; border: 1px solid #FF3B30; color: white;">
+                        Generate Recommendations
+                    </button>
                 </div>
             </div>
         </div>
         <div class="row">
             <div class="col-lg-12">
-                <div id="recommendationsList" class="row"></div>
+                <div id="recommendationsList" class="row g-4"></div>
             </div>
         </div>
     </div>
     <div class="container" id="recsEmptyState" style="display:none">
-        <div class="alert alert-info text-center">No recommendations yet. Rate books with 4 or 5 stars and click Generate.</div>
+        <div class="text-center py-5">
+            <div class="mb-4">
+                <i class="bx bx-book-open display-1 text-muted"></i>
+            </div>
+            <h4 class="text-muted mb-3">No recommendations yet</h4>
+            <p class="text-muted mb-4">Rate books with 4 or 5 stars and click Generate.</p>
+        </div>
     </div>
     <div class="container" id="recsLoading" style="display:none">
-        <div class="text-center"><div class="spinner-border" role="status"><span class="visually-hidden">Loading...</span></div></div>
+        <div class="text-center py-5">
+            <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
     </div>
 </div>
 @endauth
@@ -552,29 +565,41 @@ function loadRecommendations() {
                 return;
             }
             document.getElementById('recsEmptyState').style.display = 'none';
-            data.data.forEach(rec => {
-                const col = document.createElement('div');
-                col.className = 'col-lg-4 col-md-6 mb-4';
-                const percent = Math.round(rec.score * 100);
-                const category = rec.category_name || (rec.livre && rec.livre.categorie ? rec.livre.categorie.nom : '');
-                col.innerHTML = `
-                    <div class="card h-100">
-                        <div class="card-body">
-                            <div class="d-flex justify-content-between align-items-center mb-2">
-                                <span class="badge bg-info">${rec.source || 'AI'}</span>
-                                <div class="d-flex align-items-center gap-2">
-                                    ${category ? `<span class=\"badge bg-secondary\">${category}</span>` : ''}
-                                    <small class="text-muted">${percent}% match</small>
-                                </div>
-                            </div>
-                            <h5 class="card-title">${rec.livre?.title || 'Book'}</h5>
-                            <p class="card-text small text-muted">${rec.livre?.author || ''}</p>
-                            ${category ? `<div class=\"small text-muted mb-2\"><strong>Category:</strong> ${category}</div>` : ''}
-                            <a class="btn btn-sm btn-outline-primary" href="{{ route('livres') }}?search=${encodeURIComponent(rec.livre?.title || '')}">View Book</a>
-                        </div>
-                    </div>`;
-                list.appendChild(col);
-            });
+             data.data.forEach(rec => {
+                 const col = document.createElement('div');
+                 col.className = 'col-lg-4 col-md-6';
+                 const percent = Math.round(rec.score * 100);
+                 const category = rec.category_name || (rec.livre && rec.livre.categorie ? rec.livre.categorie.nom : '');
+                 col.innerHTML = `
+                     <div class="card h-100 shadow-sm border-0" style="border-radius: 12px; transition: transform 0.2s ease;">
+                         <div class="card-body p-4">
+                             <div class="d-flex justify-content-between align-items-start mb-3">
+                                 <span class="badge bg-primary text-white px-3 py-2" style="border-radius: 8px; font-size: 0.75rem;">
+                                     ${rec.source || 'AI'}
+                                 </span>
+                                 <small class="text-muted fw-medium">${percent}% match</small>
+                             </div>
+                             
+                             <h5 class="card-title fw-bold mb-2" style="color: #333; line-height: 1.3;">
+                                 ${rec.livre?.title || 'Book'}
+                             </h5>
+                             
+                             ${category ? `<span class="badge bg-dark text-white mb-3" style="border-radius: 6px; font-size: 0.7rem;">${category}</span>` : ''}
+                             
+                             <div class="d-flex justify-content-between align-items-center">
+                                 <small class="text-muted">
+                                     ${new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                                 </small>
+                                 <a href="{{ route('livres') }}?search=${encodeURIComponent(rec.livre?.title || '')}" 
+                                    class="btn btn-sm px-3 py-2" 
+                                    style="background-color: #ff6b35; border: 1px solid #ff6b35; color: white; border-radius: 6px; font-weight: 500;">
+                                     View Book
+                                 </a>
+                             </div>
+                         </div>
+                     </div>`;
+                 list.appendChild(col);
+             });
         })
         .catch(() => {
             document.getElementById('recsLoading').style.display = 'none';
@@ -585,4 +610,16 @@ function loadRecommendations() {
 document.addEventListener('DOMContentLoaded', loadRecommendations);
 @endauth
 </script>
+
+<style>
+.recommendation-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1) !important;
+}
+
+.btn:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+}
+</style>
 @endsection
