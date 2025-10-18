@@ -272,6 +272,7 @@ public function livresStore(Request $request)
             'description' => ['nullable', 'string', 'max:1000'],
             'isbn' => ['nullable', 'string', 'max:20'],
             'categorie_id' => ['nullable', 'exists:categories,id'],
+            'defi_id' => ['nullable', 'exists:defis,id'],
         ];
 
         // Only require title and author if no existing book is selected
@@ -309,6 +310,7 @@ public function livresStore(Request $request)
                 'taille' => $request->taille ?? $fileSizeFormatted,
                 'visibilite' => $request->visibilite,
                 'user_description' => $request->description,
+                'defi_id' => $request->defi_id,
             ]);
         } else {
             // Create new book with file upload
@@ -324,6 +326,7 @@ public function livresStore(Request $request)
                 'taille' => $request->taille ?? $fileSizeFormatted,
                 'visibilite' => $request->visibilite,
                 'user_description' => $request->description,
+                'defi_id' => $request->defi_id,
             ]);
         }
 

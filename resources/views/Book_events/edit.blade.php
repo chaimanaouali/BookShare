@@ -16,6 +16,23 @@
           
           <div class="row">
             <div class="col-md-6 mb-3">
+              <label for="defi_id" class="form-label">Défi (optionnel)</label>
+              <div class="input-group">
+                <span class="input-group-text">
+                  <i class="bx bx-flag"></i>
+                </span>
+                <select id="defi_id" name="defi_id" class="form-select @error('defi_id') is-invalid @enderror">
+                  <option value="">— Aucun défi —</option>
+                  @foreach(\App\Models\Defi::orderByDesc('created_at')->get() as $defi)
+                    <option value="{{ $defi->id }}" {{ old('defi_id', $bookEvent->defi_id) == $defi->id ? 'selected' : '' }}>{{ $defi->titre }}</option>
+                  @endforeach
+                </select>
+                @error('defi_id')
+                  <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+              </div>
+            </div>
+            <div class="col-md-6 mb-3">
               <label for="type" class="form-label">Type <span class="text-danger">*</span></label>
               <div class="input-group">
                 <span class="input-group-text">

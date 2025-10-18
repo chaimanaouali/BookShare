@@ -4,20 +4,27 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\BookEvent;
+use App\Models\Defi;
+use Carbon\Carbon;
 
 class BookEventController extends Controller
 {
     public function index()
     {
-        $events = BookEvent::all();
+        $events = BookEvent::where('type', '!=', 'Test Event')->get();
+        $recentDefis = Defi::with(['bookEvents:id,defi_id,titre'])
+            ->orderByDesc('created_at')
+            ->limit(5)
+            ->get();
         // Match existing view directory naming: resources/views/Book_events
-        return view('Book_events.index', compact('events'));
+        return view('Book_events.index', compact('events', 'recentDefis'));
     }
 
     public function create()
     {
+        $defis = \App\Models\Defi::orderByDesc('created_at')->get();
         // File present as "creat.blade.php"
-        return view('Book_events.creat');
+        return view('Book_events.creat', compact('defis'));
     }
 
     public function store(Request $request)
@@ -32,6 +39,18 @@ class BookEventController extends Controller
         ]);
 
         $data = $request->all();
+        
+        // Determine status based on date
+        $eventDate = Carbon::parse($data['date_evenement']);
+        $today = Carbon::today();
+        
+        if ($eventDate->isSameDay($today)) {
+            $data['status'] = 'en_cours';
+        } elseif ($eventDate->isPast()) {
+            $data['status'] = 'termine';
+        } else {
+            $data['status'] = 'a_venir';
+        }
         
         if ($request->hasFile('image')) {
             $image = $request->file('image');
@@ -68,6 +87,18 @@ class BookEventController extends Controller
         ]);
 
         $data = $request->all();
+        
+        // Determine status based on date
+        $eventDate = Carbon::parse($data['date_evenement']);
+        $today = Carbon::today();
+        
+        if ($eventDate->isSameDay($today)) {
+            $data['status'] = 'en_cours';
+        } elseif ($eventDate->isPast()) {
+            $data['status'] = 'termine';
+        } else {
+            $data['status'] = 'a_venir';
+        }
         
         if ($request->hasFile('image')) {
             // Delete old image if exists

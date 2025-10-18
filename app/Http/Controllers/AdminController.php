@@ -21,7 +21,7 @@ class AdminController extends Controller
      */
     public function bibliothequeShow($id)
     {
-        $bibliotheque = BibliothequeVirtuelle::with(['livreUtilisateurs.livre', 'user'])->findOrFail($id);
+        $bibliotheque = BibliothequeVirtuelle::with(['livreUtilisateurs', 'user'])->findOrFail($id);
         return view('admin.bibliotheques.show', compact('bibliotheque'));
     }
 }

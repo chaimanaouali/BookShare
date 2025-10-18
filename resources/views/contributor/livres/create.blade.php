@@ -103,6 +103,27 @@
             </div>
           </div>
           
+          <!-- Challenge Selection -->
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <label for="defi_id" class="form-label">Associate with Challenge (Optional)</label>
+              <select class="form-select @error('defi_id') is-invalid @enderror" id="defi_id" name="defi_id">
+                <option value="">No challenge</option>
+                @foreach(\App\Models\Defi::all() as $defi)
+                  <option value="{{ $defi->id }}" {{ old('defi_id') == $defi->id ? 'selected' : '' }}>
+                    {{ $defi->titre }}
+                  </option>
+                @endforeach
+              </select>
+              @error('defi_id')
+                <div class="invalid-feedback">{{ $message }}</div>
+              @enderror
+              <div class="form-text">
+                <small class="text-muted">Associate this book with a reading challenge</small>
+              </div>
+            </div>
+          </div>
+          
           <!-- New Book Details (shown when no existing book is selected) -->
           <div id="newBookFields" class="row mb-3" style="display: none;">
             <div class="col-md-6">

@@ -102,4 +102,12 @@ class User extends Authenticatable
     {
         return $this->hasMany(Recommendation::class);
     }
+
+    /**
+     * Get the défi participations for the user.
+     */
+    public function participationDefis(): HasMany
+    {
+        return $this->hasMany(ParticipationDefi::class);
+    }
 }

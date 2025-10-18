@@ -30,6 +30,7 @@ class Livre extends Model
         'disponibilite',
         'etat',
         'categorie_id',
+        'defi_id',
     ];
 
     protected $casts = [
@@ -75,6 +76,14 @@ class Livre extends Model
     public function categorie(): BelongsTo
     {
         return $this->belongsTo(Categorie::class, 'categorie_id');
+    }
+
+    /**
+     * Get the défi (challenge) that this book belongs to.
+     */
+    public function defi(): BelongsTo
+    {
+        return $this->belongsTo(Defi::class, 'defi_id');
     }
 
     /**

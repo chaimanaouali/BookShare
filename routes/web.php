@@ -60,6 +60,13 @@ Route::get('/home', function () {
     return view('front.home', ['useCustomJs' => true], ['usePreloader' => true]);
 });
 
+// Front events listing and details
+Route::get('/events', [\App\Http\Controllers\FrontEventController::class, 'index'])->name('front.events.index');
+Route::get('/events/{event}', [\App\Http\Controllers\FrontEventController::class, 'show'])->name('front.events.show');
+
+// Front-end participations
+Route::get('/my-participations', [\App\Http\Controllers\ParticipationDefiController::class, 'myParticipations'])->name('front.participations.my');
+
 // Auth page (login + register)
 Route::get('/auth', function () {
     return view('auth.register');
@@ -80,6 +87,32 @@ Route::delete('/avis/{avisId}', [LivresController::class, 'deleteAvis']);
 
 // controlleur book event
 
+
+// controlleur book event & nested defis (defis first to avoid route shadowing)
+Route::prefix('book-events')->middleware(['auth','admin'])->group(function () {
+    Route::resource('defis', \App\Http\Controllers\Admin\DefiController::class)->names([
+        'index' => 'defis.index',
+        'create' => 'defis.create',
+        'store' => 'defis.store',
+        'show' => 'defis.show',
+        'edit' => 'defis.edit',
+        'update' => 'defis.update',
+        'destroy' => 'defis.destroy',
+    ]);
+    
+    // Routes pour gérer l'association des livres aux défis
+    Route::get('defis/{defi}/add-books', [\App\Http\Controllers\Admin\DefiController::class, 'addBooks'])->name('defis.add-books');
+    Route::post('defis/{defi}/associate-books', [\App\Http\Controllers\Admin\DefiController::class, 'associateBooks'])->name('defis.associate-books');
+    Route::delete('defis/{defi}/remove-book/{livre}', [\App\Http\Controllers\Admin\DefiController::class, 'removeBook'])->name('defis.remove-book');
+
+    // Participants list for a defi
+    Route::get('defis/{defi}/participants', [\App\Http\Controllers\Admin\DefiController::class, 'participants'])->name('defis.participants');
+    
+    // Ranking routes
+    Route::get('defis/{defi}/ranking', [\App\Http\Controllers\Admin\RankingController::class, 'show'])->name('defis.ranking');
+    Route::get('ranking/global', [\App\Http\Controllers\Admin\RankingController::class, 'global'])->name('ranking.global');
+    Route::post('ranking/recalculate', [\App\Http\Controllers\Admin\RankingController::class, 'recalculate'])->name('ranking.recalculate');
+});
 Route::resource('book-events', BookEventController::class)->middleware(['auth', 'admin']);
 
 // Main Page Route
@@ -247,3 +280,31 @@ Route::middleware(['auth'])->prefix('recommendations')->name('recommendations.')
     Route::get('/unviewed-count', [App\Http\Controllers\RecommendationController::class, 'unviewedCount'])->name('unviewed-count');
     Route::delete('/{recommendation}', [App\Http\Controllers\RecommendationController::class, 'destroy'])->name('destroy');
 });
+
+// Front-end Defi routes (accessible to all users)
+Route::prefix('defis')->name('front.defis.')->group(function () {
+    Route::get('/', [App\Http\Controllers\FrontDefiController::class, 'index'])->name('index');
+    Route::get('/{defi}', [App\Http\Controllers\FrontDefiController::class, 'show'])->name('show');
+});
+
+// Participation Defi routes (requires authentication)
+Route::middleware(['auth'])->prefix('participation-defis')->name('participation-defis.')->group(function () {
+    Route::get('/my-participations', [App\Http\Controllers\ParticipationDefiController::class, 'myParticipations'])->name('my-participations');
+    Route::get('/defi/{defi}/create', [App\Http\Controllers\ParticipationDefiController::class, 'create'])->name('create');
+    Route::post('/defi/{defi}/store', [App\Http\Controllers\ParticipationDefiController::class, 'store'])->name('store');
+    Route::get('/{participation}', [App\Http\Controllers\ParticipationDefiController::class, 'show'])->name('show');
+    Route::get('/{participation}/modal-content', [App\Http\Controllers\ParticipationDefiController::class, 'modalContent'])->name('modal-content');
+    Route::put('/{participation}/update-status', [App\Http\Controllers\ParticipationDefiController::class, 'updateStatus'])->name('update-status');
+    Route::delete('/{participation}', [App\Http\Controllers\ParticipationDefiController::class, 'destroy'])->name('destroy');
+});
+
+// Test route
+Route::get('/test-defi', function() {
+    $defi = \App\Models\Defi::with('livres')->first();
+    return response()->json(['defi' => $defi]);
+});
+
+// AI Quiz generation (Groq)
+Route::post('/ai/quiz', [\App\Http\Controllers\QuizController::class, 'generate'])->name('ai.quiz.generate');
+Route::middleware(['auth'])->post('/ai/quiz/from-participation/{participation}', [\App\Http\Controllers\QuizController::class, 'generateFromParticipation'])->name('ai.quiz.from-participation');
+Route::middleware(['auth'])->post('/ai/quiz/save-score/{participation}', [\App\Http\Controllers\QuizController::class, 'saveScore'])->name('ai.quiz.save-score');

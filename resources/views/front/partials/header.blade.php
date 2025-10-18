@@ -30,6 +30,7 @@
             <li class="scroll-to-section"><a href="#about">About Us</a></li>
             <li class="scroll-to-section"><a href="#services">How It Works</a></li>
             <li class="scroll-to-section"><a href="#portfolio">Categories</a></li>
+            <li><a href="{{ route('front.defis.index') }}">Défis</a></li>
             <li class="scroll-to-section"><a href="#blog">Community</a></li>
             <li class="scroll-to-section"><a href="#contact">Contact</a></li>
             <li class="scroll-to-section">
@@ -42,6 +43,7 @@
             @auth
                  @if(Auth::user()->role === 'user')
             <li><a href="{{ route('emprunts.index') }}">Emprunts</a></li>
+            <li><a href="{{ route('front.participations.my') }}">Mes Participations</a></li>
                   @endif
             @endauth
             <li class="scroll-to-section"><div class="main-red-button"><a href="{{ route('auth') }}">Join Us</a></div></li>

@@ -36,4 +36,12 @@ return [
     'base_url' => env('OPENAI_BASE_URL', 'https://api.openai.com/v1'),
   ],
 
+  'groq' => [
+    'api_key' => env('GROQ_API_KEY'),
+    // Groq exposes OpenAI-compatible endpoints under /openai, but also has v1
+    'base_url' => env('GROQ_BASE_URL', 'https://api.groq.com/openai/v1'),
+    // Default model; can be overridden per call. Good options: llama-3.1-8b-instant, llama-3.1-70b-versatile
+    'model' => env('GROQ_MODEL', 'llama-3.1-8b-instant'),
+  ],
+
 ];

@@ -133,6 +133,12 @@
       "url": "book-events"
     },
     {
+      "name": "Défis",
+      "icon": "menu-icon tf-icons bx bx-flag",
+      "slug": "defis",
+      "url": "book-events/defis"
+    },
+    {
       "name": "Recommendations",
       "icon": "menu-icon tf-icons bx bx-star",
       "slug": "recommendations",
