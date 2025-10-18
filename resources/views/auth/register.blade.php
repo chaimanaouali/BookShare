@@ -16,7 +16,7 @@
         </ul>
     </div>
 @endif
-<form action="{{ url('/auth/login') }}" method="POST" class="sign-in-form">
+<form action="{{ route('auth.login') }}" method="POST" class="sign-in-form">
     @csrf
     <h2 class="title">Sign in</h2>
     <div class="input-field">
@@ -48,7 +48,7 @@
                     </ul>
                 </div>
             @endif
-            <form action="{{ url('/auth/register') }}" method="POST" class="sign-up-form">
+            <form action="{{ route('auth.register') }}" method="POST" class="sign-up-form">
                 @csrf
                 <h2 class="title">Sign up</h2>
                 <div class="input-field">
