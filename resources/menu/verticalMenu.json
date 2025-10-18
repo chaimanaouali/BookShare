@@ -133,12 +133,6 @@
       "url": "book-events"
     },
     {
-      "name": "Recommendations",
-      "icon": "menu-icon tf-icons bx bx-star",
-      "slug": "recommendations",
-      "url": "recommendations"
-    },
-    {
       "name": "Library",
       "icon": "menu-icon tf-icons bx bx-book",
       "slug": "library",

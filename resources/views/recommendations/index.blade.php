@@ -4,160 +4,98 @@
 
 @section('content')
 <div class="container-xxl flex-grow-1 container-p-y">
-    <div class="row">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5 class="card-title mb-0">Your Book Recommendations</h5>
-                    <div class="d-flex gap-2">
-                        <a href="{{ route('recommendations.generate.get') }}" class="btn btn-primary">
-                            <i class="bx bx-refresh me-1"></i> Generate New Recommendations
-                        </a>
-                        <div class="dropdown">
-                            <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                                Filter by Source
-                            </button>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="{{ route('recommendations.index') }}">All Sources</a></li>
-                                <li><a class="dropdown-item" href="{{ route('recommendations.by-source', 'AI') }}">AI Recommendations</a></li>
-                                <li><a class="dropdown-item" href="{{ route('recommendations.by-source', 'collaborative') }}">Collaborative</a></li>
-                                <li><a class="dropdown-item" href="{{ route('recommendations.by-source', 'manual') }}">Manual</a></li>
-                            </ul>
+    <!-- Header Section -->
+    <div class="text-center mb-5">
+        <h1 class="display-4 fw-bold mb-3">
+            Your <span class="text-primary">Recommendations</span>
+        </h1>
+        <p class="lead text-muted mb-4">Personalized suggestions based on your reviews</p>
+        <a href="{{ route('recommendations.generate.get') }}" class="btn btn-lg px-4 py-2" 
+           style="background-color: #FF3B30; border: 1px solid #FF3B30; color: white;">
+            Generate Recommendations
+        </a>
+    </div>
+
+    <!-- Recommendations Grid -->
+    <div class="container">
+        @if(session('success'))
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                {{ session('success') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        @endif
+
+        @if($recommendations->count() > 0)
+            <div class="row g-4">
+                @foreach($recommendations as $recommendation)
+                    <div class="col-lg-4 col-md-6">
+                        <div class="card h-100 shadow-sm border-0 recommendation-card" 
+                             data-recommendation-id="{{ $recommendation->id }}"
+                             style="border-radius: 12px; transition: transform 0.2s ease;">
+                            <div class="card-body p-4">
+                                <div class="d-flex justify-content-between align-items-start mb-3">
+                                    <span class="badge bg-primary text-white px-3 py-2" style="border-radius: 8px; font-size: 0.75rem;">
+                                        {{ $recommendation->source === 'AI' ? 'AI' : ucfirst($recommendation->source) }}
+                                    </span>
+                                    <small class="text-muted fw-medium">{{ number_format($recommendation->score * 100, 0) }}% match</small>
+                                </div>
+                                
+                                <h5 class="card-title fw-bold mb-2" style="color: #333; line-height: 1.3;">
+                                    {{ $recommendation->livre->title }}
+                                </h5>
+                                
+                                @if($recommendation->livre->categorie)
+                                    <span class="badge bg-dark text-white mb-3" style="border-radius: 6px; font-size: 0.7rem;">
+                                        {{ $recommendation->livre->categorie->nom }}
+                                    </span>
+                                @endif
+                                
+                                @if($recommendation->reason)
+                                    <p class="card-text small text-muted mb-3" style="line-height: 1.4;">
+                                        {{ \Illuminate\Support\Str::limit($recommendation->reason, 80) }}
+                                    </p>
+                                @endif
+                                
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <small class="text-muted">
+                                        {{ $recommendation->date_creation->format('M d, Y') }}
+                                    </small>
+                                    <a href="{{ route('livres') }}?search={{ urlencode($recommendation->livre->title) }}" 
+                                       class="btn btn-sm px-3 py-2" 
+                                       style="background-color: #ff6b35; border: 1px solid #ff6b35; color: white; border-radius: 6px; font-weight: 500;">
+                                        View Book
+                                    </a>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="card-body">
-                    @if(session('success'))
-                        <div class="alert alert-success alert-dismissible fade show" role="alert">
-                            {{ session('success') }}
-                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                        </div>
-                    @endif
-
-                    @if($recommendations->count() > 0)
-                        <div class="row">
-                            @foreach($recommendations as $recommendation)
-                                <div class="col-md-6 col-lg-4 mb-4">
-                                    <div class="card h-100 recommendation-card {{ $recommendation->is_viewed ? '' : 'border-primary' }}" 
-                                         data-recommendation-id="{{ $recommendation->id }}">
-                                        <div class="card-body">
-                                            <div class="d-flex justify-content-between align-items-start mb-2">
-                                                <span class="badge bg-{{ $recommendation->source === 'AI' ? 'info' : ($recommendation->source === 'collaborative' ? 'success' : 'secondary') }}">
-                                                    {{ ucfirst($recommendation->source) }}
-                                                </span>
-                                                <div class="dropdown">
-                                                    <button class="btn btn-sm btn-outline-secondary" type="button" data-bs-toggle="dropdown">
-                                                        <i class="bx bx-dots-vertical-rounded"></i>
-                                                    </button>
-                                                    <ul class="dropdown-menu">
-                                                        <li>
-                                                            <a class="dropdown-item mark-viewed" href="#" data-id="{{ $recommendation->id }}">
-                                                                <i class="bx bx-check me-2"></i>Mark as Viewed
-                                                            </a>
-                                                        </li>
-                                                        <li>
-                                                            <a class="dropdown-item text-danger" href="#" 
-                                                               onclick="deleteRecommendation({{ $recommendation->id }})">
-                                                                <i class="bx bx-trash me-2"></i>Remove
-                                                            </a>
-                                                        </li>
-                                                    </ul>
-                                                </div>
-                                            </div>
-                                            
-                                            <h6 class="card-title">{{ $recommendation->livre->title }}</h6>
-                                            <p class="text-muted small mb-2">by {{ $recommendation->livre->author }}</p>
-                                            
-                                            @if($recommendation->livre->categorie)
-                                                <span class="badge bg-light text-dark mb-2">{{ $recommendation->livre->categorie->nom }}</span>
-                                            @endif
-                                            
-                                            <div class="d-flex align-items-center mb-2">
-                                                <div class="progress flex-grow-1 me-2" style="height: 6px;">
-                                                    <div class="progress-bar bg-primary" style="width: {{ $recommendation->score * 100 }}%"></div>
-                                                </div>
-                                                <small class="text-muted">{{ number_format($recommendation->score * 100, 1) }}% match</small>
-                                            </div>
-                                            
-                                            @if($recommendation->reason)
-                                                <p class="card-text small text-muted">{{ \Illuminate\Support\Str::limit($recommendation->reason, 100) }}</p>
-                                            @endif
-                                            
-                                            <div class="d-flex justify-content-between align-items-center">
-                                                <small class="text-muted">
-                                                    {{ $recommendation->date_creation->format('M d, Y') }}
-                                                </small>
-                                                <a href="{{ route('livres') }}?search={{ urlencode($recommendation->livre->title) }}" 
-                                                   class="btn btn-sm btn-outline-primary">
-                                                    View Book
-                                                </a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            @endforeach
-                        </div>
-                    @else
-                        <div class="text-center py-5">
-                            <i class="bx bx-book-open display-4 text-muted mb-3"></i>
-                            <h5 class="text-muted">No recommendations yet</h5>
-                            <p class="text-muted">Start rating books to get personalized recommendations!</p>
-                            <a href="{{ route('recommendations.generate') }}" class="btn btn-primary">
-                                Generate Recommendations
-                            </a>
-                        </div>
-                    @endif
-                </div>
+                @endforeach
             </div>
-        </div>
+        @else
+            <div class="text-center py-5">
+                <div class="mb-4">
+                    <i class="bx bx-book-open display-1 text-muted"></i>
+                </div>
+                <h4 class="text-muted mb-3">No recommendations yet</h4>
+                <p class="text-muted mb-4">Start rating books to get personalized recommendations!</p>
+                <a href="{{ route('recommendations.generate') }}" class="btn btn-lg px-4 py-2" 
+                   style="background-color: #FF3B30; border: 1px solid #FF3B30; color: white;">
+                    Generate Recommendations
+                </a>
+            </div>
+        @endif
     </div>
 </div>
 
-<script>
-function deleteRecommendation(id) {
-    if (confirm('Are you sure you want to remove this recommendation?')) {
-        fetch(`/recommendations/${id}`, {
-            method: 'DELETE',
-            headers: {
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                'Content-Type': 'application/json',
-            },
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                location.reload();
-            }
-        })
-        .catch(error => console.error('Error:', error));
-    }
+<style>
+.recommendation-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1) !important;
 }
 
-// Mark as viewed functionality
-document.addEventListener('DOMContentLoaded', function() {
-    document.querySelectorAll('.mark-viewed').forEach(button => {
-        button.addEventListener('click', function(e) {
-            e.preventDefault();
-            const recommendationId = this.getAttribute('data-id');
-            
-            fetch(`/recommendations/${recommendationId}/mark-viewed`, {
-                method: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                    'Content-Type': 'application/json',
-                },
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    const card = document.querySelector(`[data-recommendation-id="${recommendationId}"]`);
-                    card.classList.remove('border-primary');
-                    this.closest('.dropdown-menu').querySelector('.mark-viewed').style.display = 'none';
-                }
-            })
-            .catch(error => console.error('Error:', error));
-        });
-    });
-});
-</script>
+.btn:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+}
+</style>
 @endsection

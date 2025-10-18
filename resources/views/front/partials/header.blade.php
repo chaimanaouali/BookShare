@@ -15,7 +15,7 @@
             <li class="scroll-to-section"><a href="#top" class="active">Home</a></li>
             <li><a href="{{ url('/livres') }}">Books</a></li>
             <li><a href="{{ url('/explore') }}">Libraries</a></li>
-            
+
             @auth
               @if(Auth::user()->role === 'user' || Auth::user()->role === 'contributor')
             <li class="submenu">
@@ -27,7 +27,7 @@
             </li>
               @endif
             @endauth
-            
+
             <li class="scroll-to-section"><a href="#about">About Us</a></li>
             <li class="scroll-to-section"><a href="#portfolio">Categories</a></li>
             <li class="scroll-to-section"><a href="#contact">Contact</a></li>
