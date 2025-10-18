@@ -13,10 +13,14 @@ class AvisObserver
      */
     public function created(Avis $avis): void
     {
+        $recommendationService = app(RecommendationService::class);
+        
+        // Remove any existing recommendations for this book since user has now reviewed it
+        $recommendationService->removeRecommendationsForBook($avis->utilisateur, $avis->livre);
+        
         // Generate recommendations when a user gives a good rating (4+ stars)
         if ($avis->note >= 4) {
-            // Resolve the service from the container to avoid constructor injection issues in observers
-            app(RecommendationService::class)->generateRecommendationsOnRating($avis);
+            $recommendationService->generateRecommendationsOnRating($avis);
         }
     }
 
@@ -25,9 +29,16 @@ class AvisObserver
      */
     public function updated(Avis $avis): void
     {
-        // Generate recommendations if rating was updated to 4+ stars
-        if ($avis->note >= 4 && $avis->wasChanged('note')) {
-            app(RecommendationService::class)->generateRecommendationsOnRating($avis);
+        $recommendationService = app(RecommendationService::class);
+        
+        // If the rating was changed, remove existing recommendations for this book
+        if ($avis->wasChanged('note')) {
+            $recommendationService->removeRecommendationsForBook($avis->utilisateur, $avis->livre);
+            
+            // Generate recommendations if rating was updated to 4+ stars
+            if ($avis->note >= 4) {
+                $recommendationService->generateRecommendationsOnRating($avis);
+            }
         }
     }
 
@@ -36,7 +47,8 @@ class AvisObserver
      */
     public function deleted(Avis $avis): void
     {
-        //
+        // Remove any existing recommendations for this book since the review was deleted
+        app(RecommendationService::class)->removeRecommendationsForBook($avis->utilisateur, $avis->livre);
     }
 
     /**

@@ -36,6 +36,12 @@ return [
     'base_url' => env('OPENAI_BASE_URL', 'https://api.openai.com/v1'),
   ],
 
+  'gemini' => [
+    'api_key' => env('GEMINI_API_KEY'),
+    'base_url' => env('GEMINI_BASE_URL', 'https://generativelanguage.googleapis.com/v1beta'),
+    'model' => env('GEMINI_MODEL', 'gemini-2.5-flash'),
+  ],
+
   'groq' => [
     'api_key' => env('GROQ_API_KEY'),
     // Groq exposes OpenAI-compatible endpoints under /openai, but also has v1

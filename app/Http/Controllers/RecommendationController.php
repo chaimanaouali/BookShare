@@ -24,6 +24,10 @@ class RecommendationController extends Controller
     public function index()
     {
         $user = Auth::user();
+        
+        // Automatically clean up recommendations for books the user has already reviewed
+        $this->recommendationService->cleanupReviewedBooks($user);
+        
         $recommendations = $this->recommendationService->getUserRecommendations($user, 20);
         
         return view('recommendations.index', compact('recommendations'));
@@ -99,6 +103,10 @@ class RecommendationController extends Controller
     public function listForUser(): JsonResponse
     {
         $user = Auth::user();
+        
+        // Automatically clean up recommendations for books the user has already reviewed
+        $this->recommendationService->cleanupReviewedBooks($user);
+        
         $items = Recommendation::where('user_id', $user->id)
             ->with(['livre:id,title,author,categorie_id', 'livre.categorie:id,nom'])
             ->orderBy('score', 'desc')
