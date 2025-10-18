@@ -28,7 +28,6 @@
             </li>
               @endif
             @endauth
-
             <li class="scroll-to-section"><a href="#about">About Us</a></li>
             <li class="scroll-to-section"><a href="#portfolio">Categories</a></li>
             <li class="scroll-to-section"><a href="#contact">Contact</a></li>

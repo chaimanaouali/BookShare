@@ -186,13 +186,11 @@ Route::get('/pages/misc-error', [MiscError::class, 'index'])->name('pages-misc-e
 Route::get('/pages/misc-under-maintenance', [MiscUnderMaintenance::class, 'index'])->name('pages-misc-under-maintenance');
 
 // authentication
-Route::get('/auth/login-basic', [LoginBasic::class, 'index'])->name('auth-login-basic');
-Route::get('/auth/register-basic', [RegisterBasic::class, 'index'])->name('auth-register-basic');
-Route::get('/auth/forgot-password-basic', [ForgotPasswordBasic::class, 'index'])->name('auth-reset-password-basic');
+Route::get('/auth', [LoginBasic::class, 'index'])->name('auth');
 
 // Add login route alias for authentication redirects
 Route::get('/login', function () {
-    return redirect()->route('auth-login-basic');
+    return redirect()->route('auth');
 })->name('login');
 
 // cards
