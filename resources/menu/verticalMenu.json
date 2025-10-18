@@ -80,6 +80,12 @@
       "url": "contributor/dashboard"
     },
     {
+      "name": "Books",
+      "icon": "menu-icon tf-icons bx bx-book",
+      "slug": "books",
+      "url": "contributor/livres"
+    },
+    {
       "name": "Account Settings",
       "icon": "menu-icon tf-icons bx bx bx-dock-top",
       "slug": "pages-account-settings",

@@ -48,6 +48,7 @@ use App\Http\Controllers\form_layouts\HorizontalForm;
 use App\Http\Controllers\tables\Basic as TablesBasic;
 use App\Http\Controllers\ContributorController;
 use App\Http\Controllers\BookEventController;
+use App\Services\GroqEmbeddingService;
 
 // Front-Office
 Route::middleware(['auth'])->group(function () {
@@ -152,6 +153,35 @@ Route::get('/login', function () {
     return redirect()->route('auth-login-basic');
 })->name('login');
 
+// Test route for embeddings (separate from /auth)
+Route::get('/test-embeddings', function () {
+    try {
+        $svc = new \App\Services\GroqEmbeddingService();
+        $result = $svc->generateEmbedding('Hello world, this is a test for embeddings.');
+        return response()->json([
+            'ok' => true,
+            'dimension' => $result['dimension'],
+            'first10' => array_slice($result['vector'], 0, 10),
+        ]);
+    } catch (\Throwable $e) {
+        return response()->json(['ok' => false, 'error' => $e->getMessage()], 500);
+    }
+});
+
+// Quick test route for Groq embeddings (temporary)
+Route::get('/groq-test', function (GroqEmbeddingService $svc) {
+    try {
+        $result = $svc->generateEmbedding('Hello world, this is a test for embeddings.');
+        return response()->json([
+            'ok' => true,
+            'dimension' => $result['dimension'],
+            'first10' => array_slice($result['vector'], 0, 10),
+        ]);
+    } catch (\Throwable $e) {
+        return response()->json(['ok' => false, 'error' => $e->getMessage()], 500);
+    }
+});
+
 // cards
 Route::get('/cards/basic', [CardBasic::class, 'index'])->name('cards-basic');
 
@@ -211,6 +241,10 @@ Route::middleware(['auth'])->prefix('contributor')->name('contributor.')->group(
     Route::get('/bibliotheques/{bibliotheque}/edit', [ContributorController::class, 'bibliothequesEdit'])->name('bibliotheques.edit');
     Route::put('/bibliotheques/{bibliotheque}', [ContributorController::class, 'bibliothequesUpdate'])->name('bibliotheques.update');
     Route::delete('/bibliotheques/{bibliotheque}', [ContributorController::class, 'bibliothequesDestroy'])->name('bibliotheques.destroy');
+    
+    // Book Selection for Library
+    Route::get('/bibliotheques/{bibliotheque}/add-books', [ContributorController::class, 'bibliothequesAddBooks'])->name('bibliotheques.add-books');
+    Route::post('/bibliotheques/{bibliotheque}/add-books', [ContributorController::class, 'bibliothequesStoreBooks'])->name('bibliotheques.store-books');
 
     // Livres Management
     Route::get('/livres/create', [ContributorController::class, 'livresCreate'])->name('livres.create');

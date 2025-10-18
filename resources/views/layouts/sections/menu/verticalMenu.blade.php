@@ -2,7 +2,7 @@
 
   <!-- ! Hide app brand if navbar-full -->
   <div class="app-brand demo">
-    <a href="{{url('/dashboard')}}" class="app-brand-link">
+    <a href="{{ (Auth::check() && Auth::user()->role === 'contributor') ? url('contributor/dashboard') : url('/dashboard') }}" class="app-brand-link">
       <img src="{{ asset('assets/images/bookVerse.png') }}" alt="Book Verse" style="height: 25px; width: auto;" class="app-brand-logo demo">
       <span class="app-brand-text demo menu-text fw-bold ms-2">{{config('variables.templateName')}}</span>
     </a>
@@ -52,7 +52,14 @@
 
       {{-- main menu --}}
       <li class="menu-item {{$activeClass}}">
-        <a href="{{ isset($menu->url) ? url($menu->url) : 'javascript:void(0);' }}" class="{{ isset($menu->submenu) ? 'menu-link menu-toggle' : 'menu-link' }}" @if (isset($menu->target) and !empty($menu->target)) target="_blank" @endif>
+        @php
+          $resolvedUrl = isset($menu->url) ? $menu->url : null;
+          // Route contributors away from admin-only dashboard
+          if (isset($menu->slug) && $menu->slug === 'dashboard' && Auth::check() && Auth::user()->role === 'contributor') {
+            $resolvedUrl = 'contributor/dashboard';
+          }
+        @endphp
+        <a href="{{ isset($resolvedUrl) ? url($resolvedUrl) : 'javascript:void(0);' }}" class="{{ isset($menu->submenu) ? 'menu-link menu-toggle' : 'menu-link' }}" @if (isset($menu->target) and !empty($menu->target)) target="_blank" @endif>
           @isset($menu->icon)
             <i class="{{ $menu->icon }}"></i>
           @endisset

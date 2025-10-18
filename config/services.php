@@ -36,4 +36,16 @@ return [
     'base_url' => env('OPENAI_BASE_URL', 'https://api.openai.com/v1'),
   ],
 
+  'groq' => [
+    'key' => env('GROQ_API_KEY'),
+    'model' => env('GROQ_EMBEDDING_MODEL', 'text-embedding-ada-002'),
+    'base_url' => env('GROQ_BASE_URL', 'https://api.groq.com/openai/v1'),
+  ],
+
+  'huggingface' => [
+    'api_key' => env('HUGGINGFACE_API_KEY'),
+    'embedding_model' => env('HUGGINGFACE_EMBEDDING_MODEL', 'sentence-transformers/all-MiniLM-L6-v2'),
+    'base_url' => env('HUGGINGFACE_BASE_URL', 'https://api-inference.huggingface.co'),
+  ],
+
 ];

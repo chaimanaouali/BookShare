@@ -17,9 +17,6 @@
             <a href="{{ route('contributor.bibliotheques.create') }}" class="btn btn-primary">
               <i class="bx bx-plus me-1"></i> New Library
             </a>
-            <a href="{{ route('contributor.livres.create') }}" class="btn btn-outline-primary">
-              <i class="bx bx-upload me-1"></i> Upload Book
-            </a>
           </div>
         </div>
       </div>
@@ -257,9 +254,6 @@
             <i class="bx bx-book display-4 text-muted mb-3"></i>
             <h5 class="text-muted">No books uploaded yet</h5>
             <p class="text-muted">Upload your first digital book to start sharing</p>
-            <a href="{{ route('contributor.livres.create') }}" class="btn btn-primary">
-              <i class="bx bx-upload me-1"></i> Upload Book
-            </a>
           </div>
         @endif
       </div>

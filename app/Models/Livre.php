@@ -18,6 +18,7 @@ class Livre extends Model
         'genre',
         // New fields from LivreUtilisateur
         'user_id',
+        'utilisateur_id',
         'bibliotheque_id',
         'fichier_livre',
         'format',

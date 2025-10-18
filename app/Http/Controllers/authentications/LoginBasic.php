@@ -4,6 +4,7 @@ namespace App\Http\Controllers\authentications;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class LoginBasic extends Controller
 {
@@ -21,8 +22,18 @@ class LoginBasic extends Controller
             'password' => bcrypt($validated['password']),
             'role' => 'user',
         ]);
-        \Auth::login($user);
-        return redirect('/contributor');
+        Auth::login($user);
+        // Redirect based on role to avoid 403 on /contributor for normal users
+        if ($user->role === 'admin') {
+            return redirect('/admin');
+        }
+        if ($user->role === 'contributor') {
+            return redirect('/contributor');
+        }
+        if ($user->role === 'user') {
+            return redirect('/explore');
+        }
+        return redirect('/');
     }
 
     // Show the login form
@@ -35,12 +46,12 @@ class LoginBasic extends Controller
     public function login(Request $request)
     {
         $credentials = $request->only('email', 'password');
-        if (\Auth::attempt($credentials, $request->filled('remember'))) {
-            $user = \Auth::user();
+        if (Auth::attempt($credentials, $request->filled('remember'))) {
+            $user = Auth::user();
             if ($user->role === 'admin') {
                 return redirect('/admin');
             }
-            if ($user->isContributor()) {
+            if ($user->role === 'contributor') {
                 return redirect('/contributor');
             }
             if ($user->role === 'user') {
@@ -56,7 +67,7 @@ class LoginBasic extends Controller
     // Handle logout
     public function logout(Request $request)
     {
-        \Auth::logout();
+        Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
         return redirect('/');

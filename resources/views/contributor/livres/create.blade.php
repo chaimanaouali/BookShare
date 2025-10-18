@@ -28,6 +28,15 @@
         <h5 class="card-title mb-0">Book Information</h5>
       </div>
       <div class="card-body">
+        <!-- Plagiarism Alert -->
+        @error('plagiarism')
+          <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bx bx-error-circle me-2"></i>
+            {{ $message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+          </div>
+        @enderror
+
         <form action="{{ route('contributor.livres.store') }}" method="POST" enctype="multipart/form-data" novalidate>
           @csrf
           
@@ -70,23 +79,6 @@
           <!-- Book Details -->
           <div class="row mb-3">
             <div class="col-md-6">
-              <label for="livre_id" class="form-label">Existing Book (Optional)</label>
-              <select class="form-select @error('livre_id') is-invalid @enderror" id="livre_id" name="livre_id">
-                <option value="">Create new book</option>
-                @foreach($livres as $livre)
-                  <option value="{{ $livre->id }}" {{ old('livre_id') == $livre->id ? 'selected' : '' }}>
-                    {{ $livre->title }} - {{ $livre->author }}
-                  </option>
-                @endforeach
-              </select>
-              @error('livre_id')
-                <div class="invalid-feedback">{{ $message }}</div>
-              @enderror
-              <div class="form-text">
-                <small class="text-muted">Select an existing book or create a new one below</small>
-              </div>
-            </div>
-            <div class="col-md-6">
               <label for="bibliotheque_id" class="form-label">Library <span class="text-danger">*</span></label>
               <select class="form-select @error('bibliotheque_id') is-invalid @enderror" id="bibliotheque_id" name="bibliotheque_id" required>
                 <option value="">Select a library</option>
@@ -101,15 +93,26 @@
                 <div class="invalid-feedback">{{ $message }}</div>
               @enderror
             </div>
+            <div class="col-md-6">
+              <label for="visibilite" class="form-label">Visibility <span class="text-danger">*</span></label>
+              <select class="form-select @error('visibilite') is-invalid @enderror" id="visibilite" name="visibilite" required>
+                <option value="">Select visibility</option>
+                <option value="public" {{ old('visibilite') == 'public' ? 'selected' : '' }}>Public</option>
+                <option value="private" {{ old('visibilite') == 'private' ? 'selected' : '' }}>Private</option>
+              </select>
+              @error('visibilite')
+                <div class="invalid-feedback">{{ $message }}</div>
+              @enderror
+            </div>
           </div>
           
-          <!-- New Book Details (shown when no existing book is selected) -->
-          <div id="newBookFields" class="row mb-3" style="display: none;">
+          <!-- Book Information -->
+          <div class="row mb-3">
             <div class="col-md-6">
               <label for="title" class="form-label">Book Title <span class="text-danger">*</span></label>
               <input type="text" class="form-control @error('title') is-invalid @enderror" 
                      id="title" name="title" value="{{ old('title') }}" 
-                     placeholder="Enter book title">
+                     placeholder="Enter book title" required>
               @error('title')
                 <div class="invalid-feedback">{{ $message }}</div>
               @enderror
@@ -118,14 +121,14 @@
               <label for="author" class="form-label">Author <span class="text-danger">*</span></label>
               <input type="text" class="form-control @error('author') is-invalid @enderror" 
                      id="author" name="author" value="{{ old('author') }}" 
-                     placeholder="Enter author name">
+                     placeholder="Enter author name" required>
               @error('author')
                 <div class="invalid-feedback">{{ $message }}</div>
               @enderror
             </div>
           </div>
           
-          <div id="newBookFields2" class="row mb-3" style="display: none;">
+          <div class="row mb-3">
             <div class="col-md-6">
               <label for="isbn" class="form-label">ISBN</label>
               <input type="text" class="form-control @error('isbn') is-invalid @enderror" 

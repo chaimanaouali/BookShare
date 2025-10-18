@@ -62,7 +62,12 @@
                                     </div>
                                     
                                     <div class="livre-actions">
-                                        <button class="main-button" onclick="openReviewsModal({{ $livre->id }}, '{{ $livre->title }}')">
+                                        @if($livre->fichier_livre)
+                                            <button class="main-button" onclick="readBook({{ $livre->id }}, '{{ $livre->title }}', '{{ $livre->fichier_livre }}')">
+                                                <i class="bx bx-book-open me-1"></i> Read Book
+                                            </button>
+                                        @endif
+                                        <button class="main-button secondary" onclick="openReviewsModal({{ $livre->id }}, '{{ $livre->title }}')">
                                             View Reviews
                                         </button>
                                         <button class="main-button secondary" onclick="openAddReviewModal({{ $livre->id }}, '{{ $livre->title }}')">
@@ -214,12 +219,209 @@
         </div>
     </div>
 </div>
+
+<!-- Book Reading Modal -->
+<div class="modal fade" id="bookReadingModal" tabindex="-1" aria-labelledby="bookReadingModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="bookReadingModalLabel">Reading: <span id="readingBookTitle"></span></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="bookContent" style="height: 70vh; overflow-y: auto;">
+                    <div class="text-center">
+                        <div class="spinner-border" role="status">
+                            <span class="visually-hidden">Loading book content...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <a id="downloadBookBtn" href="#" class="btn btn-primary" download>
+                    <i class="bx bx-download me-1"></i> Download
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
 @endsection
 
 @section('extra-js')
+<!-- PDF.js for PDF viewing -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script>
+// Configure PDF.js
+pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 // Global variables
 let currentLivreId = null;
+
+// Read book function
+function readBook(livreId, bookTitle, filePath) {
+    document.getElementById('readingBookTitle').textContent = bookTitle;
+    
+    // Set up download link
+    const downloadBtn = document.getElementById('downloadBookBtn');
+    downloadBtn.href = `/storage/${filePath}`;
+    downloadBtn.download = `${bookTitle}.${filePath.split('.').pop()}`;
+    
+    // Show modal
+    const modal = new bootstrap.Modal(document.getElementById('bookReadingModal'));
+    modal.show();
+    
+    // Load book content
+    loadBookContent(livreId, filePath);
+}
+
+// Load book content
+function loadBookContent(livreId, filePath) {
+    const bookContent = document.getElementById('bookContent');
+    bookContent.innerHTML = '<div class="text-center"><div class="spinner-border" role="status"><span class="visually-hidden">Loading book content...</span></div></div>';
+    
+    const fileExtension = filePath.split('.').pop().toLowerCase();
+    const fileUrl = `/storage/${filePath}`;
+    
+    switch(fileExtension) {
+        case 'pdf':
+            loadPDF(fileUrl, bookContent);
+            break;
+        case 'txt':
+            loadTextFile(fileUrl, bookContent);
+            break;
+        case 'epub':
+            // EPUB files are complex and require special handling
+            // For now, show a message with download option
+            bookContent.innerHTML = `
+                <div class="text-center py-5">
+                    <i class="bx bx-book display-1 text-primary mb-3"></i>
+                    <h5>EPUB E-book</h5>
+                    <p class="text-muted">EPUB files require special handling. Please download the file to read it with an e-reader app.</p>
+                    <p class="small text-muted">You can use apps like Adobe Digital Editions, Calibre, or most web browsers.</p>
+                </div>
+            `;
+            break;
+        default:
+            bookContent.innerHTML = `
+                <div class="text-center py-5">
+                    <i class="bx bx-file display-1 text-secondary mb-3"></i>
+                    <h5>Document File</h5>
+                    <p class="text-muted">This file format (${fileExtension.toUpperCase()}) cannot be displayed in the browser.</p>
+                    <p class="small text-muted">Please download the file to read it with an appropriate application.</p>
+                </div>
+            `;
+    }
+}
+
+// Load PDF using PDF.js
+function loadPDF(fileUrl, container) {
+    container.innerHTML = '<div class="text-center"><div class="spinner-border" role="status"><span class="visually-hidden">Loading PDF...</span></div></div>';
+    
+    pdfjsLib.getDocument(fileUrl).promise.then(function(pdf) {
+        let pdfContent = '<div class="pdf-viewer">';
+        
+        // Load first few pages (limit to 5 pages for performance)
+        const maxPages = Math.min(pdf.numPages, 5);
+        
+        for (let pageNum = 1; pageNum <= maxPages; pageNum++) {
+            pdf.getPage(pageNum).then(function(page) {
+                const scale = 1.5;
+                const viewport = page.getViewport({scale: scale});
+                
+                const canvas = document.createElement('canvas');
+                const context = canvas.getContext('2d');
+                canvas.height = viewport.height;
+                canvas.width = viewport.width;
+                
+                const renderContext = {
+                    canvasContext: context,
+                    viewport: viewport
+                };
+                
+                page.render(renderContext).promise.then(function() {
+                    const pageDiv = document.createElement('div');
+                    pageDiv.className = 'pdf-page mb-3';
+                    pageDiv.style.textAlign = 'center';
+                    pageDiv.style.border = '1px solid #ddd';
+                    pageDiv.style.borderRadius = '8px';
+                    pageDiv.style.padding = '10px';
+                    pageDiv.style.backgroundColor = '#fff';
+                    
+                    const pageLabel = document.createElement('div');
+                    pageLabel.className = 'page-label mb-2';
+                    pageLabel.innerHTML = `<small class="text-muted">Page ${pageNum}</small>`;
+                    
+                    pageDiv.appendChild(pageLabel);
+                    pageDiv.appendChild(canvas);
+                    
+                    container.appendChild(pageDiv);
+                });
+            });
+        }
+        
+        if (pdf.numPages > 5) {
+            pdfContent += `<div class="alert alert-info mt-3">
+                <i class="bx bx-info-circle me-1"></i>
+                Showing first 5 pages. This PDF has ${pdf.numPages} pages total. 
+                <a href="${fileUrl}" download class="btn btn-sm btn-primary ms-2">Download Full PDF</a>
+            </div>`;
+        }
+        
+        pdfContent += '</div>';
+        
+    }).catch(function(error) {
+        console.error('Error loading PDF:', error);
+        container.innerHTML = `
+            <div class="text-center py-5">
+                <i class="bx bx-file-pdf display-1 text-danger mb-3"></i>
+                <h5>PDF Loading Error</h5>
+                <p class="text-muted">Unable to display this PDF in the browser.</p>
+                <p class="small text-muted">Please download the file to read it with a PDF reader.</p>
+            </div>
+        `;
+    });
+}
+
+// Load text file content
+function loadTextFile(fileUrl, container) {
+    fetch(fileUrl)
+        .then(response => response.text())
+        .then(text => {
+            // Clean and format the text
+            const cleanText = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+            
+            container.innerHTML = `
+                <div class="text-content">
+                    <div class="text-start">
+                        <div style="
+                            white-space: pre-wrap; 
+                            font-family: 'Georgia', 'Times New Roman', serif; 
+                            line-height: 1.8; 
+                            padding: 30px; 
+                            background: #fff; 
+                            border-radius: 8px; 
+                            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+                            font-size: 16px;
+                            color: #333;
+                            max-width: 100%;
+                            word-wrap: break-word;
+                        ">${cleanText}</div>
+                    </div>
+                </div>
+            `;
+        })
+        .catch(error => {
+            console.error('Error loading text file:', error);
+            container.innerHTML = `
+                <div class="text-center py-5">
+                    <i class="bx bx-file-txt display-1 text-info mb-3"></i>
+                    <h5>Text File Loading Error</h5>
+                    <p class="text-muted">Unable to load this text file.</p>
+                    <p class="small text-muted">Please try downloading the file instead.</p>
+                </div>
+            `;
+        });
+}
 
 // Get CSRF token safely
 function getCSRFToken() {

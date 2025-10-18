@@ -4,6 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\BibliothequeVirtuelle;
 use App\Models\Livre;
+use App\Models\LivreEmbedding;
+use App\Services\GroqEmbeddingService;
+use App\Services\BookTextExtractor;
+use App\Services\SimilarityService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -44,11 +48,21 @@ class ContributorController extends Controller
             'cover_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'publication_date' => 'nullable|date',
             'categorie_id' => 'nullable|exists:categories,id',
+            'langue' => 'nullable|string|max:10',
+            'nb_pages' => 'nullable|integer|min:0',
+            'resume' => 'nullable|string',
+            'etat' => 'nullable|string|max:50',
         ]);
         // Handle cover image upload if present
         if ($request->hasFile('cover_image')) {
             $validated['cover_image'] = $request->file('cover_image')->store('covers', 'public');
         }
+        // Ensure defaults if not provided
+        $validated['langue'] = $validated['langue'] ?? 'fr';
+        $validated['nb_pages'] = $validated['nb_pages'] ?? 0;
+        $validated['resume'] = $validated['resume'] ?? '';
+        $validated['etat'] = $validated['etat'] ?? 'neuf';
+        $validated['utilisateur_id'] = Auth::id();
         $livre = \App\Models\Livre::create($validated);
         return redirect()->route('contributor.livres.create')->with('success', 'Book created! You can now upload your file.');
     }
@@ -246,14 +260,61 @@ class ContributorController extends Controller
     }
 
     /**
+     * Show the book selection page for adding books to a library.
+     */
+    public function bibliothequesAddBooks(BibliothequeVirtuelle $bibliotheque)
+    {
+        // Ensure the bibliotheque belongs to the authenticated user
+        if ($bibliotheque->user_id !== Auth::id()) {
+            abort(403);
+        }
+
+        // Get all books that don't belong to this library (or have no library assigned)
+        $availableBooks = Livre::where('user_id', Auth::id())
+            ->where(function($query) use ($bibliotheque) {
+                $query->where('bibliotheque_id', '!=', $bibliotheque->id)
+                      ->orWhereNull('bibliotheque_id');
+            })
+            ->get();
+
+        return view('contributor.bibliotheques.add-books', compact('bibliotheque', 'availableBooks'));
+    }
+
+    /**
+     * Store selected books to the library.
+     */
+    public function bibliothequesStoreBooks(Request $request, BibliothequeVirtuelle $bibliotheque)
+    {
+        // Ensure the bibliotheque belongs to the authenticated user
+        if ($bibliotheque->user_id !== Auth::id()) {
+            abort(403);
+        }
+
+        $request->validate([
+            'selected_books' => 'required|array|min:1',
+            'selected_books.*' => 'exists:livres,id',
+        ]);
+
+        // Update selected books to belong to this library
+        Livre::whereIn('id', $request->selected_books)
+            ->where('user_id', Auth::id())
+            ->update(['bibliotheque_id' => $bibliotheque->id]);
+
+        // Update library book count
+        $bibliotheque->increment('nb_livres', count($request->selected_books));
+
+        return redirect()->route('contributor.bibliotheques.show', $bibliotheque->id)
+            ->with('success', count($request->selected_books) . ' book(s) added to library successfully!');
+    }
+
+    /**
      * Show the form for creating a new livre.
      */
     public function livresCreate(Request $request)
     {
         $bibliotheques = Auth::user()->bibliotheques()->get();
-        $livres = \App\Models\Livre::all();
         $recentUploads = Auth::user()->livres()->latest()->take(3)->get();
-        return view('contributor.livres.create', compact('bibliotheques', 'livres', 'recentUploads'));
+        return view('contributor.livres.create', compact('bibliotheques', 'recentUploads'));
     }
 
     /**
@@ -261,27 +322,23 @@ class ContributorController extends Controller
      */
 public function livresStore(Request $request)
     {
-        // Dynamic validation based on whether existing book is selected
+        // Validation rules for creating new books only
         $validationRules = [
             'bibliotheque_id' => ['required', 'exists:bibliotheque_virtuelles,id'],
-            'livre_id' => ['nullable', 'exists:livres,id'],
             'fichier_livre' => ['required', 'file', 'mimes:pdf,epub,mobi,txt', 'max:10240'],
+            'title' => ['required', 'string', 'max:255'],
+            'author' => ['required', 'string', 'max:255'],
             'format' => ['nullable', 'string', 'max:50'],
             'taille' => ['nullable', 'string', 'max:50'],
             'visibilite' => ['required', 'in:public,private'],
             'description' => ['nullable', 'string', 'max:1000'],
             'isbn' => ['nullable', 'string', 'max:20'],
             'categorie_id' => ['nullable', 'exists:categories,id'],
+            'langue' => ['nullable', 'string', 'max:10'],
+            'nb_pages' => ['nullable', 'integer', 'min:0'],
+            'resume' => ['nullable', 'string'],
+            'etat' => ['nullable', 'string', 'max:50'],
         ];
-
-        // Only require title and author if no existing book is selected
-        if (!$request->livre_id) {
-            $validationRules['title'] = ['required', 'string', 'max:255'];
-            $validationRules['author'] = ['required', 'string', 'max:255'];
-        } else {
-            $validationRules['title'] = ['nullable', 'string', 'max:255'];
-            $validationRules['author'] = ['nullable', 'string', 'max:255'];
-        }
 
         $request->validate($validationRules);
 
@@ -298,19 +355,12 @@ public function livresStore(Request $request)
         $fileSizeFormatted = $this->formatFileSize($fileSize);
         $fileFormat = $file->getClientOriginalExtension();
 
-        // If livre_id is provided, update the existing book, otherwise create new
-        if ($request->livre_id) {
-            $livre = Livre::findOrFail($request->livre_id);
-            $livre->update([
-                'user_id' => Auth::id(),
-                'bibliotheque_id' => $request->bibliotheque_id,
-                'fichier_livre' => $filePath,
-                'format' => $request->format ?? $fileFormat,
-                'taille' => $request->taille ?? $fileSizeFormatted,
-                'visibilite' => $request->visibilite,
-                'user_description' => $request->description,
-            ]);
-        } else {
+        // Check for plagiarism before creating new book
+        $plagiarismResult = $this->checkForPlagiarism($file, $request);
+        if ($plagiarismResult) {
+            return back()->withErrors(['plagiarism' => $plagiarismResult])->withInput();
+        }
+
             // Create new book with file upload
             $livre = Livre::create([
                 'title' => $request->title,
@@ -318,17 +368,24 @@ public function livresStore(Request $request)
                 'isbn' => $request->isbn,
                 'categorie_id' => $request->categorie_id,
                 'user_id' => Auth::id(),
+            'utilisateur_id' => Auth::id(),
                 'bibliotheque_id' => $request->bibliotheque_id,
                 'fichier_livre' => $filePath,
                 'format' => $request->format ?? $fileFormat,
                 'taille' => $request->taille ?? $fileSizeFormatted,
                 'visibilite' => $request->visibilite,
                 'user_description' => $request->description,
+            'langue' => $request->langue ?? 'fr',
+            'nb_pages' => $request->nb_pages ?? 0,
+            'resume' => $request->resume ?? '',
+            'etat' => $request->etat ?? 'neuf',
             ]);
-        }
 
         // Update bibliotheque book count
         $bibliotheque->increment('nb_livres');
+
+        // Generate and save embedding for the new book
+        $this->saveBookEmbedding($livre, $file);
 
         return redirect()->route('contributor.bibliotheques.show', $bibliotheque->id)
             ->with('success', 'Book uploaded successfully!');
@@ -345,6 +402,10 @@ public function livresStore(Request $request)
             'isbn' => ['nullable', 'string', 'max:20'],
             'description' => ['nullable', 'string', 'max:1000'],
             'categorie_id' => ['nullable', 'exists:categories,id'],
+            'langue' => ['nullable', 'string', 'max:10'],
+            'nb_pages' => ['nullable', 'integer', 'min:0'],
+            'resume' => ['nullable', 'string'],
+            'etat' => ['nullable', 'string', 'max:50'],
         ]);
 
         $livre = Livre::create([
@@ -353,6 +414,11 @@ public function livresStore(Request $request)
             'isbn' => $request->isbn,
             'description' => $request->description,
             'categorie_id' => $request->categorie_id,
+            'langue' => $request->langue ?? 'fr',
+            'nb_pages' => $request->nb_pages ?? 0,
+            'resume' => $request->resume ?? '',
+            'etat' => $request->etat ?? 'neuf',
+            'utilisateur_id' => Auth::id(),
         ]);
 
         return response()->json([
@@ -394,5 +460,72 @@ public function livresStore(Request $request)
         $pow = min($pow, count($units) - 1);
         $bytes /= pow(1024, $pow);
         return round($bytes, 2) . ' ' . $units[$pow];
+    }
+
+    /**
+     * Check for plagiarism before creating a new book.
+     * Returns error message if plagiarism detected, null if clean.
+     */
+    private function checkForPlagiarism($file, $request): ?string
+    {
+        $extractor = new BookTextExtractor();
+        $embeddingService = new GroqEmbeddingService();
+        $similarityService = new SimilarityService();
+
+        // Extract text from uploaded file
+        $text = $extractor->extractText($file);
+        
+        // Skip check if insufficient content
+        if (!$extractor->hasSufficientContent($text)) {
+            return null;
+        }
+
+        // Generate embedding for the uploaded text
+        $embedding = $embeddingService->generateEmbedding($text);
+
+        // Get all existing embeddings
+        $existingEmbeddings = LivreEmbedding::with('livre')->get();
+
+        // Find most similar book
+        $similarBook = $similarityService->findMostSimilar($embedding['vector'], $existingEmbeddings);
+
+        if ($similarBook && $similarityService->isSimilarityHigh($similarBook['similarity'], 0.85)) {
+            // High similarity detected - return error message
+            $similarLivre = $similarBook['embedding']->livre;
+            $similarity = round($similarBook['similarity'] * 100, 1);
+            
+            return "⚠️ Plagiarism detected! This book is {$similarity}% similar to '{$similarLivre->title}' by {$similarLivre->author} in library '{$similarLivre->bibliotheque->nom_bibliotheque}'. Please ensure your content is original.";
+        }
+
+        return null;
+    }
+
+    /**
+     * Save embedding for a book after creation/update.
+     */
+    private function saveBookEmbedding($livre, $file)
+    {
+        $extractor = new BookTextExtractor();
+        $embeddingService = new GroqEmbeddingService();
+
+        // Extract text from uploaded file
+        $text = $extractor->extractText($file);
+        
+        // Skip if insufficient content
+        if (!$extractor->hasSufficientContent($text)) {
+            return;
+        }
+
+        // Generate embedding
+        $embedding = $embeddingService->generateEmbedding($text);
+
+        // Save or update embedding
+        LivreEmbedding::updateOrCreate(
+            ['livre_id' => $livre->id],
+            [
+                'embedding' => $embedding['vector'],
+                'dimension' => $embedding['dimension'],
+            ]
+        );
     }
 }

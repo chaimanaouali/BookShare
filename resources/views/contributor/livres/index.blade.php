@@ -2,7 +2,12 @@
 @section('title', 'My Books')
 @section('content')
 <div class="container py-4 mt-5">
-  <h2 class="mb-4">My Books</h2>
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="mb-0">My Books</h2>
+    <a href="{{ route('contributor.livres.create') }}" class="btn btn-primary">
+      <i class="bx bx-plus me-1"></i> Create Book
+    </a>
+  </div>
   <div class="card">
     <div class="card-body">
       @if($livres->count() > 0)
@@ -45,7 +50,14 @@
           </table>
         </div>
       @else
-        <p class="text-muted">You have not uploaded any books yet.</p>
+        <div class="text-center py-5">
+          <i class="bx bx-book display-1 text-muted mb-3"></i>
+          <h5 class="text-muted">No books uploaded yet</h5>
+          <p class="text-muted">Create your first book to start sharing</p>
+          <a href="{{ route('contributor.livres.create') }}" class="btn btn-primary">
+            <i class="bx bx-plus me-1"></i> Create Book
+          </a>
+        </div>
       @endif
     </div>
   </div>

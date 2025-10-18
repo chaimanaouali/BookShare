@@ -106,7 +106,7 @@
         </div>
         
         <div class="d-flex justify-content-between">
-          <a href="{{ route('contributor.livres.show', $livre->id) }}" class="btn btn-outline-secondary">
+          <a href="{{ route('contributor.livres.index', $livre->id) }}" class="btn btn-outline-secondary">
             <i class="bx bx-arrow-back me-1"></i>Cancel
           </a>
           <button type="submit" class="btn btn-primary">
