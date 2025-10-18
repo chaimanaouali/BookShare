@@ -287,6 +287,34 @@ class RecommendationService
     }
 
     /**
+     * Remove recommendations for a book that the user has now reviewed
+     */
+    public function removeRecommendationsForBook(User $user, Livre $book): void
+    {
+        Recommendation::where('user_id', $user->id)
+            ->where('livre_id', $book->id)
+            ->delete();
+    }
+
+    /**
+     * Clean up all existing recommendations for books that the user has already reviewed
+     */
+    public function cleanupReviewedBooks(User $user): void
+    {
+        // Get all book IDs that the user has reviewed
+        $reviewedBookIds = Avis::where('user_id', $user->id)
+            ->pluck('livre_id')
+            ->toArray();
+
+        if (!empty($reviewedBookIds)) {
+            // Remove recommendations for books the user has already reviewed
+            Recommendation::where('user_id', $user->id)
+                ->whereIn('livre_id', $reviewedBookIds)
+                ->delete();
+        }
+    }
+
+    /**
      * Generate recommendations when a user rates a book highly
      */
     public function generateRecommendationsOnRating(Avis $avis): void
@@ -295,6 +323,9 @@ class RecommendationService
             // Use the defined relation name on Avis (utilisateur)
             $user = $avis->utilisateur;
             $book = $avis->livre;
+            
+            // Clean up any existing recommendations for this book since user has now reviewed it
+            $this->removeRecommendationsForBook($user, $book);
             
             // Generate AI recommendations
             $aiRecommendations = $this->generateAiRecommendations($user, 3);

@@ -20,3 +20,6 @@
 <!-- BEGIN: Page JS-->
 @yield('page-script')
 <!-- END: Page JS-->
+<!-- BEGIN: Extra JS-->
+@yield('extra-js')
+<!-- END: Extra JS-->

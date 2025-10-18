@@ -34,7 +34,7 @@
             <button class="btn btn-primary d-grid w-100">Send Reset Link</button>
           </form>
           <div class="text-center">
-            <a href="{{url('auth/login-basic')}}" class="d-flex justify-content-center">
+            <a href="{{url('/auth')}}" class="d-flex justify-content-center">
               <i class="bx bx-chevron-left scaleX-n1-rtl me-1"></i>
               Back to login
             </a>

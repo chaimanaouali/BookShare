@@ -48,4 +48,19 @@ return [
     'base_url' => env('HUGGINGFACE_BASE_URL', 'https://api-inference.huggingface.co'),
   ],
 
+  'gemini' => [
+    'api_key' => env('GEMINI_API_KEY'),
+    'base_url' => env('GEMINI_BASE_URL', 'https://generativelanguage.googleapis.com/v1beta'),
+    'model' => env('GEMINI_MODEL', 'gemini-2.5-flash'),
+  ],
+
+  'groq' => [
+    'api_key' => env('GROQ_API_KEY'),
+    // Groq exposes OpenAI-compatible endpoints under /openai, but also has v1
+    'base_url' => env('GROQ_BASE_URL', 'https://api.groq.com/openai/v1'),
+    // Default model; can be overridden per call. Good options: llama-3.1-8b-instant, llama-3.1-70b-versatile
+    'model' => env('GROQ_MODEL', 'llama-3.1-8b-instant'),
+  ],
+
 ];
+

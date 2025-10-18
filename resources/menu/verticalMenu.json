@@ -108,29 +108,11 @@
       ]
     },
     {
-      "name": "Authentications",
+      "url": "/auth",
+      "name": "Authentication",
       "icon": "menu-icon tf-icons bx bx-lock-open-alt",
       "slug": "auth",
-      "submenu": [
-        {
-          "url": "auth/login-basic",
-          "name": "Login",
-          "slug": "auth-login-basic",
-          "target": "_blank"
-        },
-        {
-          "url": "auth/register-basic",
-          "name": "Register",
-          "slug": "auth-register-basic",
-          "target": "_blank"
-        },
-        {
-          "url": "auth/forgot-password-basic",
-          "name": "Forgot Password",
-          "slug": "auth-forgot-password-basic",
-          "target": "_blank"
-        }
-      ]
+      "target": "_blank"
     },
     {
       "name": "Book Events",
@@ -139,10 +121,22 @@
       "url": "book-events"
     },
     {
+      "name": "Défis",
+      "icon": "menu-icon tf-icons bx bx-flag",
+      "slug": "defis",
+      "url": "book-events/defis"
+    },
+    {
       "name": "Recommendations",
       "icon": "menu-icon tf-icons bx bx-star",
       "slug": "recommendations",
       "url": "recommendations"
+    },
+    {
+      "name": "Mon Profil de Lecture",
+      "icon": "menu-icon tf-icons bx bx-brain",
+      "slug": "reading-personality",
+      "url": "reading-personality"
     },
     {
       "name": "Library",

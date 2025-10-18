@@ -39,7 +39,7 @@ class LoginBasic extends Controller
     // Show the login form
     public function index()
     {
-        return view('content.authentications.auth-login-basic');
+        return view('auth.register');
     }
 
     // Handle login POST

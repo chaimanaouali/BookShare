@@ -16,13 +16,11 @@ class BookEvent extends Model
         'titre',
         'description',
         'date_evenement',
+        'status',
     ];
 
-    /* Exemple de relation : un BookEvent appartient à un défi
-      public function defi()
+    public function defi()
     {
         return $this->belongsTo(Defi::class);
-   
-}
-       */
+    }
 }

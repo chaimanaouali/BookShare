@@ -46,4 +46,12 @@ class BibliothequeVirtuelle extends Model
     {
         return $this->hasMany(Livre::class, 'bibliotheque_id');
     }
+
+    /**
+     * Get the discussions for this bibliotheque.
+     */
+    public function discussions(): HasMany
+    {
+        return $this->hasMany(Discussion::class, 'bibliotheque_id');
+    }
 }

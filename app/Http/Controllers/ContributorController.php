@@ -325,6 +325,7 @@ public function livresStore(Request $request)
         // Validation rules for creating new books only
         $validationRules = [
             'bibliotheque_id' => ['required', 'exists:bibliotheque_virtuelles,id'],
+            'livre_id' => ['nullable', 'exists:livres,id'],
             'fichier_livre' => ['required', 'file', 'mimes:pdf,epub,mobi,txt', 'max:10240'],
             'title' => ['required', 'string', 'max:255'],
             'author' => ['required', 'string', 'max:255'],
@@ -338,6 +339,7 @@ public function livresStore(Request $request)
             'nb_pages' => ['nullable', 'integer', 'min:0'],
             'resume' => ['nullable', 'string'],
             'etat' => ['nullable', 'string', 'max:50'],
+            'defi_id' => ['nullable', 'exists:defis,id'],
         ];
 
         $request->validate($validationRules);
@@ -379,6 +381,7 @@ public function livresStore(Request $request)
             'nb_pages' => $request->nb_pages ?? 0,
             'resume' => $request->resume ?? '',
             'etat' => $request->etat ?? 'neuf',
+                'defi_id' => $request->defi_id,
             ]);
 
         // Update bibliotheque book count
@@ -474,7 +477,7 @@ public function livresStore(Request $request)
 
         // Extract text from uploaded file
         $text = $extractor->extractText($file);
-        
+
         // Skip check if insufficient content
         if (!$extractor->hasSufficientContent($text)) {
             return null;
@@ -493,7 +496,7 @@ public function livresStore(Request $request)
             // High similarity detected - return error message
             $similarLivre = $similarBook['embedding']->livre;
             $similarity = round($similarBook['similarity'] * 100, 1);
-            
+
             return "⚠️ Plagiarism detected! This book is {$similarity}% similar to '{$similarLivre->title}' by {$similarLivre->author} in library '{$similarLivre->bibliotheque->nom_bibliotheque}'. Please ensure your content is original.";
         }
 
@@ -510,7 +513,7 @@ public function livresStore(Request $request)
 
         // Extract text from uploaded file
         $text = $extractor->extractText($file);
-        
+
         // Skip if insufficient content
         if (!$extractor->hasSufficientContent($text)) {
             return;

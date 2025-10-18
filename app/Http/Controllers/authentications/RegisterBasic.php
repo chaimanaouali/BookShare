@@ -9,6 +9,6 @@ class RegisterBasic extends Controller
 {
   public function index()
   {
-    return view('content.authentications.auth-register-basic');
+    return view('auth.register');
   }
 }

@@ -56,10 +56,27 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/explore', [\App\Http\Controllers\FrontBibliothequeController::class, 'index'])->name('front.bibliotheques.index');
     // View a single public bibliotheque
     Route::get('/explore/bibliotheques/{id}', [\App\Http\Controllers\FrontBibliothequeController::class, 'show'])->name('front.bibliotheques.show');
+    
+    // Discussion routes
+    Route::post('/discussions/{bibliothequeId}', [\App\Http\Controllers\DiscussionController::class, 'store'])->name('discussions.store');
+    Route::post('/discussions/{discussionId}/comments', [\App\Http\Controllers\DiscussionController::class, 'storeComment'])->name('discussions.comments.store');
+    Route::patch('/discussions/{discussionId}/resolve', [\App\Http\Controllers\DiscussionController::class, 'markResolved'])->name('discussions.resolve');
+    Route::patch('/discussions/{discussionId}/unresolve', [\App\Http\Controllers\DiscussionController::class, 'markUnresolved'])->name('discussions.unresolve');
+    Route::post('/comments/{commentId}/vote', [\App\Http\Controllers\DiscussionController::class, 'voteComment'])->name('comments.vote');
+    Route::delete('/comments/{commentId}', [\App\Http\Controllers\DiscussionController::class, 'deleteComment'])->name('comments.delete');
+    Route::get('/discussions/{discussionId}/comments', [\App\Http\Controllers\DiscussionController::class, 'getComments'])->name('discussions.comments.get');
+    Route::post('/discussions/{discussionId}/summarize', [\App\Http\Controllers\DiscussionController::class, 'generateSummary'])->name('discussions.summarize');
 });
 Route::get('/home', function () {
     return view('front.home', ['useCustomJs' => true], ['usePreloader' => true]);
 });
+
+// Front events listing and details
+Route::get('/events', [\App\Http\Controllers\FrontEventController::class, 'index'])->name('front.events.index');
+Route::get('/events/{event}', [\App\Http\Controllers\FrontEventController::class, 'show'])->name('front.events.show');
+
+// Front-end participations
+Route::get('/my-participations', [\App\Http\Controllers\ParticipationDefiController::class, 'myParticipations'])->name('front.participations.my');
 
 // Auth page (login + register)
 Route::get('/auth', function () {
@@ -81,6 +98,32 @@ Route::delete('/avis/{avisId}', [LivresController::class, 'deleteAvis']);
 
 // controlleur book event
 
+
+// controlleur book event & nested defis (defis first to avoid route shadowing)
+Route::prefix('book-events')->middleware(['auth','admin'])->group(function () {
+    Route::resource('defis', \App\Http\Controllers\Admin\DefiController::class)->names([
+        'index' => 'defis.index',
+        'create' => 'defis.create',
+        'store' => 'defis.store',
+        'show' => 'defis.show',
+        'edit' => 'defis.edit',
+        'update' => 'defis.update',
+        'destroy' => 'defis.destroy',
+    ]);
+    
+    // Routes pour gérer l'association des livres aux défis
+    Route::get('defis/{defi}/add-books', [\App\Http\Controllers\Admin\DefiController::class, 'addBooks'])->name('defis.add-books');
+    Route::post('defis/{defi}/associate-books', [\App\Http\Controllers\Admin\DefiController::class, 'associateBooks'])->name('defis.associate-books');
+    Route::delete('defis/{defi}/remove-book/{livre}', [\App\Http\Controllers\Admin\DefiController::class, 'removeBook'])->name('defis.remove-book');
+
+    // Participants list for a defi
+    Route::get('defis/{defi}/participants', [\App\Http\Controllers\Admin\DefiController::class, 'participants'])->name('defis.participants');
+    
+    // Ranking routes
+    Route::get('defis/{defi}/ranking', [\App\Http\Controllers\Admin\RankingController::class, 'show'])->name('defis.ranking');
+    Route::get('ranking/global', [\App\Http\Controllers\Admin\RankingController::class, 'global'])->name('ranking.global');
+    Route::post('ranking/recalculate', [\App\Http\Controllers\Admin\RankingController::class, 'recalculate'])->name('ranking.recalculate');
+});
 Route::resource('book-events', BookEventController::class)->middleware(['auth', 'admin']);
 
 // Main Page Route
@@ -144,13 +187,11 @@ Route::get('/pages/misc-error', [MiscError::class, 'index'])->name('pages-misc-e
 Route::get('/pages/misc-under-maintenance', [MiscUnderMaintenance::class, 'index'])->name('pages-misc-under-maintenance');
 
 // authentication
-Route::get('/auth/login-basic', [LoginBasic::class, 'index'])->name('auth-login-basic');
-Route::get('/auth/register-basic', [RegisterBasic::class, 'index'])->name('auth-register-basic');
-Route::get('/auth/forgot-password-basic', [ForgotPasswordBasic::class, 'index'])->name('auth-reset-password-basic');
+Route::get('/auth', [LoginBasic::class, 'index'])->name('auth');
 
 // Add login route alias for authentication redirects
 Route::get('/login', function () {
-    return redirect()->route('auth-login-basic');
+    return redirect()->route('auth');
 })->name('login');
 
 // Test route for embeddings (separate from /auth)
@@ -225,7 +266,7 @@ Route::get('/form/layouts-horizontal', [HorizontalForm::class, 'index'])->name('
 Route::get('/tables/basic', [TablesBasic::class, 'index'])->name('tables-basic');
 
 // Emprunts and HistoriqueEmprunts CRUD routes
-Route::resource('emprunts', App\Http\Controllers\EmpruntController::class);
+Route::resource('emprunts', App\Http\Controllers\EmpruntController::class)->middleware('auth');
 Route::resource('historique-emprunts', App\Http\Controllers\HistoriqueEmpruntController::class)->middleware(['auth', 'admin']);
 
 // Contributor Routes (Protected)
@@ -265,6 +306,10 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     
     // Categories Management
     Route::resource('categories', CategorieController::class);
+
+    // Discussions (read + delete only)
+    Route::delete('discussions/{discussion}', [\App\Http\Controllers\AdminController::class, 'deleteDiscussion'])->name('discussions.destroy');
+    Route::get('bibliotheques/{id}/discussions', [\App\Http\Controllers\AdminController::class, 'bibliothequeDiscussions'])->name('bibliotheques.discussions');
 });
 
 // Recommendation routes
@@ -280,4 +325,41 @@ Route::middleware(['auth'])->prefix('recommendations')->name('recommendations.')
     Route::post('/{recommendation}/mark-viewed', [App\Http\Controllers\RecommendationController::class, 'markAsViewed'])->name('mark-viewed');
     Route::get('/unviewed-count', [App\Http\Controllers\RecommendationController::class, 'unviewedCount'])->name('unviewed-count');
     Route::delete('/{recommendation}', [App\Http\Controllers\RecommendationController::class, 'destroy'])->name('destroy');
+});
+
+// Front-end Defi routes (accessible to all users)
+Route::prefix('defis')->name('front.defis.')->group(function () {
+    Route::get('/', [App\Http\Controllers\FrontDefiController::class, 'index'])->name('index');
+    Route::get('/{defi}', [App\Http\Controllers\FrontDefiController::class, 'show'])->name('show');
+});
+
+// Participation Defi routes (requires authentication)
+Route::middleware(['auth'])->prefix('participation-defis')->name('participation-defis.')->group(function () {
+    Route::get('/my-participations', [App\Http\Controllers\ParticipationDefiController::class, 'myParticipations'])->name('my-participations');
+    Route::get('/defi/{defi}/create', [App\Http\Controllers\ParticipationDefiController::class, 'create'])->name('create');
+    Route::post('/defi/{defi}/store', [App\Http\Controllers\ParticipationDefiController::class, 'store'])->name('store');
+    Route::get('/{participation}', [App\Http\Controllers\ParticipationDefiController::class, 'show'])->name('show');
+    Route::get('/{participation}/modal-content', [App\Http\Controllers\ParticipationDefiController::class, 'modalContent'])->name('modal-content');
+    Route::put('/{participation}/update-status', [App\Http\Controllers\ParticipationDefiController::class, 'updateStatus'])->name('update-status');
+    Route::delete('/{participation}', [App\Http\Controllers\ParticipationDefiController::class, 'destroy'])->name('destroy');
+});
+
+// Test route
+Route::get('/test-defi', function() {
+    $defi = \App\Models\Defi::with('livres')->first();
+    return response()->json(['defi' => $defi]);
+});
+
+// AI Quiz generation (Groq)
+Route::post('/ai/quiz', [\App\Http\Controllers\QuizController::class, 'generate'])->name('ai.quiz.generate');
+Route::middleware(['auth'])->post('/ai/quiz/from-participation/{participation}', [\App\Http\Controllers\QuizController::class, 'generateFromParticipation'])->name('ai.quiz.from-participation');
+Route::middleware(['auth'])->post('/ai/quiz/save-score/{participation}', [\App\Http\Controllers\QuizController::class, 'saveScore'])->name('ai.quiz.save-score');
+
+// Reading Personality routes
+Route::middleware(['auth'])->prefix('reading-personality')->name('reading-personality.')->group(function () {
+    Route::get('/', [\App\Http\Controllers\ReadingPersonalityController::class, 'show'])->name('show');
+    Route::post('/generate', [\App\Http\Controllers\ReadingPersonalityController::class, 'generate'])->name('generate');
+    Route::post('/update', [\App\Http\Controllers\ReadingPersonalityController::class, 'update'])->name('update');
+    Route::get('/data', [\App\Http\Controllers\ReadingPersonalityController::class, 'getPersonalityData'])->name('data');
+    Route::get('/user/{user}', [\App\Http\Controllers\ReadingPersonalityController::class, 'showUser'])->name('show-user');
 });
