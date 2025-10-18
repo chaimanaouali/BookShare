@@ -13,38 +13,37 @@
           <!-- ***** Menu Start ***** -->
           <ul class="nav">
             <li class="scroll-to-section"><a href="#top" class="active">Home</a></li>
-            <li>
-              @auth
-                @if(Auth::user()->role === 'user')
-                  <a href="{{ url('/livres') }}">Books</a>
-                @endif
-              @endauth
-            </li>
+            <li><a href="{{ url('/livres') }}">Books</a></li>
+            <li><a href="{{ url('/explore') }}">Libraries</a></li>
+            
             @auth
-              @if(Auth::user()->role === 'user')
-            <li>
-              <a href="{{ route('recommendations.generate.get', ['redirect' => 'home']) }}">Recommendations</a>
+              @if(Auth::user()->role === 'user' || Auth::user()->role === 'contributor')
+            <li class="submenu">
+              <a href="#">My Account</a>
+              <ul>
+                <li><a href="{{ route('recommendations.generate.get', ['redirect' => 'home']) }}">Recommendations</a></li>
+                <li><a href="{{ route('emprunts.index') }}">Emprunts</a></li>
+              </ul>
             </li>
               @endif
             @endauth
+            
             <li class="scroll-to-section"><a href="#about">About Us</a></li>
-            <li class="scroll-to-section"><a href="#services">How It Works</a></li>
             <li class="scroll-to-section"><a href="#portfolio">Categories</a></li>
-            <li class="scroll-to-section"><a href="#blog">Community</a></li>
             <li class="scroll-to-section"><a href="#contact">Contact</a></li>
-            <li class="scroll-to-section">
-              @auth
-                @if(Auth::user()->role === 'user')
-                  <a href="{{ url('/explore') }}">Explore</a>
-                @endif
-              @endauth
-            </li>
-            @auth
-                 @if(Auth::user()->role === 'user')
-            <li><a href="{{ route('emprunts.index') }}">Emprunts</a></li>
-                  @endif
-            @endauth
+            @guest
             <li class="scroll-to-section"><div class="main-red-button"><a href="{{ route('auth') }}">Join Us</a></div></li>
+            @endguest
+            @auth
+            <li class="scroll-to-section">
+              <div class="main-red-button">
+                <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Logout</a>
+              </div>
+              <form id="logout-form" method="POST" action="{{ route('logout') }}" style="display: none;">
+                @csrf
+              </form>
+            </li>
+            @endauth
           </ul>
           <a class='menu-trigger'>
               <span>Menu</span>

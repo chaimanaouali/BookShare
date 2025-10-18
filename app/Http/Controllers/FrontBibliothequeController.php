@@ -10,9 +10,9 @@ class FrontBibliothequeController extends Controller
     // List all public bibliothèques
     public function index()
     {
-        $bibliotheques = BibliothequeVirtuelle::whereHas('livreUtilisateurs', function($q) {
+        $bibliotheques = BibliothequeVirtuelle::whereHas('livres', function($q) {
             $q->where('visibilite', 'public');
-        })->withCount(['livreUtilisateurs' => function($q) {
+        })->withCount(['livres' => function($q) {
             $q->where('visibilite', 'public');
         }])->with('user')->get();
         return view('front.bibliotheques.index', compact('bibliotheques'));
@@ -21,9 +21,20 @@ class FrontBibliothequeController extends Controller
     // Show a public bibliothèque and its public books
     public function show($id)
     {
-        $bibliotheque = BibliothequeVirtuelle::with(['user', 'livreUtilisateurs' => function($q) {
-            $q->where('visibilite', 'public')->with('livre');
-        }])->findOrFail($id);
+        $bibliotheque = BibliothequeVirtuelle::with([
+            'user', 
+            'livres' => function($q) {
+                $q->where('visibilite', 'public');
+            },
+            'discussions' => function($q) {
+                $q->with(['user', 'topLevelComments' => function($commentQuery) {
+                    $commentQuery->with(['user', 'votes', 'replies' => function($replyQuery) {
+                        $replyQuery->with(['user', 'votes']);
+                    }])->orderBy('created_at', 'desc');
+                }])->orderBy('created_at', 'desc');
+            }
+        ])->findOrFail($id);
+        
         return view('front.bibliotheques.show', compact('bibliotheque'));
     }
 }

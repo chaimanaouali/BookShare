@@ -55,6 +55,16 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/explore', [\App\Http\Controllers\FrontBibliothequeController::class, 'index'])->name('front.bibliotheques.index');
     // View a single public bibliotheque
     Route::get('/explore/bibliotheques/{id}', [\App\Http\Controllers\FrontBibliothequeController::class, 'show'])->name('front.bibliotheques.show');
+    
+    // Discussion routes
+    Route::post('/discussions/{bibliothequeId}', [\App\Http\Controllers\DiscussionController::class, 'store'])->name('discussions.store');
+    Route::post('/discussions/{discussionId}/comments', [\App\Http\Controllers\DiscussionController::class, 'storeComment'])->name('discussions.comments.store');
+    Route::patch('/discussions/{discussionId}/resolve', [\App\Http\Controllers\DiscussionController::class, 'markResolved'])->name('discussions.resolve');
+    Route::patch('/discussions/{discussionId}/unresolve', [\App\Http\Controllers\DiscussionController::class, 'markUnresolved'])->name('discussions.unresolve');
+    Route::post('/comments/{commentId}/vote', [\App\Http\Controllers\DiscussionController::class, 'voteComment'])->name('comments.vote');
+    Route::delete('/comments/{commentId}', [\App\Http\Controllers\DiscussionController::class, 'deleteComment'])->name('comments.delete');
+    Route::get('/discussions/{discussionId}/comments', [\App\Http\Controllers\DiscussionController::class, 'getComments'])->name('discussions.comments.get');
+    Route::post('/discussions/{discussionId}/summarize', [\App\Http\Controllers\DiscussionController::class, 'generateSummary'])->name('discussions.summarize');
 });
 Route::get('/home', function () {
     return view('front.home', ['useCustomJs' => true], ['usePreloader' => true]);
@@ -231,6 +241,10 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     
     // Categories Management
     Route::resource('categories', CategorieController::class);
+
+    // Discussions (read + delete only)
+    Route::delete('discussions/{discussion}', [\App\Http\Controllers\AdminController::class, 'deleteDiscussion'])->name('discussions.destroy');
+    Route::get('bibliotheques/{id}/discussions', [\App\Http\Controllers\AdminController::class, 'bibliothequeDiscussions'])->name('bibliotheques.discussions');
 });
 
 // Recommendation routes
