@@ -54,6 +54,7 @@
                             </a>
                             <ul class="dropdown-menu">
                                 <li><a class="dropdown-item" href="{{ route('participation-defis.my-participations') }}">Mes Participations</a></li>
+                                <li><a class="dropdown-item" href="{{ route('reading-personality.show') }}">Mon Profil IA</a></li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li>
                                     <form method="POST" action="{{ route('logout') }}" class="d-inline">
@@ -102,6 +103,3 @@
     @yield('extra-js')
 </body>
 </html>
-
-
-

@@ -236,7 +236,7 @@ Route::get('/form/layouts-horizontal', [HorizontalForm::class, 'index'])->name('
 Route::get('/tables/basic', [TablesBasic::class, 'index'])->name('tables-basic');
 
 // Emprunts and HistoriqueEmprunts CRUD routes
-Route::resource('emprunts', App\Http\Controllers\EmpruntController::class);
+Route::resource('emprunts', App\Http\Controllers\EmpruntController::class)->middleware('auth');
 Route::resource('historique-emprunts', App\Http\Controllers\HistoriqueEmpruntController::class)->middleware(['auth', 'admin']);
 
 // Contributor Routes (Protected)
@@ -320,3 +320,12 @@ Route::get('/test-defi', function() {
 Route::post('/ai/quiz', [\App\Http\Controllers\QuizController::class, 'generate'])->name('ai.quiz.generate');
 Route::middleware(['auth'])->post('/ai/quiz/from-participation/{participation}', [\App\Http\Controllers\QuizController::class, 'generateFromParticipation'])->name('ai.quiz.from-participation');
 Route::middleware(['auth'])->post('/ai/quiz/save-score/{participation}', [\App\Http\Controllers\QuizController::class, 'saveScore'])->name('ai.quiz.save-score');
+
+// Reading Personality routes
+Route::middleware(['auth'])->prefix('reading-personality')->name('reading-personality.')->group(function () {
+    Route::get('/', [\App\Http\Controllers\ReadingPersonalityController::class, 'show'])->name('show');
+    Route::post('/generate', [\App\Http\Controllers\ReadingPersonalityController::class, 'generate'])->name('generate');
+    Route::post('/update', [\App\Http\Controllers\ReadingPersonalityController::class, 'update'])->name('update');
+    Route::get('/data', [\App\Http\Controllers\ReadingPersonalityController::class, 'getPersonalityData'])->name('data');
+    Route::get('/user/{user}', [\App\Http\Controllers\ReadingPersonalityController::class, 'showUser'])->name('show-user');
+});

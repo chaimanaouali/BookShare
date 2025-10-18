@@ -46,17 +46,14 @@
                             <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <label for="utilisateur_id" class="form-label">Utilisateur *</label>
-                                    <select class="form-select @error('utilisateur_id') is-invalid @enderror" id="utilisateur_id" name="utilisateur_id" required>
-                                        <option value="">Sélectionner un utilisateur</option>
-                                        @foreach($utilisateurs as $utilisateur)
-                                            <option value="{{ $utilisateur->id }}" {{ old('utilisateur_id') == $utilisateur->id ? 'selected' : '' }}>
-                                                {{ $utilisateur->name }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                    @error('utilisateur_id')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" value="{{ $currentUser->name }}" readonly>
+                                        <input type="hidden" name="utilisateur_id" value="{{ $currentUser->id }}">
+                                        <span class="input-group-text">
+                                            <i class="bx bx-user-check text-success"></i>
+                                        </span>
+                                    </div>
+                                    <small class="form-text text-muted">Vous êtes automatiquement sélectionné comme utilisateur</small>
                                 </div>
 
                                 <div class="col-md-6 mb-3">

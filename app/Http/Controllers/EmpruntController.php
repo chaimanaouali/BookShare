@@ -15,13 +15,14 @@ class EmpruntController extends Controller
     public function index()
     {
         $emprunts = Emprunt::with(['utilisateur', 'livre', 'historiqueEmprunts'])->paginate(10);
+        $currentUser = auth()->user();
         
         // Check if accessed from front-end (not from dashboard)
         if (!request()->is('dashboard/*') && !request()->is('dashboard')) {
-            return view('front.emprunts.index', compact('emprunts'));
+            return view('front.emprunts.index', compact('emprunts', 'currentUser'));
         }
         
-        return view('emprunts.index', compact('emprunts'));
+        return view('emprunts.index', compact('emprunts', 'currentUser'));
     }
 
     /**
@@ -31,13 +32,14 @@ class EmpruntController extends Controller
     {
         $utilisateurs = User::all();
         $livres = Livre::all();
+        $currentUser = auth()->user();
         
         // Check if accessed from front-end (not from dashboard)
         if (!request()->is('dashboard/*') && !request()->is('dashboard')) {
-            return view('front.emprunts.create', compact('utilisateurs', 'livres'));
+            return view('front.emprunts.create', compact('utilisateurs', 'livres', 'currentUser'));
         }
         
-        return view('emprunts.create', compact('utilisateurs', 'livres'));
+        return view('emprunts.create', compact('utilisateurs', 'livres', 'currentUser'));
     }
 
     /**

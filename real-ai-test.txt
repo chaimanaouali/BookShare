@@ -1,0 +1,43 @@
+// Test with real Gemini API (if configured)
+// Run: php artisan tinker
+// Then paste these commands:
+
+// 1. Check if API key is configured
+echo "GEMINI_API_KEY: " . (config('services.gemini.api_key') ? 'Set' : 'Not set') . "\n";
+echo "GEMINI_BASE_URL: " . config('services.gemini.base_url') . "\n";
+echo "GEMINI_MODEL: " . config('services.gemini.model') . "\n";
+
+// 2. Test with real user (if you have test data)
+$user = App\Models\User::where('email', 'test@readingpersonality.com')->first();
+if ($user) {
+    echo "Test user found: " . $user->name . "\n";
+    
+    $service = new App\Services\ReadingPersonalityService();
+    
+    // Check if user has enough history
+    $hasEnough = $service->hasEnoughHistory($user);
+    echo "Has enough history: " . ($hasEnough ? 'Yes' : 'No') . "\n";
+    
+    if ($hasEnough && config('services.gemini.api_key')) {
+        echo "Attempting to generate personality...\n";
+        
+        try {
+            $result = $service->generateReadingPersonality($user);
+            
+            if ($result['success']) {
+                echo "✅ Personality generated successfully!\n";
+                echo "Title: " . $result['personality']->personality_title . "\n";
+                echo "Description: " . $result['personality']->personality_description . "\n";
+                echo "Books analyzed: " . $result['books_analyzed'] . "\n";
+            } else {
+                echo "❌ Generation failed: " . $result['error'] . "\n";
+            }
+        } catch (Exception $e) {
+            echo "❌ Exception: " . $e->getMessage() . "\n";
+        }
+    } else {
+        echo "⚠️ Cannot generate: " . ($hasEnough ? 'No API key' : 'Insufficient history') . "\n";
+    }
+} else {
+    echo "❌ Test user not found. Run the seeder first.\n";
+}

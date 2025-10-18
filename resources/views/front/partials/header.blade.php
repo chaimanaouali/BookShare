@@ -23,7 +23,8 @@
               <ul>
                 <li><a href="{{ route('recommendations.generate.get', ['redirect' => 'home']) }}">Recommendations</a></li>
                 <li><a href="{{ route('emprunts.index') }}">Emprunts</a></li>
-                 <li><a href="{{ route('front.defis.index') }}">Défis</a></li>
+                <li><a href="{{ route('front.defis.index') }}">Défis</a></li>
+                <li><a href="{{ route('reading-personality.show') }}">Mon Profil IA</a></li>
               </ul>
             </li>
               @endif

@@ -127,6 +127,12 @@
       "url": "recommendations"
     },
     {
+      "name": "Mon Profil de Lecture",
+      "icon": "menu-icon tf-icons bx bx-brain",
+      "slug": "reading-personality",
+      "url": "reading-personality"
+    },
+    {
       "name": "Library",
       "icon": "menu-icon tf-icons bx bx-book",
       "slug": "library",

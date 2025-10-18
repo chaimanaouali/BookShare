@@ -110,4 +110,28 @@ class User extends Authenticatable
     {
         return $this->hasMany(ParticipationDefi::class);
     }
+
+    /**
+     * Get the emprunts (borrowings) for the user.
+     */
+    public function emprunts(): HasMany
+    {
+        return $this->hasMany(Emprunt::class, 'utilisateur_id');
+    }
+
+    /**
+     * Get the reading personalities for the user.
+     */
+    public function readingPersonalities(): HasMany
+    {
+        return $this->hasMany(ReadingPersonality::class);
+    }
+
+    /**
+     * Get the latest reading personality for the user.
+     */
+    public function latestReadingPersonality()
+    {
+        return $this->readingPersonalities()->latestForUser($this->id)->first();
+    }
 }

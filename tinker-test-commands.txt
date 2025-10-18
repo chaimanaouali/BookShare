@@ -1,0 +1,43 @@
+// Laravel Tinker commands to test the feature
+// Run: php artisan tinker
+// Then paste these commands one by one:
+
+// 1. Check test user and data
+$user = App\Models\User::where('email', 'test@readingpersonality.com')->first();
+echo "User: " . $user->name . "\n";
+
+// 2. Check borrowing history
+$borrowings = App\Models\Emprunt::where('utilisateur_id', $user->id)->whereNotNull('date_retour_eff')->count();
+echo "Completed borrowings: " . $borrowings . "\n";
+
+// 3. Test service
+$service = new App\Services\ReadingPersonalityService();
+$hasEnough = $service->hasEnoughHistory($user);
+echo "Has enough history: " . ($hasEnough ? 'Yes' : 'No') . "\n";
+
+// 4. Check API configuration
+$configValid = $service->validateConfiguration();
+echo "API config valid: " . ($configValid ? 'Yes' : 'No') . "\n";
+
+// 5. Test borrowing history retrieval
+$reflection = new ReflectionClass($service);
+$method = $reflection->getMethod('getUserBorrowingHistory');
+$method->setAccessible(true);
+$history = $method->invoke($service, $user);
+echo "History retrieved: " . count($history) . " books\n";
+
+// 6. Show sample book data
+if (!empty($history)) {
+    $sample = $history[0];
+    echo "Sample book: " . $sample['title'] . " by " . $sample['author'] . "\n";
+}
+
+// 7. Test data preparation
+$prepareMethod = $reflection->getMethod('prepareAnalysisData');
+$prepareMethod->setAccessible(true);
+$analysisData = $prepareMethod->invoke($service, $user, $history);
+echo "Analysis data length: " . strlen($analysisData) . " characters\n";
+
+// 8. Check existing personalities
+$personalities = $user->readingPersonalities;
+echo "Existing personalities: " . $personalities->count() . "\n";
