@@ -608,4 +608,3 @@ document.addEventListener('DOMContentLoaded', loadRecommendations);
 }
 </style>
 @endsection
-

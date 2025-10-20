@@ -37,6 +37,16 @@ const LibsCssFiles = GetFilesArray('resources/assets/vendor/libs/**/*.css');
 const FontsScssFiles = GetFilesArray('resources/assets/vendor/fonts/!(_)*.scss');
 
 export default defineConfig({
+  server: {
+    host: true,
+    port: 5173,
+    strictPort: true,
+    cors: true,
+    hmr: {
+      host: 'localhost',
+      port: 5173
+    }
+  },
   plugins: [
     laravel({
       input: [

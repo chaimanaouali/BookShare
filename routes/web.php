@@ -48,7 +48,9 @@ use App\Http\Controllers\form_layouts\HorizontalForm;
 use App\Http\Controllers\tables\Basic as TablesBasic;
 use App\Http\Controllers\ContributorController;
 use App\Http\Controllers\BookEventController;
+use Spatie\Prometheus\Http\Controllers\MetricsController;
 
+Route::get('/prometheus', [MetricsController::class, 'index']);
 // Front-Office
 Route::middleware(['auth'])->group(function () {
     // Explore all public bibliotheques
