@@ -209,7 +209,7 @@
             <li><a href="{{ url('/explore') }}">Libraries</a></li>
 
             @auth
-              @if(Auth::user()->role === 'user' || Auth::user()->role === 'contributor')
+              @if(in_array(Auth::user()->role, ['user', 'contributor', 'admin']))
             <li><a href="{{ url('/livres') }}">Recommendations</a></li>
             <li><a href="{{ route('emprunts.index') }}">Emprunts</a></li>
             <li><a href="{{ route('historique-emprunts.index') }}">My Emprunt History</a></li>
@@ -230,7 +230,7 @@
               </div>
             </li>
               @endif
-              @if(Auth::user()->role === 'contributor')
+              @if(in_array(Auth::user()->role, ['contributor', 'admin']))
             <li class="scroll-to-section">
               <div class="main-blue-button">
                 <a href="{{ route('contributor.dashboard') }}">Contributor Page</a>

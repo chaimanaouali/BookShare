@@ -20,31 +20,27 @@
                     data-discussion="{{ $discussion->id }}">
                 <i class="bx bx-down-arrow-alt"></i>
             </button>
-            @if(Auth::user()->role !== 'admin')
-              <button class="btn btn-link btn-sm p-0 text-primary ms-3" onclick="toggleReplyForm({{ $comment->id }})">
-                  <i class="bx bx-reply"></i> Reply
-              </button>
-            @endif
+            <button class="btn btn-link btn-sm p-0 text-primary ms-3" onclick="toggleReplyForm({{ $comment->id }})">
+                <i class="bx bx-reply"></i> Reply
+            </button>
             @if(Auth::id() === $comment->user_id)
               <button class="btn btn-link btn-sm p-0 text-danger ms-2 delete-comment-btn" data-comment="{{ $comment->id }}">
                   <i class="bx bx-trash"></i> Delete
               </button>
             @endif
         </div>
-        @if(Auth::user()->role !== 'admin')
-          <div id="reply-form-{{ $comment->id }}" class="reply-form">
-              <form class="reply-form-ajax" data-discussion="{{ $discussion->id }}" data-parent="{{ $comment->id }}">
-                  @csrf
-                  <input type="hidden" name="parent_id" value="{{ $comment->id }}">
-                  <div class="d-flex gap-2">
-                      <textarea name="contenu" class="form-control form-control-sm" rows="2" placeholder="Write a reply..." required></textarea>
-                      <button type="submit" class="btn btn-primary btn-sm">
-                          <i class="bx bx-send"></i>
-                      </button>
-                  </div>
-              </form>
-          </div>
-        @endif
+        <div id="reply-form-{{ $comment->id }}" class="reply-form">
+            <form class="reply-form-ajax" data-discussion="{{ $discussion->id }}" data-parent="{{ $comment->id }}">
+                @csrf
+                <input type="hidden" name="parent_id" value="{{ $comment->id }}">
+                <div class="d-flex gap-2">
+                    <textarea name="contenu" class="form-control form-control-sm" rows="2" placeholder="Write a reply..." required></textarea>
+                    <button type="submit" class="btn btn-primary btn-sm">
+                        <i class="bx bx-send"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
         
         <!-- Replies -->
         @foreach($comment->replies as $reply)
