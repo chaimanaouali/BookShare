@@ -89,11 +89,9 @@
                                     </div>
                                     
                                     <div class="livre-actions">
-                                        @if($livre->fichier_livre)
-                                            <button class="main-button" onclick="readBook({{ $livre->id }}, '{{ $livre->title }}', '{{ $livre->fichier_livre }}')">
-                                                <i class="bx bx-book-open me-1"></i> Read Book
-                                            </button>
-                                        @endif
+                                        <a href="{{ route('livres.show', $livre) }}" class="main-button">
+                                            <i class="bx bx-info-circle me-1"></i> View Details & Borrow
+                                        </a>
                                         <button class="main-button secondary" onclick="openReviewsModal({{ $livre->id }}, '{{ $livre->title }}')">
                                             View Reviews
                                         </button>

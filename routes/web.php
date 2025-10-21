@@ -282,6 +282,13 @@ Route::get('/tables/basic', [TablesBasic::class, 'index'])->name('tables-basic')
 Route::resource('emprunts', App\Http\Controllers\EmpruntController::class)->middleware('auth');
 Route::resource('historique-emprunts', App\Http\Controllers\HistoriqueEmpruntController::class)->middleware('auth');
 
+// Routes pour l'emprunt de livres
+Route::post('livres/{livre}/emprunter', [App\Http\Controllers\EmpruntController::class, 'emprunterLivre'])->name('livres.emprunter')->middleware('auth');
+Route::post('emprunts/{emprunt}/retourner', [App\Http\Controllers\EmpruntController::class, 'retournerLivre'])->name('emprunts.retourner')->middleware('auth');
+
+// Route pour afficher les détails d'un livre
+Route::get('livres/{id}', [App\Http\Controllers\FrontLivreController::class, 'show'])->name('livres.show');
+
 // Contributor Routes (Protected) - Accessible to contributors and users
 Route::middleware(['auth'])->prefix('contributor')->name('contributor.')->group(function () {
     // Dashboard
@@ -344,7 +351,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::get('livres', [\App\Http\Controllers\AdminController::class, 'livresIndex'])->name('livres.index');
     Route::get('livres/create', [\App\Http\Controllers\AdminController::class, 'livresCreate'])->name('livres.create');
     Route::post('livres', [\App\Http\Controllers\AdminController::class, 'livresStore'])->name('livres.store');
-    Route::get('livres/{livre}', [\App\Http\Controllers\AdminController::class, 'livresShow'])->name('livres.show');
+    Route::get('livres/{livre}', [\App\Http\Controllers\AdminController::class, 'livresShow'])->name('admin.livres.show');
     Route::get('livres/{livre}/edit', [\App\Http\Controllers\AdminController::class, 'livresEdit'])->name('livres.edit');
     Route::put('livres/{livre}', [\App\Http\Controllers\AdminController::class, 'livresUpdate'])->name('livres.update');
     Route::delete('livres/{livre}', [\App\Http\Controllers\AdminController::class, 'livresDestroy'])->name('livres.destroy');

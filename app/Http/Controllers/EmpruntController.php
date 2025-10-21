@@ -186,4 +186,98 @@ class EmpruntController extends Controller
 
         return redirect()->route('emprunts.index')->with('success', 'Emprunt supprimé avec succès.');
     }
+
+    /**
+     * Emprunter un livre directement depuis la page du livre
+     */
+    public function emprunterLivre(Request $request, Livre $livre)
+    {
+        $user = auth()->user();
+        
+        // Vérifier si l'utilisateur a déjà emprunté ce livre et qu'il est encore actif
+        $empruntActif = Emprunt::where('utilisateur_id', $user->id)
+            ->where('livre_id', $livre->id)
+            ->where('statut', 'emprunté')
+            ->first();
+
+        if ($empruntActif) {
+            return redirect()->back()->with('error', 'Vous avez déjà emprunté ce livre.');
+        }
+
+        // Vérifier si le livre est disponible
+        if (!$livre->disponibilite) {
+            return redirect()->back()->with('error', 'Ce livre n\'est pas disponible pour l\'emprunt.');
+        }
+
+        // Créer l'emprunt
+        $emprunt = Emprunt::create([
+            'utilisateur_id' => $user->id,
+            'livre_id' => $livre->id,
+            'date_emprunt' => now(),
+            'date_retour_prev' => now()->addDays(14), // 14 jours par défaut
+            'statut' => 'emprunté',
+            'penalite' => 0,
+            'commentaire' => 'Emprunt automatique depuis la page du livre',
+        ]);
+
+        // Créer l'entrée historique
+        $emprunt->historiqueEmprunts()->create([
+            'utilisateur_id' => $user->id,
+            'action' => 'Emprunt automatique',
+            'date_action' => now(),
+            'details' => 'Livre emprunté depuis la page du livre',
+        ]);
+
+        return redirect()->route('emprunts.show', $emprunt)
+            ->with('success', 'Livre emprunté avec succès ! Vous pouvez maintenant le lire.');
+    }
+
+    /**
+     * Retourner un livre
+     */
+    public function retournerLivre(Emprunt $emprunt)
+    {
+        $user = auth()->user();
+        
+        // Vérifier que l'utilisateur peut retourner ce livre
+        if ($emprunt->utilisateur_id !== $user->id) {
+            abort(403, 'Vous n\'êtes pas autorisé à retourner ce livre.');
+        }
+
+        if ($emprunt->statut !== 'emprunté') {
+            return redirect()->back()->with('error', 'Ce livre n\'est pas en cours d\'emprunt.');
+        }
+
+        // Mettre à jour l'emprunt
+        $emprunt->update([
+            'statut' => 'retourné',
+            'date_retour_eff' => now(),
+        ]);
+
+        // Créer l'entrée historique
+        $emprunt->historiqueEmprunts()->create([
+            'utilisateur_id' => $user->id,
+            'action' => 'Retour',
+            'date_action' => now(),
+            'details' => 'Livre retourné',
+        ]);
+
+        return redirect()->route('emprunts.index')
+            ->with('success', 'Livre retourné avec succès !');
+    }
+
+    /**
+     * Vérifier si un utilisateur peut lire un livre (a un emprunt actif)
+     */
+    public function peutLireLivre(Livre $livre)
+    {
+        $user = auth()->user();
+        
+        $empruntActif = Emprunt::where('utilisateur_id', $user->id)
+            ->where('livre_id', $livre->id)
+            ->where('statut', 'emprunté')
+            ->first();
+
+        return $empruntActif !== null;
+    }
 }

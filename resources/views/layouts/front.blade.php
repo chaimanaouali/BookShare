@@ -23,7 +23,7 @@
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
         <div class="container">
-            <a class="navbar-brand fw-bold text-primary" href="{{ route('front.events.index') }}">
+            <a class="navbar-brand fw-bold text-primary" href="/">
                 <i class="bx bx-book me-2"></i>BookVerse
             </a>
             
@@ -34,16 +34,14 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ route('front.events.index') }}">Événements</a>
+                        <a class="nav-link" href="/">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ route('front.defis.index') }}">Défis</a>
+                        <a class="nav-link" href="{{ route('livres') }}">Books</a>
                     </li>
-                    @auth
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ route('participation-defis.my-participations') }}">Mes Participations</a>
-                        </li>
-                    @endauth
+                    <li class="nav-item">
+                        <a class="nav-link" href="/explore">Libraries</a>
+                    </li>
                 </ul>
                 
                 <ul class="navbar-nav">
@@ -53,23 +51,22 @@
                                 {{ Auth::user()->name }}
                             </a>
                             <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="{{ route('participation-defis.my-participations') }}">Mes Participations</a></li>
-                                <li><a class="dropdown-item" href="{{ route('reading-personality.show') }}">Mon Profil IA</a></li>
+                                <li><a class="dropdown-item" href="/profile">Profile</a></li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li>
-                                    <form method="POST" action="{{ route('logout') }}" class="d-inline">
+                                    <form method="POST" action="/logout" class="d-inline">
                                         @csrf
-                                        <button type="submit" class="dropdown-item">Déconnexion</button>
+                                        <button type="submit" class="dropdown-item">Logout</button>
                                     </form>
                                 </li>
                             </ul>
                         </li>
                     @else
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ route('login') }}">Connexion</a>
+                            <a class="nav-link" href="/login">Login</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ route('register') }}">Inscription</a>
+                            <a class="nav-link" href="/register">Register</a>
                         </li>
                     @endauth
                 </ul>
