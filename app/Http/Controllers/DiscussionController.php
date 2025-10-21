@@ -7,6 +7,8 @@ use App\Models\Comment;
 use App\Models\CommentVote;
 use App\Models\BibliothequeVirtuelle;
 use App\Services\AiSummaryService;
+use App\Http\Requests\StoreDiscussionRequest;
+use App\Http\Requests\StoreCommentRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -15,13 +17,8 @@ class DiscussionController extends Controller
     /**
      * Store a new discussion for a bibliotheque.
      */
-    public function store(Request $request, $bibliothequeId)
+    public function store(StoreDiscussionRequest $request, $bibliothequeId)
     {
-        $request->validate([
-            'titre' => 'required|string|max:255',
-            'contenu' => 'required|string',
-        ]);
-
         $bibliotheque = BibliothequeVirtuelle::findOrFail($bibliothequeId);
 
         $discussion = Discussion::create([
@@ -38,13 +35,8 @@ class DiscussionController extends Controller
     /**
      * Store a new comment for a discussion.
      */
-    public function storeComment(Request $request, $discussionId)
+    public function storeComment(StoreCommentRequest $request, $discussionId)
     {
-        $request->validate([
-            'contenu' => 'required|string',
-            'parent_id' => 'nullable|exists:comments,id',
-        ]);
-
         $discussion = Discussion::findOrFail($discussionId);
 
         $comment = Comment::create([

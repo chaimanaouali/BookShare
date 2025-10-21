@@ -23,13 +23,96 @@
     <link rel="stylesheet" href="{{ asset('assets/css/owl.css') }}">
     
     <style>
+      /* CRITICAL: Remove white bar under navbar - Apply immediately */
+      * { box-sizing: border-box; }
+      html, body { margin: 0 !important; padding: 0 !important; }
+      
       /* Reserve space for sticky header so content isn't hidden under it */
       :root { --header-height: 96px; }
-      body { padding-top: var(--header-height); }
-      @media (max-width: 991.98px) { :root { --header-height: 72px; } }
+      body { padding-top: 0 !important; margin: 0 !important; }
+      
+      /* Force margin-top for all main-banner elements */
+      .main-banner { 
+        margin-top: var(--header-height) !important; 
+        margin-bottom: 0 !important;
+      }
+      #top { 
+        margin-top: var(--header-height) !important; 
+        margin-bottom: 0 !important;
+      }
+      
+      /* Specific targeting for homepage */
+      .main-banner#top { 
+        margin-top: var(--header-height) !important; 
+        margin-bottom: 0 !important;
+      }
+      
+      /* Ensure no white space between header and content */
+      .main-banner:first-child { 
+        margin-top: var(--header-height) !important; 
+        margin-bottom: 0 !important;
+      }
+      .main-banner:first-child .container { 
+        margin-top: 0 !important; 
+        margin-bottom: 0 !important;
+      }
+      
+      /* Override any inline styles */
+      .main-banner[style*="margin-top"] { 
+        margin-top: var(--header-height) !important; 
+      }
+      
+      /* CRITICAL: Force no white space anywhere */
+      .header-area + * { 
+        margin-top: 0 !important; 
+        padding-top: 0 !important; 
+      }
+      
+      /* Force the first content element to start right after header */
+      .main-banner:first-of-type { 
+        margin-top: var(--header-height) !important; 
+        margin-bottom: 0 !important;
+        padding-top: 0 !important;
+      }
+      
+      /* Override any potential spacing from other CSS files */
+      .main-banner.wow { 
+        margin-top: var(--header-height) !important; 
+      }
+      @media (max-width: 991.98px) { 
+        :root { --header-height: 72px; }
+        .main-banner { margin-top: var(--header-height) !important; }
+        #top { margin-top: var(--header-height) !important; }
+      }
       /* Keep the header fixed and above all content */
-      .header-area { background-color: #ffffff; position: relative; z-index: 9998; }
-      .header-area.header-sticky { position: fixed; top: 0; left: 0; right: 0; box-shadow: 0 4px 16px rgba(0,0,0,0.06); z-index: 9998; }
+      .header-area { 
+        background-color: #ffffff !important; 
+        position: fixed !important; 
+        top: 0 !important; 
+        left: 0 !important; 
+        right: 0 !important; 
+        z-index: 9998 !important; 
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
+      }
+      
+      /* Override any inline styles on header */
+      .header-area[style*="position"] { 
+        position: fixed !important; 
+        top: 0 !important; 
+      }
+      
+      /* Ensure header is always at the top */
+      .header-area.header-sticky { 
+        position: fixed !important; 
+        top: 0 !important; 
+        left: 0 !important; 
+        right: 0 !important; 
+        box-shadow: 0 4px 16px rgba(0,0,0,0.06) !important; 
+        z-index: 9998 !important; 
+      }
       /* Layout: ensure nav content fits inside header height */
       .header-area .container { max-width: 100% !important; padding-left: 20px !important; padding-right: 20px !important; }
       @media (max-width: 1250px) {

@@ -71,7 +71,7 @@
       "roles": ["contributor", "user"]
     },
     {
-      "name": "Défis",
+      "name": "Challenges",
       "icon": "menu-icon tf-icons bx bx-trophy",
       "slug": "user-defis",
       "url": "defis",
@@ -87,7 +87,7 @@
       "roles": ["admin"]
     },
     {
-      "name": "Défis",
+      "name": "Challenges",
       "icon": "menu-icon tf-icons bx bx-flag",
       "slug": "defis",
       "url": "book-events/defis",

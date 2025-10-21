@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Defi;
 use App\Models\Livre;
+use App\Http\Requests\StoreDefiRequest;
+use App\Http\Requests\UpdateDefiRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
@@ -21,17 +23,12 @@ class DefiController extends Controller
         return view('admin.defis.create');
     }
 
-    public function store(Request $request)
+    public function store(StoreDefiRequest $request)
     {
-        $data = $request->validate([
-            'titre' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'date_debut' => 'nullable|date',
-            'date_fin' => 'nullable|date|after_or_equal:date_debut',
-        ]);
+        $data = $request->validated();
 
         Defi::create($data);
-        return redirect()->route('defis.index')->with('success', 'Défi créé.');
+        return redirect()->route('defis.index')->with('success', 'Défi créé avec succès.');
     }
 
     public function show(Defi $defi)
@@ -45,17 +42,12 @@ class DefiController extends Controller
         return view('admin.defis.edit', compact('defi'));
     }
 
-    public function update(Request $request, Defi $defi)
+    public function update(UpdateDefiRequest $request, Defi $defi)
     {
-        $data = $request->validate([
-            'titre' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'date_debut' => 'nullable|date',
-            'date_fin' => 'nullable|date|after_or_equal:date_debut',
-        ]);
+        $data = $request->validated();
 
         $defi->update($data);
-        return redirect()->route('defis.index')->with('success', 'Défi mis à jour.');
+        return redirect()->route('defis.index')->with('success', 'Défi mis à jour avec succès.');
     }
 
     public function destroy(Defi $defi)

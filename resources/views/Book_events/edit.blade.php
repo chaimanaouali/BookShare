@@ -38,13 +38,21 @@
                 <span class="input-group-text">
                   <i class="bx bx-tag"></i>
                 </span>
-                <input type="text" 
-                       class="form-control @error('type') is-invalid @enderror" 
-                       id="type" 
-                       name="type" 
-                       placeholder="Ex: Conférence, Atelier, Formation..."
-                       value="{{ old('type', $bookEvent->type) }}" 
-                       required>
+                <select id="type" 
+                        name="type" 
+                        class="form-select @error('type') is-invalid @enderror" 
+                        required>
+                  <option value="">Sélectionnez un type d'événement</option>
+                  <option value="Silent Reading Session" {{ old('type', $bookEvent->type) == 'Silent Reading Session' ? 'selected' : '' }}>
+                    Silent Reading Session
+                  </option>
+                  <option value="Reading Challenge" {{ old('type', $bookEvent->type) == 'Reading Challenge' ? 'selected' : '' }}>
+                    Reading Challenge
+                  </option>
+                  <option value="Book Club Meeting" {{ old('type', $bookEvent->type) == 'Book Club Meeting' ? 'selected' : '' }}>
+                    Book Club Meeting
+                  </option>
+                </select>
                 @error('type')
                   <div class="invalid-feedback">{{ $message }}</div>
                 @enderror
@@ -161,5 +169,31 @@
     });
   }, false);
 })();
+
+// Enhanced combo box functionality
+document.addEventListener('DOMContentLoaded', function() {
+  const typeSelect = document.getElementById('type');
+  
+  if (typeSelect) {
+    // Add visual feedback when type is selected
+    typeSelect.addEventListener('change', function() {
+      if (this.value) {
+        this.classList.add('is-valid');
+        this.classList.remove('is-invalid');
+      } else {
+        this.classList.remove('is-valid');
+      }
+    });
+    
+    // Add custom styling for the select
+    typeSelect.addEventListener('focus', function() {
+      this.parentNode.classList.add('focused');
+    });
+    
+    typeSelect.addEventListener('blur', function() {
+      this.parentNode.classList.remove('focused');
+    });
+  }
+});
 </script>
 @endsection

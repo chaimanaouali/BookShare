@@ -36,11 +36,11 @@ class UpdateEventStatuses extends Command
             $eventDate = Carbon::parse($event->date_evenement);
             
             if ($eventDate->isSameDay($today)) {
-                $status = 'en_cours';
+                $status = 'in_progress';
             } elseif ($eventDate->isPast()) {
-                $status = 'termine';
+                $status = 'finished';
             } else {
-                $status = 'a_venir';
+                $status = 'upcoming';
             }
             
             $event->update(['status' => $status]);

@@ -8,7 +8,7 @@
     <div class="card-header d-flex justify-content-between align-items-center">
       <h5 class="mb-0">Book Events</h5>
       <a href="{{ route('book-events.create') }}" class="btn btn-primary">
-        <span class="tf-icons bx bx-plus me-1"></span> Nouvel événement
+        <span class="tf-icons bx bx-plus me-1"></span> New Event
       </a>
     </div>
 
@@ -20,7 +20,7 @@
       <table class="table table-hover mb-0">
         <thead>
             <tr>
-            <th class="text-uppercase small text-muted">Événement</th>
+            <th class="text-uppercase small text-muted">Events</th>
             <th class="text-uppercase small text-muted">Type</th>
             <th class="text-uppercase small text-muted">Date</th>
             <th class="text-uppercase small text-muted">Statut</th>
@@ -78,13 +78,13 @@
                   <i class="bx bx-dots-vertical-rounded"></i>
                 </button>
                 <div class="dropdown-menu dropdown-menu-end" aria-labelledby="evActions{{ $event->id }}">
-                  <a class="dropdown-item" href="{{ route('book-events.show', $event->id) }}">Voir</a>
-                  <a class="dropdown-item" href="{{ route('book-events.edit', $event->id) }}">Modifier</a>
+                  <a class="dropdown-item" href="{{ route('book-events.show', $event->id) }}">View</a>
+                  <a class="dropdown-item" href="{{ route('book-events.edit', $event->id) }}">Modify</a>
                   <div class="dropdown-divider"></div>
                   <form action="{{ route('book-events.destroy', $event->id) }}" method="POST" onsubmit="return confirm('Supprimer cet événement ?');">
                     @csrf
                     @method('DELETE')
-                    <button type="submit" class="dropdown-item text-danger">Supprimer</button>
+                    <button type="submit" class="dropdown-item text-danger">Delete</button>
                   </form>
                 </div>
               </div>
@@ -92,7 +92,7 @@
           </tr>
         @empty
           <tr>
-            <td colspan="5" class="text-center text-muted py-4">Aucun événement pour le moment.</td>
+            <td colspan="5" class="text-center text-muted py-4">No Events for now.</td>
           </tr>
         @endforelse
         </tbody>
@@ -102,12 +102,12 @@
   <div class="card mt-4">
     <div class="card-header d-flex justify-content-between align-items-center">
       <div class="d-flex align-items-center gap-2">
-        <h5 class="mb-0">Liste des défis</h5>
+        <h5 class="mb-0">List of challenges</h5>
         @if(isset($recentDefis))
           <span class="badge bg-label-primary">{{ $recentDefis->count() }}</span>
         @endif
       </div>
-      <a href="{{ route('defis.create') }}" class="btn btn-primary">Nouveau défi</a>
+      <a href="{{ route('defis.create') }}" class="btn btn-primary">New challenges</a>
     </div>
     
     @if(isset($recentDefis) && $recentDefis->count())
@@ -115,10 +115,10 @@
         <table class="table table-hover mb-0 align-middle">
           <thead>
             <tr>
-              <th class="text-muted text-uppercase small">Titre</th>
+              <th class="text-muted text-uppercase small">Title</th>
               <th class="text-muted text-uppercase small">Période</th>
-              <th class="text-muted text-uppercase small">Événements liés</th>
-              <th class="text-muted text-uppercase small">Statut</th>
+              <th class="text-muted text-uppercase small">Événements related</th>
+              <th class="text-muted text-uppercase small">Statuts</th>
               <th class="text-muted text-uppercase small text-end">Actions</th>
             </tr>
           </thead>
@@ -175,8 +175,8 @@
                       <i class="bx bx-dots-vertical-rounded"></i>
                     </button>
                     <div class="dropdown-menu dropdown-menu-end" aria-labelledby="defiActions{{ $defi->id }}">
-                      <a class="dropdown-item" href="{{ route('defis.show', $defi) }}">Voir</a>
-                      <a class="dropdown-item" href="{{ route('defis.edit', $defi) }}">Modifier</a>
+                      <a class="dropdown-item" href="{{ route('defis.show', $defi) }}">View</a>
+                      <a class="dropdown-item" href="{{ route('defis.edit', $defi) }}">Modifications</a>
                     </div>
                   </div>
                 </td>
@@ -188,8 +188,8 @@
     @else
       <div class="p-5 text-center text-muted">
         <i class="bx bx-flag mb-2" style="font-size:2rem;"></i>
-        <p class="mb-3">Aucun défi</p>
-        <a href="{{ route('defis.create') }}" class="btn btn-primary">Créer votre premier défi</a>
+        <p class="mb-3">No challenges</p>
+        <a href="{{ route('defis.create') }}" class="btn btn-primary">Create new challenges</a>
       </div>
     @endif
   </div>

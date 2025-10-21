@@ -5,14 +5,14 @@
 @section('content')
 <div class="container-xxl flex-grow-1 container-p-y">
   <div class="d-flex justify-content-between align-items-center mb-3">
-    <h4 class="fw-bold">Participants du défi: {{ $defi->titre }}</h4>
+    <h4 class="fw-bold">Participants Challenges: {{ $defi->titre }}</h4>
     <a href="{{ route('defis.index') }}" class="btn btn-outline-secondary"><i class="bx bx-arrow-back me-1"></i>Retour</a>
   </div>
 
   <div class="card enhanced-card">
     <div class="card-header">
       <div class="d-flex justify-content-between align-items-center">
-        <h5 class="mb-0">Liste des participants ({{ $defi->participations->count() }})</h5>
+        <h5 class="mb-0">List of participants ({{ $defi->participations->count() }})</h5>
       </div>
     </div>
 
@@ -20,12 +20,12 @@
       <table class="table table-hover mb-0">
         <thead>
           <tr>
-            <th>Utilisateur</th>
-            <th>Livre</th>
+            <th>User</th>
+            <th>Book</th>
             <th>Statut</th>
             <th>Note</th>
-            <th>Début</th>
-            <th>Fin</th>
+            <th>Start </th>
+            <th>End</th>
           </tr>
         </thead>
         <tbody>
@@ -61,7 +61,7 @@
             </tr>
           @empty
             <tr>
-              <td colspan="6" class="text-center py-4 text-muted">Aucun participant pour ce défi.</td>
+              <td colspan="6" class="text-center py-4 text-muted">No participants for this challenge.</td>
             </tr>
           @endforelse
         </tbody>

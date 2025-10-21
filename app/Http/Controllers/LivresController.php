@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Livre;
 use App\Models\Avis;
+use App\Http\Requests\StoreAvisRequest;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 
@@ -44,13 +45,9 @@ class LivresController extends Controller
     /**
      * Store a new avis
      */
-    public function storeAvis(Request $request): JsonResponse
+    public function storeAvis(StoreAvisRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'livre_id' => ['required', 'integer', 'exists:livres,id'],
-            'note' => ['required', 'integer', 'min:1', 'max:5'],
-            'commentaire' => ['required', 'string', 'max:1000'],
-        ]);
+        $validated = $request->validated();
 
         // Use authenticated user if available; fallback to 1 for legacy
         $validated['user_id'] = auth()->id() ?? 1;

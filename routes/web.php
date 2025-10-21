@@ -48,10 +48,10 @@ use App\Http\Controllers\form_layouts\HorizontalForm;
 use App\Http\Controllers\tables\Basic as TablesBasic;
 use App\Http\Controllers\ContributorController;
 use App\Http\Controllers\BookEventController;
-use Spatie\Prometheus\Http\Controllers\MetricsController;
 use App\Services\GroqEmbeddingService;
 
-Route::get('/prometheus', [MetricsController::class, 'index']);
+// Prometheus metrics route temporarily disabled
+// Route::get('/prometheus', [MetricsController::class, 'index']);
 // Front-Office
 Route::middleware(['auth'])->group(function () {
     // Explore all public bibliotheques
@@ -389,6 +389,16 @@ Route::get('/test-defi', function() {
 Route::post('/ai/quiz', [\App\Http\Controllers\QuizController::class, 'generate'])->name('ai.quiz.generate');
 Route::middleware(['auth'])->post('/ai/quiz/from-participation/{participation}', [\App\Http\Controllers\QuizController::class, 'generateFromParticipation'])->name('ai.quiz.from-participation');
 Route::middleware(['auth'])->post('/ai/quiz/save-score/{participation}', [\App\Http\Controllers\QuizController::class, 'saveScore'])->name('ai.quiz.save-score');
+
+// Favorites routes (Frontend)
+Route::middleware(['auth'])->prefix('favoris')->name('favoris.')->group(function () {
+    Route::get('/', [App\Http\Controllers\Front\FavoriController::class, 'index'])->name('index');
+    Route::post('/toggle/{livre}', [App\Http\Controllers\Front\FavoriController::class, 'toggle'])->name('toggle');
+    Route::post('/{livre}', [App\Http\Controllers\Front\FavoriController::class, 'store'])->name('store');
+    Route::delete('/{livre}', [App\Http\Controllers\Front\FavoriController::class, 'destroy'])->name('destroy');
+    Route::get('/check/{livre}', [App\Http\Controllers\Front\FavoriController::class, 'check'])->name('check');
+    Route::get('/count/{livre}', [App\Http\Controllers\Front\FavoriController::class, 'count'])->name('count');
+});
 
 // Reading Personality routes
 Route::middleware(['auth'])->prefix('reading-personality')->name('reading-personality.')->group(function () {

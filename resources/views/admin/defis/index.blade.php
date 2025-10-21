@@ -8,13 +8,13 @@
   <div class="card enhanced-card">
     <div class="card-header">
       <div class="d-flex justify-content-between align-items-center">
-        <h4 class="mb-0 fw-semibold text-dark">Liste des défis</h4>
+        <h4 class="mb-0 fw-semibold text-dark">Challenges Liste</h4>
         <div class="d-flex gap-2">
           <a href="{{ route('ranking.global') }}" class="btn btn-success btn-enhanced px-4 py-2" style="border-radius: 8px;">
-            <i class="bx bx-trophy me-2"></i>Classement Global
+            <i class="bx bx-trophy me-2"></i>Global_ranking
           </a>
           <a href="{{ route('defis.create') }}" class="btn btn-primary btn-enhanced px-4 py-2" style="border-radius: 8px;">
-            <i class="bx bx-plus me-2"></i>Nouveau défi
+            <i class="bx bx-plus me-2"></i>New Challenges
           </a>
         </div>
       </div>
@@ -29,7 +29,7 @@
         <table class="table table-hover mb-0 book-events-table">
           <thead>
             <tr>
-              <th class="text-uppercase small fw-semibold text-muted py-3 px-4" style="font-size: 0.75rem; letter-spacing: 0.5px;">TITRE</th>
+              <th class="text-uppercase small fw-semibold text-muted py-3 px-4" style="font-size: 0.75rem; letter-spacing: 0.5px;">Title</th>
               <th class="text-uppercase small fw-semibold text-muted py-3 px-4 text-center" style="font-size: 0.75rem; letter-spacing: 0.5px;">DATES</th>
               <th class="text-uppercase small fw-semibold text-muted py-3 px-4 text-end" style="font-size: 0.75rem; letter-spacing: 0.5px;">ACTIONS</th>
             </tr>
@@ -78,22 +78,22 @@
                 <td class="py-3 px-4 text-end">
                   <div class="d-flex gap-2 justify-content-end">
                     <a href="{{ route('defis.show', $defi) }}" class="btn btn-sm px-3 py-2" style="background-color: #1976d2; color: white; border-radius: 6px; font-size: 0.8rem; font-weight: 500; border: none;">
-                      <i class="bx bx-show me-1"></i>Voir
+                      <i class="bx bx-show me-1"></i>View
                     </a>
                     <a href="{{ route('defis.participants', $defi) }}" class="btn btn-sm px-3 py-2" style="background-color: #00bcd4; color: white; border-radius: 6px; font-size: 0.8rem; font-weight: 500; border: none;">
                       <i class="bx bx-group me-1"></i>Participants
                     </a>
                     <a href="{{ route('defis.ranking', $defi) }}" class="btn btn-sm px-3 py-2" style="background-color: #4caf50; color: white; border-radius: 6px; font-size: 0.8rem; font-weight: 500; border: none;">
-                      <i class="bx bx-trophy me-1"></i>Classement
+                      <i class="bx bx-trophy me-1"></i>Ranking
                     </a>
                     <a href="{{ route('defis.edit', $defi) }}" class="btn btn-sm px-3 py-2" style="background-color: #ff9800; color: white; border-radius: 6px; font-size: 0.8rem; font-weight: 500; border: none;">
-                      <i class="bx bx-edit me-1"></i>Modifier
+                      <i class="bx bx-edit me-1"></i>Modify
                     </a>
                     <form action="{{ route('defis.destroy', $defi) }}" method="POST" class="d-inline" onsubmit="return confirm('Supprimer ce défi ?');">
                       @csrf
                       @method('DELETE')
                       <button class="btn btn-sm px-3 py-2" style="background-color: #f44336; color: white; border-radius: 6px; font-size: 0.8rem; font-weight: 500; border: none;">
-                        <i class="bx bx-trash me-1"></i>Supprimer
+                        <i class="bx bx-trash me-1"></i>Delete
                       </button>
                     </form>
                   </div>
@@ -104,10 +104,10 @@
                 <td colspan="3" class="text-center py-5">
                   <div class="d-flex flex-column align-items-center">
                     <i class="bx bx-flag mb-3" style="font-size: 3rem; color: #dee2e6;"></i>
-                    <h6 class="text-muted mb-2">Aucun défi</h6>
-                    <p class="text-muted mb-3" style="font-size: 0.9rem;">Créez votre premier défi pour engager la communauté</p>
+                    <h6 class="text-muted mb-2">No chanllenges </h6>
+                    <p class="text-muted mb-3" style="font-size: 0.9rem;">Create new challenges to engage the community</p>
                     <a href="{{ route('defis.create') }}" class="btn btn-primary px-4 py-2" style="border-radius: 8px;">
-                      <i class="bx bx-plus me-2"></i>Créer votre premier défi
+                      <i class="bx bx-plus me-2"></i>Create New chanllenges 
                     </a>
                   </div>
                 </td>

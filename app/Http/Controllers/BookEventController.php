@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\BookEvent;
 use App\Models\Defi;
+use App\Http\Requests\StoreBookEventRequest;
+use App\Http\Requests\UpdateBookEventRequest;
 use Carbon\Carbon;
 
 class BookEventController extends Controller
@@ -27,18 +29,9 @@ class BookEventController extends Controller
         return view('Book_events.creat', compact('defis'));
     }
 
-    public function store(Request $request)
+    public function store(StoreBookEventRequest $request)
     {
-        $request->validate([
-            'defi_id' => 'nullable|integer',
-            'type' => 'required|string|max:255',
-            'titre' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'date_evenement' => 'required|date',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-        ]);
-
-        $data = $request->all();
+        $data = $request->validated();
         
         // Determine status based on date
         $eventDate = Carbon::parse($data['date_evenement']);
@@ -75,18 +68,9 @@ class BookEventController extends Controller
         return view('Book_events.edit', compact('bookEvent'));
     }
 
-    public function update(Request $request, BookEvent $bookEvent)
+    public function update(UpdateBookEventRequest $request, BookEvent $bookEvent)
     {
-        $request->validate([
-            'defi_id' => 'nullable|integer',
-            'type' => 'required|string|max:255',
-            'titre' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'date_evenement' => 'required|date',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-        ]);
-
-        $data = $request->all();
+        $data = $request->validated();
         
         // Determine status based on date
         $eventDate = Carbon::parse($data['date_evenement']);
