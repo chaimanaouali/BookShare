@@ -217,7 +217,7 @@
             <li><a href="{{ route('historique-emprunts.index') }}">Mon Profil IA</a></li>
               @endif
             @endauth
-            <li class="scroll-to-section"><a href="#about">About Us</a></li>
+            <li><a href="{{ route('favoris.index') }}">Liste Favoris</a></li>
             <li class="scroll-to-section"><a href="#contact">Contact</a></li>
             @guest
             <li class="scroll-to-section"><div class="main-red-button"><a href="{{ route('auth') }}">Join Us</a></div></li>

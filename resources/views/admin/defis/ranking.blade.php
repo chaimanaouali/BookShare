@@ -9,17 +9,17 @@
     <div class="card-header">
       <div class="d-flex justify-content-between align-items-center">
         <div>
-          <h4 class="mb-0 fw-semibold text-dark">Classement du défi</h4>
+          <h4 class="mb-0 fw-semibold text-dark">Challenges Ranking</h4>
           <p class="text-muted mb-0 mt-1">{{ $defi->titre }}</p>
         </div>
         <div class="d-flex gap-2">
           <a href="{{ route('defis.show', $defi) }}" class="btn btn-secondary btn-enhanced px-3 py-2" style="border-radius: 8px;">
-            <i class="bx bx-arrow-back me-2"></i>Retour au défi
+            <i class="bx bx-arrow-back me-2"></i>Back to challenge
           </a>
           <form action="{{ route('ranking.recalculate') }}" method="POST" class="d-inline">
             @csrf
             <button type="submit" class="btn btn-warning btn-enhanced px-3 py-2" style="border-radius: 8px;">
-              <i class="bx bx-refresh me-2"></i>Recalculer
+              <i class="bx bx-refresh me-2"></i>Recalculate
             </button>
           </form>
         </div>
@@ -30,8 +30,8 @@
   <!-- Ranking Table -->
   <div class="card enhanced-card">
     <div class="card-header">
-      <h5 class="mb-0 fw-semibold text-dark">Classement des participants</h5>
-      <p class="text-muted mb-0 mt-1">Classés par score de performance</p>
+      <h5 class="mb-0 fw-semibold text-dark">Participants Ranking</h5>
+      <p class="text-muted mb-0 mt-1">Ranked by average score and number of completed challenges</p>
     </div>
     
     @if($rankedParticipations->count() > 0)

@@ -71,7 +71,12 @@
                         <div class="col-lg-3 col-md-6 col-sm-6">
                             <div class="livre-item wow fadeInUp" data-wow-duration="1s" data-wow-delay="0.3s">
                                 <div class="livre-content">
-                                    <h4>{{ $livre->title }}</h4>
+                                    <div class="d-flex justify-content-between align-items-start mb-2">
+                                        <h4 class="mb-0">{{ $livre->title }}</h4>
+                                        @auth
+                                            <x-favorite-button-inline :livre="$livre" :size="'sm'" />
+                                        @endauth
+                                    </div>
                                     <p>Explore this amazing book and read community reviews</p>
                                     
                                     <div class="livre-rating">
@@ -141,11 +146,11 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form id="addReviewForm">
+                <form id="addReviewForm" novalidate>
                     <input type="hidden" id="reviewLivreId" name="livre_id">
                     
                     <div class="mb-3">
-                        <label class="form-label">Rating</label>
+                        <label class="form-label">Rating <span class="text-danger">*</span></label>
                         <div class="star-rating" id="addStarRating">
                             <span class="star" data-rating="1">★</span>
                             <span class="star" data-rating="2">★</span>
@@ -153,20 +158,37 @@
                             <span class="star" data-rating="4">★</span>
                             <span class="star" data-rating="5">★</span>
                         </div>
-                        <input type="hidden" id="reviewNote" name="note" required>
-                        <div class="rating-text" id="ratingText">Click stars to rate</div>
+                        <input type="hidden" id="reviewNote" name="note" required min="1" max="5">
+                        <div class="rating-text" id="ratingText">Click stars to rate (minimum 1 star required)</div>
+                        <div class="invalid-feedback" id="rating_error">Please select at least 1 star to rate this book.</div>
                     </div>
                     
                     <div class="mb-3">
-                        <label for="reviewCommentaire" class="form-label">Review</label>
-                        <textarea class="form-control" id="reviewCommentaire" name="commentaire" rows="4" 
-                                  placeholder="Share your thoughts about this book..." required maxlength="1000"></textarea>
-                        <div class="form-text">Maximum 1000 characters</div>
+                        <label for="reviewCommentaire" class="form-label">Review <span class="text-danger">*</span></label>
+                        <textarea class="form-control @error('commentaire') is-invalid @enderror" 
+                                  id="reviewCommentaire" 
+                                  name="commentaire" 
+                                  rows="4" 
+                                  placeholder="Share your thoughts about this book..." 
+                                  required 
+                                  minlength="10"
+                                  maxlength="1000"
+                                  data-validation="required|min:10|max:1000|regex:^[a-zA-Z0-9\s\-_.,!?()\n\r]+$"></textarea>
+                        @error('commentaire')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                        <div class="invalid-feedback" id="commentaire_error"></div>
+                        <div class="form-text">
+                            Share your detailed thoughts about this book
+                            <span class="text-muted">(<span id="commentaire_count">0</span>/1000 characters)</span>
+                        </div>
                     </div>
                     
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-primary">Submit Review</button>
+                        <button type="submit" class="btn btn-primary" id="submitReviewBtn">
+                            <i class="bx bx-star me-1"></i> Submit Review
+                        </button>
                     </div>
                 </form>
             </div>
@@ -792,11 +814,19 @@ function loadRecommendations() {
                                  <small class="text-muted" style="font-size: 0.7rem;">
                                      ${new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                                  </small>
-                                 <button onclick="readBook(${rec.livre?.id}, '${rec.livre?.title || ''}', '${rec.livre?.fichier_livre || ''}')" 
-                                         class="btn btn-sm px-2 py-1" 
-                                         style="background-color: #ff6b35; border: 1px solid #ff6b35; color: white; border-radius: 8px; font-weight: 500; font-size: 0.7rem; box-shadow: 0 2px 4px rgba(255, 107, 53, 0.3);">
-                                     <i class="bx bx-book me-1"></i>Read Book
-                                 </button>
+                                 <div class="d-flex gap-1">
+                                     <button onclick="readBook(${rec.livre?.id}, '${rec.livre?.title || ''}', '${rec.livre?.fichier_livre || ''}')" 
+                                             class="btn btn-sm px-2 py-1" 
+                                             style="background-color: #ff6b35; border: 1px solid #ff6b35; color: white; border-radius: 8px; font-weight: 500; font-size: 0.7rem; box-shadow: 0 2px 4px rgba(255, 107, 53, 0.3);">
+                                         <i class="bx bx-book me-1"></i>Read Book
+                                     </button>
+                                     <button onclick="toggleFavoriteComponent(${rec.livre?.id})" 
+                                             class="btn btn-sm px-2 py-1 favorite-toggle-btn" 
+                                             data-book-id="${rec.livre?.id}"
+                                             style="background-color: #dc3545; border: 1px solid #dc3545; color: white; border-radius: 8px; font-weight: 500; font-size: 0.7rem; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">
+                                         <i class="bx bx-heart"></i>
+                                     </button>
+                                 </div>
                              </div>
                          </div>
                      </div>`;
@@ -810,6 +840,171 @@ function loadRecommendations() {
 
 // Auto-load recommendations on page load
 document.addEventListener('DOMContentLoaded', loadRecommendations);
+
+// Review Form Validation
+document.addEventListener('DOMContentLoaded', function() {
+    const reviewForm = document.getElementById('addReviewForm');
+    const commentaireInput = document.getElementById('reviewCommentaire');
+    const commentaireCount = document.getElementById('commentaire_count');
+    const ratingInput = document.getElementById('reviewNote');
+    const submitBtn = document.getElementById('submitReviewBtn');
+    
+    if (reviewForm && commentaireInput && ratingInput) {
+        // Character counter for review
+        function updateCharacterCount(input, counter, maxLength) {
+            const count = input.value.length;
+            counter.textContent = count;
+            
+            if (count > maxLength * 0.9) {
+                counter.classList.add('text-danger');
+                counter.classList.remove('text-warning');
+            } else if (count > maxLength * 0.8) {
+                counter.classList.add('text-warning');
+                counter.classList.remove('text-danger');
+            } else {
+                counter.classList.remove('text-warning', 'text-danger');
+            }
+        }
+        
+        // Real-time character counting
+        commentaireInput.addEventListener('input', function() {
+            updateCharacterCount(this, commentaireCount, 1000);
+            validateField(this);
+        });
+        
+        // Field validation
+        function validateField(field) {
+            const value = field.value.trim();
+            const fieldName = field.name;
+            let isValid = true;
+            let errorMessage = '';
+            
+            // Remove existing validation classes
+            field.classList.remove('is-valid', 'is-invalid');
+            
+            if (fieldName === 'commentaire') {
+                if (!value) {
+                    isValid = false;
+                    errorMessage = 'Le commentaire est obligatoire.';
+                } else if (value.length < 10) {
+                    isValid = false;
+                    errorMessage = 'Le commentaire doit contenir au moins 10 caractères.';
+                } else if (value.length > 1000) {
+                    isValid = false;
+                    errorMessage = 'Le commentaire ne peut pas dépasser 1000 caractères.';
+                } else if (!/^[a-zA-Z0-9\s\-_.,!?()\n\r]+$/.test(value)) {
+                    isValid = false;
+                    errorMessage = 'Le commentaire contient des caractères non autorisés.';
+                } else if (/(.)\1{8,}/.test(value)) {
+                    isValid = false;
+                    errorMessage = 'Le commentaire ne peut pas contenir de caractères répétés plus de 8 fois.';
+                } else {
+                    // Check for meaningful content
+                    const meaningfulContent = value.replace(/[\s\p{P}]+/gu, '');
+                    if (meaningfulContent.length < 5) {
+                        isValid = false;
+                        errorMessage = 'Le commentaire doit contenir au moins 5 caractères significatifs.';
+                    }
+                    
+                    // Check for excessive special characters
+                    const specialCharCount = (value.match(/[!@#$%^&*()_+=\[\]{}|;:,.<>?]/g) || []).length;
+                    if (specialCharCount > value.length * 0.3) {
+                        isValid = false;
+                        errorMessage = 'Le commentaire contient trop de caractères spéciaux.';
+                    }
+                    
+                    // Check for all caps
+                    if (value.length > 20 && value === value.toUpperCase()) {
+                        isValid = false;
+                        errorMessage = 'Le commentaire ne peut pas être entièrement en majuscules.';
+                    }
+                }
+            }
+            
+            // Apply validation classes and messages
+            if (isValid) {
+                field.classList.add('is-valid');
+            } else {
+                field.classList.add('is-invalid');
+            }
+            
+            // Update error message
+            const errorElement = document.getElementById(fieldName + '_error');
+            if (errorElement) {
+                errorElement.textContent = errorMessage;
+            }
+            
+            return isValid;
+        }
+        
+        // Rating validation
+        function validateRating() {
+            const rating = parseInt(ratingInput.value);
+            const ratingError = document.getElementById('rating_error');
+            let isValid = true;
+            
+            if (!rating || rating < 1 || rating > 5) {
+                isValid = false;
+                ratingError.textContent = 'Veuillez sélectionner au moins 1 étoile pour noter ce livre.';
+                ratingError.style.display = 'block';
+            } else {
+                ratingError.style.display = 'none';
+            }
+            
+            return isValid;
+        }
+        
+        // Form submission validation
+        reviewForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            let isFormValid = true;
+            
+            // Validate rating (minimum 1 star)
+            isFormValid &= validateRating();
+            
+            // Validate comment
+            isFormValid &= validateField(commentaireInput);
+            
+            if (isFormValid) {
+                // Show loading state
+                const originalText = submitBtn.innerHTML;
+                submitBtn.innerHTML = '<i class="bx bx-loader-alt bx-spin me-1"></i> Submitting...';
+                submitBtn.disabled = true;
+                
+                // Submit form
+                reviewForm.submit();
+            } else {
+                // Focus on first invalid field
+                const firstInvalid = reviewForm.querySelector('.is-invalid');
+                if (firstInvalid) {
+                    firstInvalid.focus();
+                }
+                
+                // Show error message
+                showToast('Please correct the errors before submitting.', 'danger');
+            }
+        });
+        
+        // Real-time validation on blur
+        commentaireInput.addEventListener('blur', function() {
+            validateField(this);
+        });
+        
+        // Initialize character count
+        updateCharacterCount(commentaireInput, commentaireCount, 1000);
+        
+        // Validate rating when stars are clicked
+        const stars = document.querySelectorAll('#addStarRating .star');
+        stars.forEach(star => {
+            star.addEventListener('click', function() {
+                setTimeout(() => {
+                    validateRating();
+                }, 100);
+            });
+        });
+    }
+});
 @endauth
 </script>
 

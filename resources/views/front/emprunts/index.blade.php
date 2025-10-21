@@ -11,8 +11,8 @@
                     <div class="col-lg-6 align-self-center">
                         <div class="left-content header-text wow fadeInLeft" data-wow-duration="1s" data-wow-delay="1s">
                             <h6>BookShare</h6>
-                            <h2>Gestion des <em>Emprunts</em> de <span>Livres</span></h2>
-                            <p>Gérez facilement vos emprunts de livres avec notre système de gestion intégré.</p>
+                            <h2>Management  of <em>Emprunts</em>  <span>Books</span></h2>
+                            <p>Generate and manage your books borrowing.</p>
                         </div>
                     </div>
                     <div class="col-lg-6">
@@ -31,8 +31,8 @@
         <div class="row">
             <div class="col-lg-12">
                 <div class="section-heading">
-                    <h2>Mes Emprunts</h2>
-                    <p>Consultez et gérez vos emprunts de livres</p>
+                    <h2>My Emprunts</h2>
+                    <p>consult and manage your books borrowing</p>
                 </div>
             </div>
         </div>
@@ -43,14 +43,14 @@
                 <div class="card" style="box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); border: none; border-radius: 10px;">
                     <div class="card-header d-flex justify-content-between align-items-center" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 10px 10px 0 0;">
                         <h5 class="mb-0">
-                            <i class="fa fa-brain me-2"></i>Mon Profil de Lecture IA
+                            <i class="fa fa-brain me-2"></i>My Ia Reading Personality
                         </h5>
                         <div>
                             <button type="button" class="btn btn-light me-2" onclick="updatePersonality()">
-                                <i class="fa fa-refresh"></i> Mettre à jour
+                                <i class="fa fa-refresh"></i> Update
                             </button>
                             <button type="button" class="btn btn-warning" onclick="generatePersonality()">
-                                <i class="fa fa-magic"></i> Générer mon profil
+                                <i class="fa fa-magic"></i> profile management
                             </button>
                         </div>
                     </div>
@@ -58,9 +58,9 @@
                         <div id="personality-content">
                             <div class="text-center">
                                 <div class="spinner-border text-primary" role="status">
-                                    <span class="visually-hidden">Chargement...</span>
+                                    <span class="visually-hidden">loading...</span>
                                 </div>
-                                <p class="mt-2">Chargement de votre profil de lecture...</p>
+                                <p class="mt-2">loading your reading profile...</p>
                             </div>
                         </div>
                     </div>
@@ -72,9 +72,9 @@
             <div class="col-12">
                 <div class="card" style="box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); border: none; border-radius: 10px;">
                     <div class="card-header d-flex justify-content-between align-items-center" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 10px 10px 0 0;">
-                        <h5 class="mb-0">Liste des Emprunts</h5>
+                        <h5 class="mb-0">Liste of Emprunts</h5>
                         <a href="{{ route('emprunts.create') }}" class="btn btn-primary" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none;">
-                            <i class="fa fa-plus"></i> Nouvel Emprunt
+                            <i class="fa fa-plus"></i> new Emprunt
                         </a>
                     </div>
                     <div class="card-body">
@@ -89,12 +89,12 @@
                             <table class="table table-striped">
                                 <thead>
                                     <tr>
-                                        <th>Livre</th>
+                                        <th>Book</th>
                                         <th>Date Emprunt</th>
-                                        <th>Date Retour Prévue</th>
-                                        <th>Date Retour Effective</th>
+                                        <th>Date Return Expected</th>
+                                        <th>Date Return Actual</th>
                                         <th>Statut</th>
-                                        <th>Pénalité</th>
+                                        <th>Penalty</th>
                                         <th>Actions</th>
                                     </tr>
                                 </thead>
@@ -114,16 +114,16 @@
                                             <td>
                                                 <div class="btn-group" role="group">
                                                     <a href="{{ route('emprunts.show', $emprunt) }}" class="btn btn-sm btn-info">
-                                                        <i class="fa fa-eye"></i> Voir
+                                                        <i class="fa fa-eye"></i> View
                                                     </a>
                                                     <a href="{{ route('emprunts.edit', $emprunt) }}" class="btn btn-sm btn-warning">
-                                                        <i class="fa fa-edit"></i> Modifier
+                                                        <i class="fa fa-edit"></i> update
                                                     </a>
                                                     <form action="{{ route('emprunts.destroy', $emprunt) }}" method="POST" class="d-inline">
                                                         @csrf
                                                         @method('DELETE')
                                                         <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet emprunt ?')">
-                                                            <i class="fa fa-trash"></i> Supprimer
+                                                            <i class="fa fa-trash"></i> Delete
                                                         </button>
                                                     </form>
                                                 </div>
@@ -131,7 +131,7 @@
                                         </tr>
                                     @empty
                                         <tr>
-                                            <td colspan="8" class="text-center">Aucun emprunt trouvé</td>
+                                            <td colspan="8" class="text-center">no Emprunt found</td>
                                         </tr>
                                     @endforelse
                                 </tbody>
@@ -240,7 +240,7 @@ function displayNoPersonality() {
             <h5 class="text-muted">Aucun profil de lecture généré</h5>
             <p class="text-muted">Générez votre profil IA basé sur votre historique d'emprunts</p>
             <button type="button" class="btn btn-primary" onclick="generatePersonality()">
-                <i class="fa fa-magic"></i> Générer mon profil
+                <i class="fa fa-magic"></i> generate my profile
             </button>
         </div>
     `;

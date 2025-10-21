@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Categorie;
+use App\Http\Requests\StoreCategoryRequest;
+use App\Http\Requests\UpdateCategoryRequest;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
@@ -12,10 +14,58 @@ class CategorieController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(): View
+    public function index(Request $request): View
     {
-        $categories = Categorie::withBookCount()->orderBy('nom')->get();
-        return view('admin.categories.index', compact('categories'));
+        $query = Categorie::withBookCount();
+
+        // Search functionality
+        if ($request->filled('search')) {
+            $searchTerm = $request->search;
+            $query->where(function($q) use ($searchTerm) {
+                $q->where('nom', 'like', "%{$searchTerm}%")
+                  ->orWhere('description', 'like', "%{$searchTerm}%");
+            });
+        }
+
+        // Filter by book count range
+        if ($request->filled('books_min')) {
+            $query->having('livres_count', '>=', $request->books_min);
+        }
+        if ($request->filled('books_max')) {
+            $query->having('livres_count', '<=', $request->books_max);
+        }
+
+        // Filter by date range
+        if ($request->filled('date_from')) {
+            $query->whereDate('created_at', '>=', $request->date_from);
+        }
+        if ($request->filled('date_to')) {
+            $query->whereDate('created_at', '<=', $request->date_to);
+        }
+
+        // Sort options
+        $sortBy = $request->get('sort_by', 'nom');
+        $sortOrder = $request->get('sort_order', 'asc');
+
+        switch ($sortBy) {
+            case 'books_count':
+                $query->orderBy('livres_count', $sortOrder);
+                break;
+            case 'created_at':
+                $query->orderBy('created_at', $sortOrder);
+                break;
+            case 'name':
+            default:
+                $query->orderBy('nom', $sortOrder);
+                break;
+        }
+
+        $categories = $query->get();
+
+        // Get filter options for the form
+        $bookCounts = Categorie::withBookCount()->get()->pluck('livres_count')->unique()->sort()->values();
+
+        return view('admin.categories.index', compact('categories', 'bookCounts'));
     }
 
     /**
@@ -29,14 +79,9 @@ class CategorieController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request): RedirectResponse
+    public function store(StoreCategoryRequest $request): RedirectResponse
     {
-        $validated = $request->validate([
-            'nom' => ['required', 'string', 'max:255', 'unique:categories,nom'],
-            'description' => ['nullable', 'string', 'max:1000'],
-        ]);
-
-        Categorie::create($validated);
+        Categorie::create($request->validated());
 
         return redirect()->route('admin.categories.index')
             ->with('success', 'Category created successfully!');
@@ -65,14 +110,9 @@ class CategorieController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Categorie $category): RedirectResponse
+    public function update(UpdateCategoryRequest $request, Categorie $category): RedirectResponse
     {
-        $validated = $request->validate([
-            'nom' => ['required', 'string', 'max:255', 'unique:categories,nom,' . $category->id],
-            'description' => ['nullable', 'string', 'max:1000'],
-        ]);
-
-        $category->update($validated);
+        $category->update($request->validated());
 
         return redirect()->route('admin.categories.index')
             ->with('success', 'Category updated successfully!');

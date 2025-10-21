@@ -8,6 +8,8 @@ use App\Models\LivreEmbedding;
 use App\Services\GroqEmbeddingService;
 use App\Services\BookTextExtractor;
 use App\Services\SimilarityService;
+use App\Http\Requests\StoreBibliothequeRequest;
+use App\Http\Requests\UpdateBibliothequeRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -108,11 +110,75 @@ class ContributorController extends Controller
     /**
      * Display a listing of the user's livres (books).
      */
-    public function livresIndex()
+    public function livresIndex(Request $request)
     {
         $user = Auth::user();
-        $livres = $user->livres()->with(['bibliotheque'])->latest()->get();
-        return view('contributor.livres.index', compact('livres'));
+        $query = $user->livres()->with(['bibliotheque', 'avis']);
+
+        // Search functionality
+        if ($request->filled('search')) {
+            $searchTerm = $request->search;
+            $query->where(function($q) use ($searchTerm) {
+                $q->where('title', 'like', "%{$searchTerm}%")
+                  ->orWhere('author', 'like', "%{$searchTerm}%")
+                  ->orWhere('description', 'like', "%{$searchTerm}%");
+            });
+        }
+
+        // Filter by author
+        if ($request->filled('author')) {
+            $query->where('author', 'like', "%{$request->author}%");
+        }
+
+        // Filter by format
+        if ($request->filled('format')) {
+            $query->where('format', $request->format);
+        }
+
+        // Filter by date range
+        if ($request->filled('date_from')) {
+            $query->whereDate('created_at', '>=', $request->date_from);
+        }
+        if ($request->filled('date_to')) {
+            $query->whereDate('created_at', '<=', $request->date_to);
+        }
+
+        // Filter by popularity (based on number of reviews and average rating)
+        if ($request->filled('popularity')) {
+            switch ($request->popularity) {
+                case 'most_popular':
+                    $query->withCount('avis')
+                          ->withAvg('avis', 'note')
+                          ->orderBy('avis_count', 'desc')
+                          ->orderBy('avis_avg_note', 'desc');
+                    break;
+                case 'least_popular':
+                    $query->withCount('avis')
+                          ->withAvg('avis', 'note')
+                          ->orderBy('avis_count', 'asc')
+                          ->orderBy('avis_avg_note', 'asc');
+                    break;
+                case 'highest_rated':
+                    $query->withAvg('avis', 'note')
+                          ->orderBy('avis_avg_note', 'desc');
+                    break;
+                case 'lowest_rated':
+                    $query->withAvg('avis', 'note')
+                          ->orderBy('avis_avg_note', 'asc');
+                    break;
+            }
+        } else {
+            // Default sorting by creation date
+            $query->latest();
+        }
+
+        $livres = $query->get();
+
+        // Get filter options for the form
+        $authors = $user->livres()->distinct()->pluck('author')->filter()->sort();
+        $formats = $user->livres()->distinct()->pluck('format')->filter()->sort();
+
+        return view('contributor.livres.index', compact('livres', 'authors', 'formats'));
     }
 
     /**
@@ -189,14 +255,11 @@ class ContributorController extends Controller
     /**
      * Store a newly created bibliotheque.
      */
-    public function bibliothequesStore(Request $request)
+    public function bibliothequesStore(StoreBibliothequeRequest $request)
     {
-        $request->validate([
-            'nom_bibliotheque' => ['required', 'string', 'max:255', 'unique:bibliotheque_virtuelles,nom_bibliotheque,NULL,id,user_id,' . Auth::id()],
-        ]);
-
         $bibliotheque = Auth::user()->bibliotheques()->create([
             'nom_bibliotheque' => $request->nom_bibliotheque,
+            'description' => $request->description,
             'nb_livres' => 0,
         ]);
 
@@ -237,24 +300,16 @@ class ContributorController extends Controller
     /**
      * Update the specified bibliotheque.
      */
-    public function bibliothequesUpdate(Request $request, BibliothequeVirtuelle $bibliotheque)
+    public function bibliothequesUpdate(UpdateBibliothequeRequest $request, BibliothequeVirtuelle $bibliotheque)
     {
         // Ensure the bibliotheque belongs to the authenticated user
         if ($bibliotheque->user_id !== Auth::id()) {
             abort(403);
         }
 
-        $request->validate([
-            'nom_bibliotheque' => [
-                'required',
-                'string',
-                'max:255',
-                'unique:bibliotheque_virtuelles,nom_bibliotheque,' . $bibliotheque->id . ',id,user_id,' . Auth::id()
-            ],
-        ]);
-
         $bibliotheque->update([
             'nom_bibliotheque' => $request->nom_bibliotheque,
+            'description' => $request->description,
         ]);
 
         return redirect()->route('contributor.bibliotheques.show', $bibliotheque->id)

@@ -133,4 +133,38 @@ class Livre extends Model
     {
         return $query->where('categorie_id', $categoryId);
     }
+
+    /**
+     * Get the favorites for this book.
+     */
+    public function favoris(): HasMany
+    {
+        return $this->hasMany(Favori::class);
+    }
+
+    /**
+     * Get the users who favorited this book.
+     */
+    public function usersFavoris()
+    {
+        return $this->belongsToMany(User::class, 'favoris', 'livre_id', 'user_id')
+                    ->withTimestamps()
+                    ->orderBy('favoris.created_at', 'desc');
+    }
+
+    /**
+     * Check if this book is favorited by a specific user.
+     */
+    public function isFavoritedBy($userId): bool
+    {
+        return $this->favoris()->where('user_id', $userId)->exists();
+    }
+
+    /**
+     * Get the count of users who favorited this book.
+     */
+    public function getFavorisCountAttribute(): int
+    {
+        return $this->favoris()->count();
+    }
 }

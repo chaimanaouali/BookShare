@@ -149,6 +149,8 @@ Route::get('/', function () {
 
 // Admin Dashboard (list all bibliotheques) - admin only
 Route::get('/admin', [\App\Http\Controllers\AdminController::class, 'dashboard'])->name('admin.dashboard')->middleware(['auth', 'admin']);
+// Admin view of a single bibliotheque - admin only
+Route::get('/admin/bibliotheques/{id}', [\App\Http\Controllers\AdminController::class, 'bibliothequeShow'])->name('admin.bibliotheques.show')->middleware(['auth', 'admin']);
 
 // Move the dashboard analytics to /dashboard
 Route::get('/dashboard', [Analytics::class, 'index'])->name('dashboard-analytics')->middleware(['auth', 'admin']);
@@ -342,7 +344,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::get('bibliotheques/{bibliotheque}/edit', [\App\Http\Controllers\AdminController::class, 'bibliothequesEdit'])->name('bibliotheques.edit');
     Route::put('bibliotheques/{bibliotheque}', [\App\Http\Controllers\AdminController::class, 'bibliothequesUpdate'])->name('bibliotheques.update');
     Route::delete('bibliotheques/{bibliotheque}', [\App\Http\Controllers\AdminController::class, 'bibliothequesDestroy'])->name('bibliotheques.destroy');
-    
+
     // Book Selection for Library
     Route::get('bibliotheques/{bibliotheque}/add-books', [\App\Http\Controllers\AdminController::class, 'bibliothequesAddBooks'])->name('bibliotheques.add-books');
     Route::post('bibliotheques/{bibliotheque}/add-books', [\App\Http\Controllers\AdminController::class, 'bibliothequesStoreBooks'])->name('bibliotheques.store-books');
@@ -439,6 +441,16 @@ Route::get('/test-defi', function() {
 Route::post('/ai/quiz', [\App\Http\Controllers\QuizController::class, 'generate'])->name('ai.quiz.generate');
 Route::middleware(['auth'])->post('/ai/quiz/from-participation/{participation}', [\App\Http\Controllers\QuizController::class, 'generateFromParticipation'])->name('ai.quiz.from-participation');
 Route::middleware(['auth'])->post('/ai/quiz/save-score/{participation}', [\App\Http\Controllers\QuizController::class, 'saveScore'])->name('ai.quiz.save-score');
+
+// Favorites routes (Frontend)
+Route::middleware(['auth'])->prefix('favoris')->name('favoris.')->group(function () {
+    Route::get('/', [App\Http\Controllers\Front\FavoriController::class, 'index'])->name('index');
+    Route::post('/toggle/{livre}', [App\Http\Controllers\Front\FavoriController::class, 'toggle'])->name('toggle');
+    Route::post('/{livre}', [App\Http\Controllers\Front\FavoriController::class, 'store'])->name('store');
+    Route::delete('/{livre}', [App\Http\Controllers\Front\FavoriController::class, 'destroy'])->name('destroy');
+    Route::get('/check/{livre}', [App\Http\Controllers\Front\FavoriController::class, 'check'])->name('check');
+    Route::get('/count/{livre}', [App\Http\Controllers\Front\FavoriController::class, 'count'])->name('count');
+});
 
 // Reading Personality routes
 Route::middleware(['auth'])->prefix('reading-personality')->name('reading-personality.')->group(function () {

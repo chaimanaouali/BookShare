@@ -10,14 +10,14 @@
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h5 class="mb-0">
-                        <i class="bx bx-brain me-2"></i>Mon Profil de Lecture IA
+                        <i class="bx bx-brain me-2"></i>my reading personality
                     </h5>
                     <div>
                         <button type="button" class="btn btn-outline-primary me-2" onclick="updatePersonality()">
-                            <i class="bx bx-refresh"></i> Mettre à jour
+                            <i class="bx bx-refresh"></i> update
                         </button>
                         <button type="button" class="btn btn-primary" onclick="generatePersonality()">
-                            <i class="bx bx-magic-wand"></i> Générer mon profil
+                            <i class="bx bx-magic-wand"></i> generate my profile
                         </button>
                     </div>
                 </div>
@@ -25,9 +25,9 @@
                     <div id="personality-content">
                         <div class="text-center">
                             <div class="spinner-border text-primary" role="status">
-                                <span class="visually-hidden">Chargement...</span>
+                                <span class="visually-hidden">loading...</span>
                             </div>
-                            <p class="mt-2">Chargement de votre profil de lecture...</p>
+                            <p class="mt-2">loading your reading profile...</p>
                         </div>
                     </div>
                 </div>
@@ -39,9 +39,9 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0">Liste des Emprunts</h5>
+                    <h5 class="mb-0">Liste of Emprunts</h5>
                     <a href="{{ route('emprunts.create') }}" class="btn btn-primary">
-                        <i class="bx bx-plus"></i> Nouvel Emprunt
+                        <i class="bx bx-plus"></i> New Emprunt
                     </a>
                 </div>
                 <div class="card-body">
@@ -56,13 +56,13 @@
                         <table class="table table-striped">
                             <thead>
                                 <tr>
-                                    <th>Utilisateur</th>
-                                    <th>Livre</th>
+                                    <th>User</th>
+                                    <th>Book</th>
                                     <th>Date Emprunt</th>
-                                    <th>Date Retour Prévue</th>
-                                    <th>Date Retour Effective</th>
+                                    <th>Date Return Expected</th>
+                                    <th>Date Return Actual</th>
                                     <th>Statut</th>
-                                    <th>Pénalité</th>
+                                    <th>Penalty</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
@@ -87,16 +87,16 @@
                                                 </button>
                                                 <div class="dropdown-menu">
                                                     <a class="dropdown-item" href="{{ route('emprunts.show', $emprunt) }}">
-                                                        <i class="bx bx-show me-1"></i> Voir
+                                                        <i class="bx bx-show me-1"></i> View
                                                     </a>
                                                     <a class="dropdown-item" href="{{ route('emprunts.edit', $emprunt) }}">
-                                                        <i class="bx bx-edit-alt me-1"></i> Modifier
+                                                        <i class="bx bx-edit-alt me-1"></i> Edit
                                                     </a>
                                                     <form action="{{ route('emprunts.destroy', $emprunt) }}" method="POST" class="d-inline">
                                                         @csrf
                                                         @method('DELETE')
                                                         <button type="submit" class="dropdown-item text-danger" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet emprunt ?')">
-                                                            <i class="bx bx-trash me-1"></i> Supprimer
+                                                            <i class="bx bx-trash me-1"></i> delete
                                                         </button>
                                                     </form>
                                                 </div>
@@ -105,7 +105,7 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="9" class="text-center">Aucun emprunt trouvé</td>
+                                        <td colspan="9" class="text-center">No borrowing found</td>
                                     </tr>
                                 @endforelse
                             </tbody>
@@ -213,7 +213,7 @@ function displayNoPersonality() {
             <h5 class="text-muted mt-3">Aucun profil de lecture généré</h5>
             <p class="text-muted">Générez votre profil IA basé sur votre historique d'emprunts</p>
             <button type="button" class="btn btn-primary" onclick="generatePersonality()">
-                <i class="bx bx-magic-wand"></i> Générer mon profil
+                <i class="bx bx-magic-wand"></i> generate my profile
             </button>
         </div>
     `;

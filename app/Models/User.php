@@ -128,6 +128,24 @@ class User extends Authenticatable
     }
 
     /**
+     * Get the favorites for the user.
+     */
+    public function favoris(): HasMany
+    {
+        return $this->hasMany(Favori::class);
+    }
+
+    /**
+     * Get the books favorited by the user.
+     */
+    public function livresFavoris()
+    {
+        return $this->belongsToMany(Livre::class, 'favoris', 'user_id', 'livre_id')
+                    ->withTimestamps()
+                    ->orderBy('favoris.created_at', 'desc');
+    }
+
+    /**
      * Get the latest reading personality for the user.
      */
     public function latestReadingPersonality()

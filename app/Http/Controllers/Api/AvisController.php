@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Avis;
+use App\Http\Requests\StoreAvisRequest;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 
@@ -27,14 +28,11 @@ class AvisController extends Controller
     /**
      * Store a newly created avis in storage.
      */
-    public function store(Request $request): JsonResponse
+    public function store(StoreAvisRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'utilisateur_id' => ['required', 'integer', 'exists:users,id'],
-            'livre_id' => ['required', 'integer', 'exists:livres,id'],
-            'note' => ['required', 'integer', 'min:1', 'max:5'],
-            'commentaire' => ['required', 'string', 'max:1000'],
-        ]);
+        // Add user_id from authenticated user
+        $validated = $request->validated();
+        $validated['utilisateur_id'] = auth()->id();
 
         $avis = Avis::create($validated);
         $avis->load(['utilisateur', 'livre']);

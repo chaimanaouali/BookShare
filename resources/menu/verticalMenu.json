@@ -91,7 +91,7 @@
       ]
     },
     {
-      "name": "Défis",
+      "name": "Challenges",
       "icon": "menu-icon tf-icons bx bx-trophy",
       "slug": "user-defis",
       "url": "defis",
@@ -110,7 +110,7 @@
       ]
     },
     {
-      "name": "Défis",
+      "name": "Challenges",
       "icon": "menu-icon tf-icons bx bx-flag",
       "slug": "defis",
       "url": "book-events/defis",

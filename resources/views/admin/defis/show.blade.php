@@ -11,7 +11,7 @@
         <h4 class="mb-0 fw-semibold text-dark">{{ $defi->titre }}</h4>
         <div class="d-flex gap-2">
           <a href="{{ route('defis.edit', $defi) }}" class="btn btn-warning btn-enhanced px-3 py-2" style="border-radius: 8px;">
-            <i class="bx bx-edit me-2"></i>Modifier
+            <i class="bx bx-edit me-2"></i>Update
           </a>
         </div>
       </div>
@@ -23,13 +23,13 @@
       <div class="row">
         <div class="col-md-6">
           <div class="d-flex flex-column">
-            <small class="text-muted mb-1">Date de début</small>
+            <small class="text-muted mb-1">Start Date</small>
             <span class="fw-medium">{{ $defi->date_debut ? \Carbon\Carbon::parse($defi->date_debut)->translatedFormat('d M Y') : 'Non définie' }}</span>
           </div>
         </div>
         <div class="col-md-6">
           <div class="d-flex flex-column">
-            <small class="text-muted mb-1">Date de fin</small>
+            <small class="text-muted mb-1">End Date</small>
             <span class="fw-medium">{{ $defi->date_fin ? \Carbon\Carbon::parse($defi->date_fin)->translatedFormat('d M Y') : 'Non définie' }}</span>
           </div>
         </div>
@@ -41,7 +41,7 @@
   <div class="card enhanced-card">
     <div class="card-header">
       <div class="d-flex justify-content-between align-items-center">
-        <h5 class="mb-0 fw-semibold text-dark">Livres associés ({{ $defi->livres->count() }})</h5>
+        <h5 class="mb-0 fw-semibold text-dark">Associated books ({{ $defi->livres->count() }})</h5>
       </div>
     </div>
     
@@ -88,7 +88,7 @@
                       @csrf
                       @method('DELETE')
                       <button class="btn btn-sm px-3 py-2" style="background-color: #f44336; color: white; border-radius: 6px; font-size: 0.8rem; font-weight: 500; border: none;">
-                        <i class="bx bx-trash me-1"></i>Retirer
+                        <i class="bx bx-trash me-1"></i>Delete
                       </button>
                     </form>
                   </td>
@@ -102,10 +102,10 @@
       <div class="card-body p-5 text-center">
         <div class="d-flex flex-column align-items-center">
           <i class="bx bx-book mb-3" style="font-size: 3rem; color: #dee2e6;"></i>
-          <h6 class="text-muted mb-2">Aucun livre associé</h6>
-          <p class="text-muted mb-3" style="font-size: 0.9rem;">Ajoutez des livres à ce défi pour commencer</p>
+          <h6 class="text-muted mb-2">No book associated</h6>
+          <p class="text-muted mb-3" style="font-size: 0.9rem;">Add new books to this challenge</p>
           <a href="{{ route('defis.add-books', $defi) }}" class="btn btn-primary px-4 py-2" style="border-radius: 8px;">
-            <i class="bx bx-plus me-2"></i>Ajouter des livres
+            <i class="bx bx-plus me-2"></i>Add new books
           </a>
         </div>
       </div>

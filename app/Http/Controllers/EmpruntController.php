@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Emprunt;
 use App\Models\Livre;
 use App\Models\User;
+use App\Http\Requests\StoreEmpruntRequest;
 use Illuminate\Http\Request;
 
 class EmpruntController extends Controller
@@ -49,23 +50,15 @@ class EmpruntController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreEmpruntRequest $request)
     {
-        $request->validate([
-            'utilisateur_id' => 'required|exists:users,id',
-            'livre_id' => 'required|exists:livres,id',
-            'date_emprunt' => 'required|date',
-            'date_retour_prev' => 'required|date|after:date_emprunt',
-            'statut' => 'required|string|max:255',
-            'penalite' => 'nullable|numeric|min:0',
-            'commentaire' => 'nullable|string',
-        ]);
+        $validated = $request->validated();
 
-        $emprunt = Emprunt::create($request->all());
+        $emprunt = Emprunt::create($validated);
 
         // Create historique entry
         $emprunt->historiqueEmprunts()->create([
-            'utilisateur_id' => $request->utilisateur_id,
+            'utilisateur_id' => $validated['utilisateur_id'],
             'action' => 'Création',
             'date_action' => now(),
             'details' => 'Emprunt créé',

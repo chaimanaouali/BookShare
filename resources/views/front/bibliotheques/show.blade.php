@@ -251,6 +251,9 @@
             <th>File</th>
             <th>Uploaded</th>
             <th>Download</th>
+            @auth
+              <th>Favorite</th>
+            @endauth
           </tr>
         </thead>
         <tbody>
@@ -272,9 +275,14 @@
                   <span class="text-muted">N/A</span>
                 @endif
               </td>
+              @auth
+                <td>
+                  <x-favorite-button-inline :livre="$livre" :size="'sm'" />
+                </td>
+              @endauth
             </tr>
           @empty
-            <tr><td colspan="5" class="text-muted">No public books in this library.</td></tr>
+            <tr><td colspan="{{ auth()->check() ? '6' : '5' }}" class="text-muted">No public books in this library.</td></tr>
           @endforelse
         </tbody>
       </table>
@@ -368,11 +376,27 @@
 
             <!-- Add Comment Form -->
             <div class="comment-form">
-              <form class="comment-form-ajax" data-discussion="{{ $discussion->id }}">
+              <form class="comment-form-ajax" data-discussion="{{ $discussion->id }}" novalidate>
                 @csrf
                 <div class="d-flex gap-2">
-                  <textarea name="contenu" class="form-control" rows="2" placeholder="Add a comment..." required></textarea>
-                  <button type="submit" class="btn btn-primary align-self-end">
+                  <div class="flex-grow-1">
+                    <textarea name="contenu" 
+                              class="form-control @error('contenu') is-invalid @enderror" 
+                              rows="2" 
+                              placeholder="Add a comment..." 
+                              required
+                              minlength="3"
+                              maxlength="2000"
+                              data-validation="required|min:3|max:2000|regex:^[a-zA-Z0-9\s\-_.,!?()\n\r]+$"></textarea>
+                    @error('contenu')
+                      <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                    <div class="invalid-feedback" id="comment_error_{{ $discussion->id }}"></div>
+                    <div class="form-text">
+                      <span class="text-muted">(<span id="comment_count_{{ $discussion->id }}">0</span>/2000 characters)</span>
+                    </div>
+                  </div>
+                  <button type="submit" class="btn btn-primary align-self-end" id="comment_submit_{{ $discussion->id }}">
                     <i class="bx bx-send"></i>
                   </button>
                 </div>
@@ -398,21 +422,55 @@
         <h5 class="modal-title">Start New Discussion</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
-      <form method="POST" action="{{ route('discussions.store', $bibliotheque->id) }}">
+      <form method="POST" action="{{ route('discussions.store', $bibliotheque->id) }}" id="discussionForm" novalidate>
         @csrf
         <div class="modal-body">
           <div class="mb-3">
-            <label for="titre" class="form-label">Title</label>
-            <input type="text" class="form-control" id="titre" name="titre" required>
+            <label for="titre" class="form-label">Title <span class="text-danger">*</span></label>
+            <input type="text" 
+                   class="form-control @error('titre') is-invalid @enderror" 
+                   id="titre" 
+                   name="titre" 
+                   value="{{ old('titre') }}"
+                   required
+                   minlength="5"
+                   maxlength="255"
+                   pattern="[a-zA-Z0-9\s\-_.,!?()]+"
+                   data-validation="required|min:5|max:255|regex:^[a-zA-Z0-9\s\-_.,!?()]+$">
+            @error('titre')
+              <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
+            <div class="invalid-feedback" id="titre_error"></div>
+            <div class="form-text">
+              Choose a descriptive title for your discussion
+              <span class="text-muted">(<span id="titre_count">0</span>/255 characters)</span>
+            </div>
           </div>
           <div class="mb-3">
-            <label for="contenu" class="form-label">Content</label>
-            <textarea class="form-control" id="contenu" name="contenu" rows="4" required></textarea>
+            <label for="contenu" class="form-label">Content <span class="text-danger">*</span></label>
+            <textarea class="form-control @error('contenu') is-invalid @enderror" 
+                      id="contenu" 
+                      name="contenu" 
+                      rows="4" 
+                      required
+                      minlength="10"
+                      maxlength="5000"
+                      data-validation="required|min:10|max:5000|regex:^[a-zA-Z0-9\s\-_.,!?()\n\r]+$">{{ old('contenu') }}</textarea>
+            @error('contenu')
+              <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
+            <div class="invalid-feedback" id="contenu_error"></div>
+            <div class="form-text">
+              Describe your discussion topic in detail
+              <span class="text-muted">(<span id="contenu_count">0</span>/5000 characters)</span>
+            </div>
           </div>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-          <button type="submit" class="btn btn-primary">Start Discussion</button>
+          <button type="submit" class="btn btn-primary" id="submitDiscussionBtn">
+            <i class="bx bx-plus me-1"></i> Start Discussion
+          </button>
         </div>
       </form>
     </div>
@@ -957,4 +1015,262 @@ function deleteComment(commentId, button) {
         button.innerHTML = originalText;
     });
 }
+
+// Discussion Form Validation
+document.addEventListener('DOMContentLoaded', function() {
+    const discussionForm = document.getElementById('discussionForm');
+    const titreInput = document.getElementById('titre');
+    const contenuInput = document.getElementById('contenu');
+    const titreCount = document.getElementById('titre_count');
+    const contenuCount = document.getElementById('contenu_count');
+    const submitBtn = document.getElementById('submitDiscussionBtn');
+    
+    if (discussionForm && titreInput && contenuInput) {
+        // Character counters
+        function updateCharacterCount(input, counter, maxLength) {
+            const count = input.value.length;
+            counter.textContent = count;
+            
+            if (count > maxLength * 0.9) {
+                counter.classList.add('text-danger');
+                counter.classList.remove('text-warning');
+            } else if (count > maxLength * 0.8) {
+                counter.classList.add('text-warning');
+                counter.classList.remove('text-danger');
+            } else {
+                counter.classList.remove('text-warning', 'text-danger');
+            }
+        }
+        
+        // Real-time character counting
+        titreInput.addEventListener('input', function() {
+            updateCharacterCount(this, titreCount, 255);
+            validateField(this);
+        });
+        
+        contenuInput.addEventListener('input', function() {
+            updateCharacterCount(this, contenuCount, 5000);
+            validateField(this);
+        });
+        
+        // Field validation
+        function validateField(field) {
+            const value = field.value.trim();
+            const fieldName = field.name;
+            let isValid = true;
+            let errorMessage = '';
+            
+            // Remove existing validation classes
+            field.classList.remove('is-valid', 'is-invalid');
+            
+            if (fieldName === 'titre') {
+                if (!value) {
+                    isValid = false;
+                    errorMessage = 'Le titre de la discussion est obligatoire.';
+                } else if (value.length < 5) {
+                    isValid = false;
+                    errorMessage = 'Le titre doit contenir au moins 5 caractères.';
+                } else if (value.length > 255) {
+                    isValid = false;
+                    errorMessage = 'Le titre ne peut pas dépasser 255 caractères.';
+                } else if (!/^[a-zA-Z0-9\s\-_.,!?()]+$/.test(value)) {
+                    isValid = false;
+                    errorMessage = 'Le titre contient des caractères non autorisés.';
+                } else if (/(.)\1{4,}/.test(value)) {
+                    isValid = false;
+                    errorMessage = 'Le titre ne peut pas contenir de caractères répétés plus de 4 fois.';
+                } else if (value.length > 10 && value === value.toUpperCase()) {
+                    isValid = false;
+                    errorMessage = 'Le titre ne peut pas être entièrement en majuscules.';
+                }
+            } else if (fieldName === 'contenu') {
+                if (!value) {
+                    isValid = false;
+                    errorMessage = 'Le contenu de la discussion est obligatoire.';
+                } else if (value.length < 10) {
+                    isValid = false;
+                    errorMessage = 'Le contenu doit contenir au moins 10 caractères.';
+                } else if (value.length > 5000) {
+                    isValid = false;
+                    errorMessage = 'Le contenu ne peut pas dépasser 5000 caractères.';
+                } else if (!/^[a-zA-Z0-9\s\-_.,!?()\n\r]+$/.test(value)) {
+                    isValid = false;
+                    errorMessage = 'Le contenu contient des caractères non autorisés.';
+                } else if (/(.)\1{10,}/.test(value)) {
+                    isValid = false;
+                    errorMessage = 'Le contenu ne peut pas contenir de caractères répétés plus de 10 fois.';
+                } else {
+                    // Check for meaningful content
+                    const meaningfulContent = value.replace(/[\s\p{P}]+/gu, '');
+                    if (meaningfulContent.length < 5) {
+                        isValid = false;
+                        errorMessage = 'Le contenu doit contenir au moins 5 caractères significatifs.';
+                    }
+                }
+            }
+            
+            // Apply validation classes and messages
+            if (isValid) {
+                field.classList.add('is-valid');
+            } else {
+                field.classList.add('is-invalid');
+            }
+            
+            // Update error message
+            const errorElement = document.getElementById(fieldName + '_error');
+            if (errorElement) {
+                errorElement.textContent = errorMessage;
+            }
+            
+            return isValid;
+        }
+        
+        // Form submission validation
+        discussionForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            let isFormValid = true;
+            
+            // Validate all fields
+            isFormValid &= validateField(titreInput);
+            isFormValid &= validateField(contenuInput);
+            
+            if (isFormValid) {
+                // Show loading state
+                const originalText = submitBtn.innerHTML;
+                submitBtn.innerHTML = '<i class="bx bx-loader-alt bx-spin me-1"></i> Creating...';
+                submitBtn.disabled = true;
+                
+                // Submit form
+                discussionForm.submit();
+            } else {
+                // Focus on first invalid field
+                const firstInvalid = discussionForm.querySelector('.is-invalid');
+                if (firstInvalid) {
+                    firstInvalid.focus();
+                }
+                
+                // Show error message
+                showNotification('Please correct the errors before submitting.', 'error');
+            }
+        });
+        
+        // Real-time validation on blur
+        titreInput.addEventListener('blur', function() {
+            validateField(this);
+        });
+        
+        contenuInput.addEventListener('blur', function() {
+            validateField(this);
+        });
+        
+        // Initialize character counts
+        updateCharacterCount(titreInput, titreCount, 255);
+        updateCharacterCount(contenuInput, contenuCount, 5000);
+    }
+    
+    // Comment Form Validation
+    function initializeCommentValidation() {
+        // Handle comment form submissions
+        document.addEventListener('submit', function(e) {
+            const form = e.target.closest('.comment-form-ajax, .reply-form-ajax');
+            if (!form) return;
+            
+            e.preventDefault();
+            
+            const textarea = form.querySelector('textarea[name="contenu"]');
+            const discussionId = form.dataset.discussion;
+            const parentId = form.dataset.parent;
+            const submitBtn = form.querySelector('button[type="submit"]');
+            
+            if (!textarea) return;
+            
+            // Validate comment content
+            const value = textarea.value.trim();
+            let isValid = true;
+            let errorMessage = '';
+            
+            // Remove existing validation classes
+            textarea.classList.remove('is-valid', 'is-invalid');
+            
+            if (!value) {
+                isValid = false;
+                errorMessage = 'Le contenu du commentaire est obligatoire.';
+            } else if (value.length < 3) {
+                isValid = false;
+                errorMessage = 'Le commentaire doit contenir au moins 3 caractères.';
+            } else if (value.length > 2000) {
+                isValid = false;
+                errorMessage = 'Le commentaire ne peut pas dépasser 2000 caractères.';
+            } else if (!/^[a-zA-Z0-9\s\-_.,!?()\n\r]+$/.test(value)) {
+                isValid = false;
+                errorMessage = 'Le commentaire contient des caractères non autorisés.';
+            } else if (/(.)\1{8,}/.test(value)) {
+                isValid = false;
+                errorMessage = 'Le commentaire ne peut pas contenir de caractères répétés plus de 8 fois.';
+            } else {
+                // Check for meaningful content
+                const meaningfulContent = value.replace(/[\s\p{P}]+/gu, '');
+                if (meaningfulContent.length < 2) {
+                    isValid = false;
+                    errorMessage = 'Le commentaire doit contenir au moins 2 caractères significatifs.';
+                }
+                
+                // Check for excessive special characters
+                const specialCharCount = (value.match(/[!@#$%^&*()_+=\[\]{}|;:,.<>?]/g) || []).length;
+                if (specialCharCount > value.length * 0.3) {
+                    isValid = false;
+                    errorMessage = 'Le commentaire contient trop de caractères spéciaux.';
+                }
+            }
+            
+            if (!isValid) {
+                textarea.classList.add('is-invalid');
+                
+                // Update error message
+                const errorElement = document.getElementById(`comment_error_${discussionId}`);
+                if (errorElement) {
+                    errorElement.textContent = errorMessage;
+                }
+                
+                // Focus on textarea
+                textarea.focus();
+                
+                // Show error notification
+                showNotification('Please correct the errors before submitting.', 'error');
+                return;
+            }
+            
+            // If valid, proceed with AJAX submission
+            submitCommentForm(form, discussionId, parentId, submitBtn);
+        });
+        
+        // Real-time character counting for comment textareas
+        document.addEventListener('input', function(e) {
+            if (e.target.matches('textarea[name="contenu"]')) {
+                const textarea = e.target;
+                const discussionId = textarea.closest('form').dataset.discussion;
+                const counter = document.getElementById(`comment_count_${discussionId}`);
+                
+                if (counter) {
+                    const count = textarea.value.length;
+                    counter.textContent = count;
+                    
+                    if (count > 2000 * 0.9) {
+                        counter.classList.add('text-danger');
+                        counter.classList.remove('text-warning');
+                    } else if (count > 2000 * 0.8) {
+                        counter.classList.add('text-warning');
+                        counter.classList.remove('text-danger');
+                    } else {
+                        counter.classList.remove('text-warning', 'text-danger');
+                    }
+                }
+            }
+        });
+    }
+    
+    // Initialize comment validation
+    initializeCommentValidation();
+});
 </script>

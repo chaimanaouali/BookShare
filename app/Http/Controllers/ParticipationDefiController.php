@@ -41,7 +41,7 @@ class ParticipationDefiController extends Controller
             ->first();
 
         if ($existingParticipation) {
-            if ($existingParticipation->status === 'termine') {
+            if ($existingParticipation->status === 'finished') {
                 return redirect()->back()
                     ->withErrors(['livre_id' => 'Vous avez déjà terminé ce défi. Vous ne pouvez pas participer à nouveau.']);
             } else {
