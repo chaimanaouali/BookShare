@@ -37,10 +37,11 @@ jobs:
       - name: Debug Docker username
         run: echo "Docker username is ${{ secrets.DOCKERHUB_USERNAME }}"
 
-
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
           context: .
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/bookshare:latest
+          build-args: |
+            PHP_VERSION=8.3
