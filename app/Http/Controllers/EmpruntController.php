@@ -14,8 +14,12 @@ class EmpruntController extends Controller
      */
     public function index()
     {
-        $emprunts = Emprunt::with(['utilisateur', 'livre', 'historiqueEmprunts'])->paginate(10);
         $currentUser = auth()->user();
+        
+        // Filter emprunts to show only the authenticated user's emprunts
+        $emprunts = Emprunt::with(['utilisateur', 'livre', 'historiqueEmprunts'])
+            ->where('utilisateur_id', $currentUser->id)
+            ->paginate(10);
         
         // Check if accessed from front-end (not from dashboard)
         if (!request()->is('dashboard/*') && !request()->is('dashboard')) {
@@ -80,6 +84,11 @@ class EmpruntController extends Controller
      */
     public function show(Emprunt $emprunt)
     {
+        // Ensure the user can only view their own emprunts
+        if ($emprunt->utilisateur_id !== auth()->id()) {
+            abort(403, 'Vous n\'êtes pas autorisé à voir cet emprunt.');
+        }
+        
         $emprunt->load(['utilisateur', 'livre', 'historiqueEmprunts.utilisateur']);
         
         // Check if accessed from front-end (not from dashboard)
@@ -95,6 +104,11 @@ class EmpruntController extends Controller
      */
     public function edit(Emprunt $emprunt)
     {
+        // Ensure the user can only edit their own emprunts
+        if ($emprunt->utilisateur_id !== auth()->id()) {
+            abort(403, 'Vous n\'êtes pas autorisé à modifier cet emprunt.');
+        }
+        
         $utilisateurs = User::all();
         $livres = Livre::all();
         
@@ -111,6 +125,11 @@ class EmpruntController extends Controller
      */
     public function update(Request $request, Emprunt $emprunt)
     {
+        // Ensure the user can only update their own emprunts
+        if ($emprunt->utilisateur_id !== auth()->id()) {
+            abort(403, 'Vous n\'êtes pas autorisé à modifier cet emprunt.');
+        }
+        
         $request->validate([
             'utilisateur_id' => 'required|exists:users,id',
             'livre_id' => 'required|exists:livres,id',
@@ -145,6 +164,11 @@ class EmpruntController extends Controller
      */
     public function destroy(Emprunt $emprunt)
     {
+        // Ensure the user can only delete their own emprunts
+        if ($emprunt->utilisateur_id !== auth()->id()) {
+            abort(403, 'Vous n\'êtes pas autorisé à supprimer cet emprunt.');
+        }
+        
         // Create historique entry before deletion
         $emprunt->historiqueEmprunts()->create([
             'utilisateur_id' => $emprunt->utilisateur_id,

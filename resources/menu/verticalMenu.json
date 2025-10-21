@@ -107,11 +107,11 @@
     
     
     {
-      "name": "Historique Emprunts",
+      "name": "My Emprunts History",
       "icon": "menu-icon tf-icons bx bx-history",
       "slug": "historique-emprunts",
       "url": "historique-emprunts",
-      "roles": ["admin"]
+      "roles": ["contributor", "user"]
     }
   ]
 }

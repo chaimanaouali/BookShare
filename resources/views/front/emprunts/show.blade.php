@@ -11,7 +11,7 @@
                     <div class="col-lg-6 align-self-center">
                         <div class="left-content header-text wow fadeInLeft" data-wow-duration="1s" data-wow-delay="1s">
                             <h6>BookShare</h6>
-                            <h2>Détails de l'<em>Emprunt</em> #{{ $emprunt->id }}</h2>
+                            <h2>Détails de l'<em>Emprunt</em></h2>
                             <p>Consultez les détails complets de votre emprunt de livre.</p>
                         </div>
                     </div>
@@ -31,7 +31,7 @@
         <div class="row">
             <div class="col-lg-12">
                 <div class="section-heading">
-                    <h2>Détails de l'Emprunt #{{ $emprunt->id }}</h2>
+                    <h2>Détails de l'Emprunt</h2>
                     <p>Informations complètes sur votre emprunt</p>
                 </div>
             </div>
@@ -56,10 +56,6 @@
                             <div class="col-md-6">
                                 <h6>Informations de l'Emprunt</h6>
                                 <table class="table table-borderless">
-                                    <tr>
-                                        <td><strong>ID:</strong></td>
-                                        <td>{{ $emprunt->id }}</td>
-                                    </tr>
                                     <tr>
                                         <td><strong>Utilisateur:</strong></td>
                                         <td>{{ $emprunt->utilisateur->name ?? 'N/A' }}</td>

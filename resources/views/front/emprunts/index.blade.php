@@ -89,7 +89,6 @@
                             <table class="table table-striped">
                                 <thead>
                                     <tr>
-                                        <th>ID</th>
                                         <th>Livre</th>
                                         <th>Date Emprunt</th>
                                         <th>Date Retour Prévue</th>
@@ -102,7 +101,6 @@
                                 <tbody>
                                     @forelse($emprunts as $emprunt)
                                         <tr>
-                                            <td>{{ $emprunt->id }}</td>
                                             <td>{{ $emprunt->livre->title ?? 'N/A' }}</td>
                                             <td>{{ $emprunt->date_emprunt->format('d/m/Y') }}</td>
                                             <td>{{ $emprunt->date_retour_prev->format('d/m/Y') }}</td>

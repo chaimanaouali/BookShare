@@ -14,7 +14,19 @@ class HistoriqueEmpruntController extends Controller
      */
     public function index()
     {
-        $historiqueEmprunts = HistoriqueEmprunt::with(['emprunt', 'utilisateur'])->paginate(10);
+        $currentUser = auth()->user();
+        
+        // Filter historique emprunts to show only the authenticated user's history
+        $historiqueEmprunts = HistoriqueEmprunt::with(['emprunt.livre', 'utilisateur'])
+            ->where('utilisateur_id', $currentUser->id)
+            ->orderBy('date_action', 'desc')
+            ->paginate(10);
+        
+        // Check if accessed from front-end (not from dashboard)
+        if (!request()->is('dashboard/*') && !request()->is('dashboard')) {
+            return view('front.historique-emprunts.index', compact('historiqueEmprunts'));
+        }
+            
         return view('historique-emprunts.index', compact('historiqueEmprunts'));
     }
 
@@ -51,7 +63,18 @@ class HistoriqueEmpruntController extends Controller
      */
     public function show(HistoriqueEmprunt $historiqueEmprunt)
     {
-        $historiqueEmprunt->load(['emprunt', 'utilisateur']);
+        // Ensure the user can only view their own historique emprunts
+        if ($historiqueEmprunt->utilisateur_id !== auth()->id()) {
+            abort(403, 'Vous n\'êtes pas autorisé à voir cet historique.');
+        }
+        
+        $historiqueEmprunt->load(['emprunt.livre', 'utilisateur']);
+        
+        // Check if accessed from front-end (not from dashboard)
+        if (!request()->is('dashboard/*') && !request()->is('dashboard')) {
+            return view('front.historique-emprunts.show', compact('historiqueEmprunt'));
+        }
+        
         return view('historique-emprunts.show', compact('historiqueEmprunt'));
     }
 
@@ -60,8 +83,20 @@ class HistoriqueEmpruntController extends Controller
      */
     public function edit(HistoriqueEmprunt $historiqueEmprunt)
     {
+        // Ensure the user can only edit their own historique emprunts
+        if ($historiqueEmprunt->utilisateur_id !== auth()->id()) {
+            abort(403, 'Vous n\'êtes pas autorisé à modifier cet historique.');
+        }
+        
         $emprunts = Emprunt::all();
         $utilisateurs = User::all();
+        
+        // Check if accessed from front-end (not from dashboard)
+        if (!request()->is('dashboard/*') && !request()->is('dashboard')) {
+            $historiqueEmprunt->load(['emprunt.livre']);
+            return view('front.historique-emprunts.edit', compact('historiqueEmprunt', 'emprunts', 'utilisateurs'));
+        }
+        
         return view('historique-emprunts.edit', compact('historiqueEmprunt', 'emprunts', 'utilisateurs'));
     }
 
@@ -70,6 +105,11 @@ class HistoriqueEmpruntController extends Controller
      */
     public function update(Request $request, HistoriqueEmprunt $historiqueEmprunt)
     {
+        // Ensure the user can only update their own historique emprunts
+        if ($historiqueEmprunt->utilisateur_id !== auth()->id()) {
+            abort(403, 'Vous n\'êtes pas autorisé à modifier cet historique.');
+        }
+        
         $request->validate([
             'emprunt_id' => 'required|exists:emprunts,id',
             'utilisateur_id' => 'required|exists:users,id',
@@ -80,6 +120,11 @@ class HistoriqueEmpruntController extends Controller
 
         $historiqueEmprunt->update($request->all());
 
+        // Check if accessed from front-end and redirect accordingly
+        if (!request()->is('dashboard/*') && !request()->is('dashboard')) {
+            return redirect()->route('historique-emprunts.index')->with('success', 'Entrée d\'historique modifiée avec succès.');
+        }
+
         return redirect()->route('historique-emprunts.index')->with('success', 'Entrée d\'historique modifiée avec succès.');
     }
 
@@ -88,7 +133,17 @@ class HistoriqueEmpruntController extends Controller
      */
     public function destroy(HistoriqueEmprunt $historiqueEmprunt)
     {
+        // Ensure the user can only delete their own historique emprunts
+        if ($historiqueEmprunt->utilisateur_id !== auth()->id()) {
+            abort(403, 'Vous n\'êtes pas autorisé à supprimer cet historique.');
+        }
+        
         $historiqueEmprunt->delete();
+
+        // Check if accessed from front-end and redirect accordingly
+        if (!request()->is('dashboard/*') && !request()->is('dashboard')) {
+            return redirect()->route('historique-emprunts.index')->with('success', 'Entrée d\'historique supprimée avec succès.');
+        }
 
         return redirect()->route('historique-emprunts.index')->with('success', 'Entrée d\'historique supprimée avec succès.');
     }

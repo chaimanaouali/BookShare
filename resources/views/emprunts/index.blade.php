@@ -56,7 +56,6 @@
                         <table class="table table-striped">
                             <thead>
                                 <tr>
-                                    <th>ID</th>
                                     <th>Utilisateur</th>
                                     <th>Livre</th>
                                     <th>Date Emprunt</th>
@@ -70,7 +69,6 @@
                             <tbody>
                                 @forelse($emprunts as $emprunt)
                                     <tr>
-                                        <td>{{ $emprunt->id }}</td>
                                         <td>{{ $emprunt->utilisateur->name ?? 'N/A' }}</td>
                                         <td>{{ $emprunt->livre->title ?? 'N/A' }}</td>
                                         <td>{{ $emprunt->date_emprunt->format('d/m/Y') }}</td>

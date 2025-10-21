@@ -25,7 +25,6 @@
                         <table class="table table-striped">
                             <thead>
                                 <tr>
-                                    <th>ID</th>
                                     <th>Emprunt</th>
                                     <th>Utilisateur</th>
                                     <th>Action</th>
@@ -37,7 +36,6 @@
                             <tbody>
                                 @forelse($historiqueEmprunts as $historique)
                                     <tr>
-                                        <td>{{ $historique->id }}</td>
                                         <td>
                                             <a href="{{ route('emprunts.show', $historique->emprunt) }}" class="text-decoration-none">
                                                 Emprunt #{{ $historique->emprunt->id }}

@@ -8,7 +8,7 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0">Détails de l'Emprunt #{{ $emprunt->id }}</h5>
+                    <h5 class="mb-0">Détails de l'Emprunt</h5>
                     <div>
                         <a href="{{ route('emprunts.edit', $emprunt) }}" class="btn btn-primary">
                             <i class="bx bx-edit"></i> Modifier
@@ -23,10 +23,6 @@
                         <div class="col-md-6">
                             <h6>Informations de l'Emprunt</h6>
                             <table class="table table-borderless">
-                                <tr>
-                                    <td><strong>ID:</strong></td>
-                                    <td>{{ $emprunt->id }}</td>
-                                </tr>
                                 <tr>
                                     <td><strong>Utilisateur:</strong></td>
                                     <td>{{ $emprunt->utilisateur->name ?? 'N/A' }}</td>

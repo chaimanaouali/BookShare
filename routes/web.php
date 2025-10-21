@@ -282,7 +282,7 @@ Route::get('/tables/basic', [TablesBasic::class, 'index'])->name('tables-basic')
 
 // Emprunts and HistoriqueEmprunts CRUD routes
 Route::resource('emprunts', App\Http\Controllers\EmpruntController::class)->middleware('auth');
-Route::resource('historique-emprunts', App\Http\Controllers\HistoriqueEmpruntController::class)->middleware(['auth', 'admin']);
+Route::resource('historique-emprunts', App\Http\Controllers\HistoriqueEmpruntController::class)->middleware('auth');
 
 // Contributor Routes (Protected) - Accessible to contributors and users
 Route::middleware(['auth'])->prefix('contributor')->name('contributor.')->group(function () {

@@ -212,8 +212,9 @@
               @if(Auth::user()->role === 'user' || Auth::user()->role === 'contributor')
             <li><a href="{{ url('/livres') }}">Recommendations</a></li>
             <li><a href="{{ route('emprunts.index') }}">Emprunts</a></li>
+            <li><a href="{{ route('historique-emprunts.index') }}">My Emprunt History</a></li>
             <li><a href="{{ route('front.defis.index') }}">Défis</a></li>
-            <li><a href="{{ route('reading-personality.show') }}">Mon Profil IA</a></li>
+            <li><a href="{{ route('historique-emprunts.index') }}">Mon Profil IA</a></li>
               @endif
             @endauth
             <li class="scroll-to-section"><a href="#about">About Us</a></li>
