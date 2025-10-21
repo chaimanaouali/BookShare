@@ -146,6 +146,15 @@
       ]
     },
     {
+      "name": "All Emprunts History",
+      "icon": "menu-icon tf-icons bx bx-history",
+      "slug": "admin-historique-emprunts",
+      "url": "admin/historique-emprunts",
+      "roles": [
+        "admin"
+      ]
+    },
+    {
       "name": "My Emprunts History",
       "icon": "menu-icon tf-icons bx bx-history",
       "slug": "historique-emprunts",

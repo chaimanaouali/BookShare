@@ -351,11 +351,33 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::get('livres', [\App\Http\Controllers\AdminController::class, 'livresIndex'])->name('livres.index');
     Route::get('livres/create', [\App\Http\Controllers\AdminController::class, 'livresCreate'])->name('livres.create');
     Route::post('livres', [\App\Http\Controllers\AdminController::class, 'livresStore'])->name('livres.store');
-    Route::get('livres/{livre}', [\App\Http\Controllers\AdminController::class, 'livresShow'])->name('admin.livres.show');
+    Route::get('livres/{livre}', [\App\Http\Controllers\AdminController::class, 'livresShow'])->name('livres.show');
     Route::get('livres/{livre}/edit', [\App\Http\Controllers\AdminController::class, 'livresEdit'])->name('livres.edit');
     Route::put('livres/{livre}', [\App\Http\Controllers\AdminController::class, 'livresUpdate'])->name('livres.update');
     Route::delete('livres/{livre}', [\App\Http\Controllers\AdminController::class, 'livresDestroy'])->name('livres.destroy');
     Route::post('livres/create-book', [\App\Http\Controllers\AdminController::class, 'createBook'])->name('livres.create-book');
+
+    // Admin Historique Emprunts Management
+    Route::get('historique-emprunts', [\App\Http\Controllers\HistoriqueEmpruntController::class, 'adminIndex'])->name('historique-emprunts.index');
+    Route::get('historique-emprunts/{historiqueEmprunt}', [\App\Http\Controllers\HistoriqueEmpruntController::class, 'adminShow'])->name('historique-emprunts.show');
+
+    // Admin Book Events
+    Route::get('book-events', [\App\Http\Controllers\BookEventController::class, 'index'])->name('book-events.index');
+    Route::get('book-events/create', [\App\Http\Controllers\BookEventController::class, 'create'])->name('book-events.create');
+    Route::post('book-events', [\App\Http\Controllers\BookEventController::class, 'store'])->name('book-events.store');
+    Route::get('book-events/{book_event}', [\App\Http\Controllers\BookEventController::class, 'show'])->name('book-events.show');
+    Route::get('book-events/{book_event}/edit', [\App\Http\Controllers\BookEventController::class, 'edit'])->name('book-events.edit');
+    Route::put('book-events/{book_event}', [\App\Http\Controllers\BookEventController::class, 'update'])->name('book-events.update');
+    Route::delete('book-events/{book_event}', [\App\Http\Controllers\BookEventController::class, 'destroy'])->name('book-events.destroy');
+
+    // Admin Défis
+    Route::get('defis', [\App\Http\Controllers\DefiController::class, 'index'])->name('defis.index');
+    Route::get('defis/create', [\App\Http\Controllers\DefiController::class, 'create'])->name('defis.create');
+    Route::post('defis', [\App\Http\Controllers\DefiController::class, 'store'])->name('defis.store');
+    Route::get('defis/{defi}', [\App\Http\Controllers\DefiController::class, 'show'])->name('defis.show');
+    Route::get('defis/{defi}/edit', [\App\Http\Controllers\DefiController::class, 'edit'])->name('defis.edit');
+    Route::put('defis/{defi}', [\App\Http\Controllers\DefiController::class, 'update'])->name('defis.update');
+    Route::delete('defis/{defi}', [\App\Http\Controllers\DefiController::class, 'destroy'])->name('defis.destroy');
 
     // Discussions (delete only - admin only)
     Route::delete('discussions/{discussion}', [\App\Http\Controllers\AdminController::class, 'deleteDiscussion'])->name('discussions.destroy');
