@@ -48,10 +48,10 @@ use App\Http\Controllers\form_layouts\HorizontalForm;
 use App\Http\Controllers\tables\Basic as TablesBasic;
 use App\Http\Controllers\ContributorController;
 use App\Http\Controllers\BookEventController;
+use Spatie\Prometheus\Http\Controllers\PrometheusMetricsController;
 use App\Services\GroqEmbeddingService;
 
-// Prometheus metrics route temporarily disabled
-// Route::get('/prometheus', [MetricsController::class, 'index']);
+Route::get('/prometheus', PrometheusMetricsController::class);
 // Front-Office
 Route::middleware(['auth'])->group(function () {
     // Explore all public bibliotheques
@@ -328,6 +328,29 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
 
     // User Management
     Route::resource('users', \App\Http\Controllers\Admin\UserController::class);
+
+    // Admin Bibliotheques Management (same as contributor)
+    Route::get('bibliotheques', [\App\Http\Controllers\AdminController::class, 'bibliothequesIndex'])->name('bibliotheques.index');
+    Route::get('bibliotheques/create', [\App\Http\Controllers\AdminController::class, 'bibliothequesCreate'])->name('bibliotheques.create');
+    Route::post('bibliotheques', [\App\Http\Controllers\AdminController::class, 'bibliothequesStore'])->name('bibliotheques.store');
+    Route::get('bibliotheques/{bibliotheque}', [\App\Http\Controllers\AdminController::class, 'bibliothequesShow'])->name('bibliotheques.show');
+    Route::get('bibliotheques/{bibliotheque}/edit', [\App\Http\Controllers\AdminController::class, 'bibliothequesEdit'])->name('bibliotheques.edit');
+    Route::put('bibliotheques/{bibliotheque}', [\App\Http\Controllers\AdminController::class, 'bibliothequesUpdate'])->name('bibliotheques.update');
+    Route::delete('bibliotheques/{bibliotheque}', [\App\Http\Controllers\AdminController::class, 'bibliothequesDestroy'])->name('bibliotheques.destroy');
+
+    // Book Selection for Library
+    Route::get('bibliotheques/{bibliotheque}/add-books', [\App\Http\Controllers\AdminController::class, 'bibliothequesAddBooks'])->name('bibliotheques.add-books');
+    Route::post('bibliotheques/{bibliotheque}/add-books', [\App\Http\Controllers\AdminController::class, 'bibliothequesStoreBooks'])->name('bibliotheques.store-books');
+
+    // Admin Livres Management (same as contributor)
+    Route::get('livres', [\App\Http\Controllers\AdminController::class, 'livresIndex'])->name('livres.index');
+    Route::get('livres/create', [\App\Http\Controllers\AdminController::class, 'livresCreate'])->name('livres.create');
+    Route::post('livres', [\App\Http\Controllers\AdminController::class, 'livresStore'])->name('livres.store');
+    Route::get('livres/{livre}', [\App\Http\Controllers\AdminController::class, 'livresShow'])->name('livres.show');
+    Route::get('livres/{livre}/edit', [\App\Http\Controllers\AdminController::class, 'livresEdit'])->name('livres.edit');
+    Route::put('livres/{livre}', [\App\Http\Controllers\AdminController::class, 'livresUpdate'])->name('livres.update');
+    Route::delete('livres/{livre}', [\App\Http\Controllers\AdminController::class, 'livresDestroy'])->name('livres.destroy');
+    Route::post('livres/create-book', [\App\Http\Controllers\AdminController::class, 'createBook'])->name('livres.create-book');
 
     // Discussions (delete only - admin only)
     Route::delete('discussions/{discussion}', [\App\Http\Controllers\AdminController::class, 'deleteDiscussion'])->name('discussions.destroy');

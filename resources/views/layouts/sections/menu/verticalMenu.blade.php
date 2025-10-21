@@ -2,7 +2,7 @@
 
   <!-- ! Hide app brand if navbar-full -->
   <div class="app-brand demo">
-    <a href="{{ (Auth::check() && Auth::user()->role === 'contributor') ? url('contributor/dashboard') : url('/dashboard') }}" class="app-brand-link">
+    <a href="{{ (Auth::check() && Auth::user()->role === 'contributor') ? url('contributor/dashboard') : (Auth::check() && Auth::user()->role === 'admin' ? url('/dashboard') : url('/dashboard')) }}" class="app-brand-link">
       <img src="{{ asset('assets/images/bookVerse.png') }}" alt="Book Verse" style="height: 25px; width: auto;" class="app-brand-logo demo">
       <span class="app-brand-text demo menu-text fw-bold ms-2">{{config('variables.templateName')}}</span>
     </a>

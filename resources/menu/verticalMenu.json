@@ -1,117 +1,169 @@
 {
   "menu": [
-    
-    
     {
       "menuHeader": "Apps & Pages"
     },
-    
     {
       "url": "/admin/avis",
       "name": "Reviews Management",
       "icon": "menu-icon tf-icons bx bx-star",
       "slug": "admin-avis",
-      "roles": ["admin"]
+      "roles": [
+        "admin"
+      ]
     },
-     {
+    {
       "name": "Home",
       "icon": "menu-icon tf-icons bx bx-home",
       "slug": "user-dashboard",
       "url": "/",
-      "roles": ["contributor", "user"]
+      "roles": [
+        "contributor",
+        "user"
+      ]
     },
     {
       "url": "/contributor/my-reviews",
       "name": "My Reviews",
       "icon": "menu-icon tf-icons bx bx-star",
       "slug": "contributor-my-reviews",
-      "roles": ["contributor", "user"]
+      "roles": [
+        "contributor",
+        "user"
+      ]
     },
     {
       "url": "/admin/categories",
       "name": "Categories Management",
       "icon": "menu-icon tf-icons bx bx-category",
       "slug": "admin-categories",
-      "roles": ["admin"]
+      "roles": [
+        "admin"
+      ]
     },
     {
       "url": "/admin/users",
       "name": "User Management",
       "icon": "menu-icon tf-icons bx bx-user",
       "slug": "admin-users",
-      "roles": ["admin"]
+      "roles": [
+        "admin"
+      ]
     },
-   
     {
       "name": "My Books",
       "icon": "menu-icon tf-icons bx bx-book",
       "slug": "my-books",
       "url": "contributor/livres",
-      "roles": ["contributor", "user"]
+      "roles": [
+        "contributor",
+        "user"
+      ]
     },
     {
       "name": "My Libraries",
       "icon": "menu-icon tf-icons bx bx-library",
       "slug": "my-libraries",
       "url": "contributor/bibliotheques",
-      "roles": ["contributor", "user"]
+      "roles": [
+        "contributor",
+        "user"
+      ]
     },
     {
       "name": "Recommendations",
       "icon": "menu-icon tf-icons bx bx-bulb",
       "slug": "recommendations",
       "url": "livres",
-      "roles": ["contributor", "user"]
+      "roles": [
+        "contributor",
+        "user"
+      ]
     },
     {
       "name": "Emprunts",
       "icon": "menu-icon tf-icons bx bx-book-open",
       "slug": "emprunts",
       "url": "emprunts",
-      "roles": ["contributor", "user"]
+      "roles": [
+        "contributor",
+        "user"
+      ]
     },
     {
       "name": "Challenges",
       "icon": "menu-icon tf-icons bx bx-trophy",
       "slug": "user-defis",
       "url": "defis",
-      "roles": ["contributor", "user"]
+      "roles": [
+        "contributor",
+        "user"
+      ]
     },
-
-   
     {
       "name": "Book Events",
       "icon": "menu-icon tf-icons bx bx-book",
       "slug": "book-events",
       "url": "book-events",
-      "roles": ["admin"]
+      "roles": [
+        "admin"
+      ]
     },
     {
       "name": "Challenges",
       "icon": "menu-icon tf-icons bx bx-flag",
       "slug": "defis",
       "url": "book-events/defis",
-      "roles": ["admin"]
+      "roles": [
+        "admin"
+      ]
     },
-
-
     {
       "name": "All Libraries",
       "icon": "menu-icon tf-icons bx bx-library",
       "slug": "library",
       "url": "admin",
-      "roles": ["admin"]
+      "roles": [
+        "admin"
+      ]
     },
-    
-    
-    
-    
+    {
+      "name": "Manage Libraries",
+      "icon": "menu-icon tf-icons bx bx-library",
+      "slug": "admin-bibliotheques",
+      "url": "admin/bibliotheques",
+      "roles": [
+        "admin"
+      ]
+    },
+    {
+      "name": "Manage Books",
+      "icon": "menu-icon tf-icons bx bx-book",
+      "slug": "admin-livres",
+      "url": "admin/livres",
+      "roles": [
+        "admin"
+      ]
+    },
     {
       "name": "My Emprunts History",
       "icon": "menu-icon tf-icons bx bx-history",
       "slug": "historique-emprunts",
       "url": "historique-emprunts",
-      "roles": ["contributor", "user"]
+      "roles": [
+        "contributor",
+        "user"
+      ]
+    },
+    {
+      "name": "Add new Book",
+      "icon": "menu-icon tf-icons bx bx-history",
+      "slug": "add-book",
+      "url": "add-book",
+      "roles": [
+        "contributor",
+        "admin"
+      ]
     }
   ]
 }

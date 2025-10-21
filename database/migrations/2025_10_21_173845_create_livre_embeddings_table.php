@@ -11,12 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('defis', function (Blueprint $table) {
+        Schema::create('livre_embeddings', function (Blueprint $table) {
             $table->id();
-            $table->string('titre');
-            $table->text('description');
-            $table->date('date_debut');
-            $table->date('date_fin');
             $table->timestamps();
         });
     }
@@ -26,9 +22,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('defis');
+        Schema::dropIfExists('livre_embeddings');
     }
 };
-
-
-
