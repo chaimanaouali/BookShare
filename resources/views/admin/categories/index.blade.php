@@ -66,7 +66,7 @@
                                                 <span class="badge bg-label-info">{{ $categorie->livres_count }} books</span>
                                             </td>
                                             <td>
-                                                <small class="text-muted">{{ $categorie->created_at->format('M d, Y') }}</small>
+                                                <small class="text-muted">{{ $categorie->created_at?->format('M d, Y') }}</small>
                                             </td>
                                             <td>
                                                 <div class="dropdown">

@@ -12,11 +12,11 @@
         <p class="text-muted">{{ $bibliotheque->nb_livres }} books • Created {{ $bibliotheque->created_at->diffForHumans() }}</p>
       </div>
       <div class="d-flex gap-2">
+        <a href="{{ route('contributor.bibliotheques.add-books', $bibliotheque->id) }}" class="btn btn-primary">
+          <i class="bx bx-plus me-1"></i> Add Books
+        </a>
         <a href="{{ route('contributor.bibliotheques.edit', $bibliotheque->id) }}" class="btn btn-outline-primary">
           <i class="bx bx-edit me-1"></i> Edit Library
-        </a>
-        <a href="{{ route('contributor.livres.create', ['bibliotheque' => $bibliotheque->id]) }}" class="btn btn-primary">
-          <i class="bx bx-plus me-1"></i> Add Book
         </a>
       </div>
     </div>
@@ -107,9 +107,7 @@
             <option value="public">Public Only</option>
             <option value="private">Private Only</option>
           </select>
-          <a href="{{ route('contributor.livres.create', ['bibliotheque' => $bibliotheque->id]) }}" class="btn btn-sm btn-primary">
-            <i class="bx bx-plus me-1"></i> Add Book
-          </a>
+
         </div>
       </div>
       <div class="card-body">
@@ -189,8 +187,8 @@
             <i class="bx bx-book display-1 text-muted mb-3"></i>
             <h5 class="text-muted">No books in this library yet</h5>
             <p class="text-muted mb-4">Upload your first book to start building your collection</p>
-            <a href="{{ route('contributor.livres.create', ['bibliotheque' => $bibliotheque->id]) }}" class="btn btn-primary">
-              <i class="bx bx-upload me-1"></i> Upload First Book
+            <a href="{{ route('contributor.bibliotheques.add-books', $bibliotheque->id) }}" class="btn btn-primary">
+              <i class="bx bx-plus me-1"></i> Add Books to Library
             </a>
           </div>
         @endif

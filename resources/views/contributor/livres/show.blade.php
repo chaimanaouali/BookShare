@@ -17,6 +17,13 @@
       @endif
       <p class="mb-1"><strong>Library:</strong> {{ $livre->bibliotheque->nom_bibliotheque ?? '-' }}</p>
       <p class="mb-1"><strong>Instance Description:</strong> {{ $livre->user_description ?? '-' }}</p>
+      @if(isset($livre->bibliotheque_id))
+        <div class="mt-3">
+          <a href="{{ route('contributor.livres.index', $livre->bibliotheque_id) }}" class="btn btn-primary">
+            return
+          </a>
+        </div>
+      @endif
     </div>
   </div>
 </div>

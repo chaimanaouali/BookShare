@@ -2,7 +2,7 @@
 
   <!-- ! Hide app brand if navbar-full -->
   <div class="app-brand demo">
-    <a href="{{url('/dashboard')}}" class="app-brand-link">
+    <a href="{{ (Auth::check() && Auth::user()->role === 'contributor') ? url('contributor/dashboard') : url('/dashboard') }}" class="app-brand-link">
       <img src="{{ asset('assets/images/bookVerse.png') }}" alt="Book Verse" style="height: 25px; width: auto;" class="app-brand-logo demo">
       <span class="app-brand-text demo menu-text fw-bold ms-2">{{config('variables.templateName')}}</span>
     </a>
@@ -26,6 +26,16 @@
         </li>
       @else
 
+      {{-- Check role-based access --}}
+      @php
+      $hasAccess = true;
+      if (isset($menu->roles) && Auth::check()) {
+        $userRole = Auth::user()->role;
+        $hasAccess = in_array($userRole, $menu->roles);
+      }
+      @endphp
+
+      @if ($hasAccess)
       {{-- active menu method --}}
       @php
       $activeClass = null;
@@ -52,7 +62,18 @@
 
       {{-- main menu --}}
       <li class="menu-item {{$activeClass}}">
-        <a href="{{ isset($menu->url) ? url($menu->url) : 'javascript:void(0);' }}" class="{{ isset($menu->submenu) ? 'menu-link menu-toggle' : 'menu-link' }}" @if (isset($menu->target) and !empty($menu->target)) target="_blank" @endif>
+        @php
+          $resolvedUrl = isset($menu->url) ? $menu->url : null;
+          // Route contributors away from admin-only dashboard
+          if (isset($menu->slug) && $menu->slug === 'dashboard' && Auth::check() && Auth::user()->role === 'contributor') {
+            $resolvedUrl = 'contributor/dashboard';
+          }
+        @endphp
+        @if(isset($menu->slug) && $menu->slug === 'logout')
+          <a href="#" class="menu-link" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+        @else
+          <a href="{{ isset($resolvedUrl) ? url($resolvedUrl) : 'javascript:void(0);' }}" class="{{ isset($menu->submenu) ? 'menu-link menu-toggle' : 'menu-link' }}" @if (isset($menu->target) and !empty($menu->target)) target="_blank" @endif>
+        @endif
           @isset($menu->icon)
             <i class="{{ $menu->icon }}"></i>
           @endisset
@@ -68,7 +89,13 @@
         @endisset
       </li>
       @endif
+      @endif
     @endforeach
   </ul>
+
+  <!-- Logout Form (Hidden) -->
+  <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+    @csrf
+  </form>
 
 </aside>

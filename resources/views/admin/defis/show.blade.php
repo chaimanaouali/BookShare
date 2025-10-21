@@ -10,9 +10,6 @@
       <div class="d-flex justify-content-between align-items-center">
         <h4 class="mb-0 fw-semibold text-dark">{{ $defi->titre }}</h4>
         <div class="d-flex gap-2">
-          <a href="{{ route('defis.add-books', $defi) }}" class="btn btn-primary btn-enhanced px-3 py-2" style="border-radius: 8px;">
-            <i class="bx bx-plus me-2"></i>Ajouter des livres
-          </a>
           <a href="{{ route('defis.edit', $defi) }}" class="btn btn-warning btn-enhanced px-3 py-2" style="border-radius: 8px;">
             <i class="bx bx-edit me-2"></i>Modifier
           </a>
@@ -45,9 +42,6 @@
     <div class="card-header">
       <div class="d-flex justify-content-between align-items-center">
         <h5 class="mb-0 fw-semibold text-dark">Livres associés ({{ $defi->livres->count() }})</h5>
-        <a href="{{ route('defis.add-books', $defi) }}" class="btn btn-primary btn-enhanced px-3 py-2" style="border-radius: 8px;">
-          <i class="bx bx-plus me-2"></i>Ajouter des livres
-        </a>
       </div>
     </div>
     

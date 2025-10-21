@@ -27,6 +27,10 @@
         <i class="fas fa-lock"></i>
         <input type="password" name="password" placeholder="Password" required />
     </div>
+    
+    <div style="text-align: right; margin-bottom: 15px;">
+        <a href="{{ route('password.request') }}" style="color: #667eea; text-decoration: none; font-size: 14px; font-weight: 500;">Forgot Password?</a>
+    </div>
 
     <input type="submit" value="Login" class="btn solid" />
     <p class="social-text">Or Sign in with social platforms</p>

@@ -17,7 +17,7 @@ $navbarDetached = ($navbarDetached ?? '');
       <!--  Brand demo (display only for navbar-full and hide on below xl) -->
       @if(isset($navbarFull))
       <div class="navbar-brand app-brand demo d-none d-xl-flex py-0 me-4">
-        <a href="{{url('/dashboard')}}" class="app-brand-link gap-2">
+        <a href="{{ (Auth::check() && Auth::user()->role === 'contributor') ? url('contributor/dashboard') : url('/dashboard') }}" class="app-brand-link gap-2">
           <span class="app-brand-logo demo">@include('_partials.macros',["width"=>25,"withbg"=>'var(--bs-primary)'])</span>
           <span class="app-brand-text demo menu-text fw-bold text-heading">{{config('variables.templateName')}}</span>
         </a>
@@ -66,8 +66,8 @@ $navbarDetached = ($navbarDetached ?? '');
                       </div>
                     </div>
                     <div class="flex-grow-1">
-                      <h6 class="mb-0">John Doe</h6>
-                      <small class="text-muted">Admin</small>
+                      <h6 class="mb-0">{{ Auth::user()->name }}</h6>
+                      <small class="text-muted">{{ ucfirst(Auth::user()->role) }}</small>
                     </div>
                   </div>
                 </a>
@@ -76,28 +76,18 @@ $navbarDetached = ($navbarDetached ?? '');
                 <div class="dropdown-divider my-1"></div>
               </li>
               <li>
-                <a class="dropdown-item" href="javascript:void(0);">
+                <a class="dropdown-item" href="{{ route('profile.show') }}">
                   <i class="bx bx-user bx-md me-3"></i><span>My Profile</span>
                 </a>
               </li>
-              <li>
-                <a class="dropdown-item" href="javascript:void(0);">
-                  <i class="bx bx-cog bx-md me-3"></i><span>Settings</span>
-                </a>
-              </li>
-              <li>
-                <a class="dropdown-item" href="javascript:void(0);">
-                  <span class="d-flex align-items-center align-middle">
-                    <i class="flex-shrink-0 bx bx-credit-card bx-md me-3"></i><span class="flex-grow-1 align-middle">Billing Plan</span>
-                    <span class="flex-shrink-0 badge rounded-pill bg-danger">4</span>
-                  </span>
-                </a>
+             
+                
               </li>
               <li>
                 <div class="dropdown-divider my-1"></div>
               </li>
               <li>
-                <a class="dropdown-item" href="javascript:void(0);">
+                <a class="dropdown-item" href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                   <i class="bx bx-power-off bx-md me-3"></i><span>Log Out</span>
                 </a>
               </li>
@@ -112,3 +102,8 @@ $navbarDetached = ($navbarDetached ?? '');
     @endif
   </nav>
   <!-- / Navbar -->
+
+  <!-- Logout Form (Hidden) -->
+  <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+    @csrf
+  </form>

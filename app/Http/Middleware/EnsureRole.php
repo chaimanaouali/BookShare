@@ -19,9 +19,30 @@ class EnsureRole
     public function handle(Request $request, Closure $next, $role)
     {
         $user = Auth::user();
-        if (!$user || $user->role !== $role) {
-            abort(403, 'Access denied.');
+        if (!$user) {
+            return redirect()->route('login');
         }
-        return $next($request);
+
+        $userRole = strtolower((string) $user->role);
+        $requiredRole = strtolower((string) $role);
+
+        // Allow exact role match
+        if ($userRole === $requiredRole) {
+            return $next($request);
+        }
+
+        // Allow admins to access contributor pages
+        if ($requiredRole === 'contributor' && $userRole === 'admin') {
+            return $next($request);
+        }
+
+        // Gracefully redirect mismatched roles to their home areas
+        if ($userRole === 'admin') {
+            return redirect('/admin');
+        }
+        if ($userRole === 'contributor') {
+            return redirect('/contributor');
+        }
+        return redirect('/explore');
     }
 }

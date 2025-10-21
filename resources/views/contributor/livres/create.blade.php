@@ -28,9 +28,18 @@
         <h5 class="card-title mb-0">Book Information</h5>
       </div>
       <div class="card-body">
+        <!-- Plagiarism Alert -->
+        @error('plagiarism')
+          <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bx bx-error-circle me-2"></i>
+            {{ $message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+          </div>
+        @enderror
+
         <form action="{{ route('contributor.livres.store') }}" method="POST" enctype="multipart/form-data" novalidate>
           @csrf
-          
+
           <!-- Book Selection -->
           <div class="mb-4">
             <label class="form-label">Select Book <span class="text-danger">*</span></label>
@@ -41,8 +50,8 @@
                     <i class="bx bx-cloud-upload display-4 text-muted mb-3"></i>
                     <h5 class="text-muted">Drop your book file here</h5>
                     <p class="text-muted small">or click to browse</p>
-                    <input type="file" class="form-control @error('fichier_livre') is-invalid @enderror" 
-                           id="fichier_livre" name="fichier_livre" 
+                    <input type="file" class="form-control @error('fichier_livre') is-invalid @enderror"
+                           id="fichier_livre" name="fichier_livre"
                            accept=".pdf,.epub,.mobi,.txt" required>
                     @error('fichier_livre')
                       <div class="invalid-feedback">{{ $message }}</div>
@@ -66,32 +75,15 @@
               </div>
             </div>
           </div>
-          
+
           <!-- Book Details -->
           <div class="row mb-3">
-            <div class="col-md-6">
-              <label for="livre_id" class="form-label">Existing Book (Optional)</label>
-              <select class="form-select @error('livre_id') is-invalid @enderror" id="livre_id" name="livre_id">
-                <option value="">Create new book</option>
-                @foreach($livres as $livre)
-                  <option value="{{ $livre->id }}" {{ old('livre_id') == $livre->id ? 'selected' : '' }}>
-                    {{ $livre->title }} - {{ $livre->author }}
-                  </option>
-                @endforeach
-              </select>
-              @error('livre_id')
-                <div class="invalid-feedback">{{ $message }}</div>
-              @enderror
-              <div class="form-text">
-                <small class="text-muted">Select an existing book or create a new one below</small>
-              </div>
-            </div>
             <div class="col-md-6">
               <label for="bibliotheque_id" class="form-label">Library <span class="text-danger">*</span></label>
               <select class="form-select @error('bibliotheque_id') is-invalid @enderror" id="bibliotheque_id" name="bibliotheque_id" required>
                 <option value="">Select a library</option>
                 @foreach($bibliotheques as $bibliotheque)
-                  <option value="{{ $bibliotheque->id }}" 
+                  <option value="{{ $bibliotheque->id }}"
                           {{ (old('bibliotheque_id') == $bibliotheque->id || request('bibliotheque') == $bibliotheque->id) ? 'selected' : '' }}>
                     {{ $bibliotheque->nom_bibliotheque }}
                   </option>
@@ -102,7 +94,9 @@
               @enderror
             </div>
           </div>
-          
+
+          <!-- Book Information -->
+          <div class="row mb-3">
           <!-- Challenge Selection -->
           <div class="row mb-3">
             <div class="col-md-6">
@@ -123,34 +117,34 @@
               </div>
             </div>
           </div>
-          
+
           <!-- New Book Details (shown when no existing book is selected) -->
           <div id="newBookFields" class="row mb-3" style="display: none;">
             <div class="col-md-6">
               <label for="title" class="form-label">Book Title <span class="text-danger">*</span></label>
-              <input type="text" class="form-control @error('title') is-invalid @enderror" 
-                     id="title" name="title" value="{{ old('title') }}" 
-                     placeholder="Enter book title">
+              <input type="text" class="form-control @error('title') is-invalid @enderror"
+                     id="title" name="title" value="{{ old('title') }}"
+                     placeholder="Enter book title" required>
               @error('title')
                 <div class="invalid-feedback">{{ $message }}</div>
               @enderror
             </div>
             <div class="col-md-6">
               <label for="author" class="form-label">Author <span class="text-danger">*</span></label>
-              <input type="text" class="form-control @error('author') is-invalid @enderror" 
-                     id="author" name="author" value="{{ old('author') }}" 
-                     placeholder="Enter author name">
+              <input type="text" class="form-control @error('author') is-invalid @enderror"
+                     id="author" name="author" value="{{ old('author') }}"
+                     placeholder="Enter author name" required>
               @error('author')
                 <div class="invalid-feedback">{{ $message }}</div>
               @enderror
             </div>
           </div>
-          
-          <div id="newBookFields2" class="row mb-3" style="display: none;">
+
+          <div class="row mb-3">
             <div class="col-md-6">
               <label for="isbn" class="form-label">ISBN</label>
-              <input type="text" class="form-control @error('isbn') is-invalid @enderror" 
-                     id="isbn" name="isbn" value="{{ old('isbn') }}" 
+              <input type="text" class="form-control @error('isbn') is-invalid @enderror"
+                     id="isbn" name="isbn" value="{{ old('isbn') }}"
                      placeholder="Enter ISBN (optional)">
               @error('isbn')
                 <div class="invalid-feedback">{{ $message }}</div>
@@ -158,7 +152,7 @@
             </div>
             <div class="col-md-6">
               <label for="categorie_id" class="form-label">Category</label>
-              <select class="form-select @error('categorie_id') is-invalid @enderror" 
+              <select class="form-select @error('categorie_id') is-invalid @enderror"
                       id="categorie_id" name="categorie_id">
                 <option value="">Select a category (optional)</option>
                 @foreach(\App\Models\Categorie::orderBy('nom')->get() as $categorie)
@@ -172,7 +166,7 @@
               @enderror
             </div>
           </div>
-          
+
           <!-- Visibility and Description -->
           <div class="row mb-3">
             <div class="col-md-6">
@@ -186,26 +180,26 @@
               @enderror
               <div class="form-text">
                 <small class="text-muted">
-                  <i class="bx bx-info-circle me-1"></i> 
+                  <i class="bx bx-info-circle me-1"></i>
                   Public books can be discovered by other users
                 </small>
               </div>
             </div>
             <div class="col-md-6">
               <label for="format" class="form-label">Format</label>
-              <input type="text" class="form-control" id="format" name="format" 
+              <input type="text" class="form-control" id="format" name="format"
                      value="{{ old('format') }}" placeholder="Auto-detected from file">
               <div class="form-text">Leave empty for auto-detection</div>
             </div>
           </div>
-          
+
           <div class="mb-4">
             <label for="description" class="form-label">Description</label>
-            <textarea class="form-control" id="description" name="description" rows="3" 
+            <textarea class="form-control" id="description" name="description" rows="3"
                       placeholder="Add a description for this book instance (optional)">{{ old('description') }}</textarea>
             <div class="form-text">Optional description for this specific book file</div>
           </div>
-          
+
           <div class="d-flex justify-content-between">
             <a href="{{ request('bibliotheque') ? route('contributor.bibliotheques.show', request('bibliotheque')) : route('contributor.livres.index') }}" class="btn btn-outline-secondary">
               Cancel
@@ -218,7 +212,7 @@
       </div>
     </div>
   </div>
-  
+
   <!-- Help Card -->
   <div class="col-lg-4">
     <div class="card">
@@ -236,19 +230,19 @@
             <li>Ensure file is not corrupted</li>
           </ul>
         </div>
-        
+
         <div class="mb-3">
           <h6 class="text-primary">Book Entry</h6>
           <p class="small text-muted mb-0">Create a book entry first if the book doesn't exist in the system</p>
         </div>
-        
+
         <div class="mb-0">
           <h6 class="text-primary">Visibility</h6>
           <p class="small text-muted mb-0">Choose public to let others discover your book, or private for personal use only</p>
         </div>
       </div>
     </div>
-    
+
     <!-- Recent Uploads -->
     <div class="card mt-3">
       <div class="card-header">
@@ -351,10 +345,10 @@ fileInput.addEventListener('change', (e) => {
 function updateFileDisplay(file) {
   const dropZone = document.getElementById('dropZone');
   const fileInput = document.getElementById('fichier_livre');
-  
+
   // Hide the original file input
   fileInput.style.display = 'none';
-  
+
   // Update the display without replacing the file input
   dropZone.innerHTML = `
     <div class="card-body text-center py-4">
@@ -366,74 +360,62 @@ function updateFileDisplay(file) {
       </button>
     </div>
   `;
-  
+
   // Re-add the original file input (hidden) to preserve the selected file
   dropZone.appendChild(fileInput);
 }
 
-// Show/hide new book fields based on livre_id selection
-const livreSelect = document.getElementById('livre_id');
+// Show new book fields (always visible for new book creation)
 const newBookFields = document.getElementById('newBookFields');
-const newBookFields2 = document.getElementById('newBookFields2');
 
-function toggleNewBookFields() {
-  if (livreSelect.value === '') {
-    // No existing book selected, show new book fields
+function initializeNewBookFields() {
+  if (newBookFields) {
+    // Always show new book fields for new book creation
     newBookFields.style.display = 'block';
-    newBookFields2.style.display = 'block';
     // Make title and author required
-    document.getElementById('title').required = true;
-    document.getElementById('author').required = true;
-  } else {
-    // Existing book selected, hide new book fields
-    newBookFields.style.display = 'none';
-    newBookFields2.style.display = 'none';
-    // Make title and author not required
-    document.getElementById('title').required = false;
-    document.getElementById('author').required = false;
+    const titleInput = document.getElementById('title');
+    const authorInput = document.getElementById('author');
+    if (titleInput) titleInput.required = true;
+    if (authorInput) authorInput.required = true;
   }
 }
 
-livreSelect.addEventListener('change', toggleNewBookFields);
 // Initialize on page load
-toggleNewBookFields();
+initializeNewBookFields();
 
 // Form validation before submit
 function validateForm() {
   const fileInput = document.getElementById('fichier_livre');
-  const livreSelect = document.getElementById('livre_id');
   const titleInput = document.getElementById('title');
   const authorInput = document.getElementById('author');
-  
+
   // Check if file is selected
   if (!fileInput.files || fileInput.files.length === 0) {
     alert('Please select a file to upload.');
     return false;
   }
-  
-  // Check if creating new book and required fields are filled
-  if (!livreSelect.value) {
-    if (!titleInput.value.trim()) {
-      alert('Please enter a book title.');
-      titleInput.focus();
-      return false;
-    }
-    if (!authorInput.value.trim()) {
-      alert('Please enter an author name.');
-      authorInput.focus();
-      return false;
-    }
+
+  // Check if required fields are filled
+  if (!titleInput.value.trim()) {
+    alert('Please enter a book title.');
+    titleInput.focus();
+    return false;
   }
-  
+  if (!authorInput.value.trim()) {
+    alert('Please enter an author name.');
+    authorInput.focus();
+    return false;
+  }
+
   return true;
 }
 
 // Create book form
 document.getElementById('createBookForm').addEventListener('submit', function(e) {
   e.preventDefault();
-  
+
   const formData = new FormData(this);
-  
+
   fetch('/contributor/livres/create-book', {
     method: 'POST',
     body: formData,
@@ -444,19 +426,14 @@ document.getElementById('createBookForm').addEventListener('submit', function(e)
   .then(response => response.json())
   .then(data => {
     if (data.success) {
-      // Add new option to select
-      const select = document.getElementById('livre_id');
-      const option = document.createElement('option');
-      option.value = data.book.id;
-      option.textContent = `${data.book.title} - ${data.book.author}`;
-      option.selected = true;
-      select.appendChild(option);
-      
       // Close modal
       bootstrap.Modal.getInstance(document.getElementById('createBookModal')).hide();
-      
+
       // Reset form
       this.reset();
+      
+      // Show success message or redirect
+      alert('Book created successfully!');
     }
   })
   .catch(error => {

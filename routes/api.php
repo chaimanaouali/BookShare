@@ -9,6 +9,21 @@ use App\Http\Controllers\Api\LivreUtilisateurController;
 use App\Http\Controllers\Api\AvisController;
 use App\Http\Controllers\Api\CategorieController;
 
+// Simple embedding test route (no auth required)
+Route::get('/embedding-test', function () {
+    try {
+        $svc = new \App\Services\GroqEmbeddingService();
+        $result = $svc->generateEmbedding('Hello world, this is a test for embeddings.');
+        return response()->json([
+            'ok' => true,
+            'dimension' => $result['dimension'],
+            'first10' => array_slice($result['vector'], 0, 10),
+        ]);
+    } catch (\Throwable $e) {
+        return response()->json(['ok' => false, 'error' => $e->getMessage()], 500);
+    }
+});
+
 // (Removed API login/signup routes to avoid conflict with web login)
 
 // Protected Routes (require authentication)

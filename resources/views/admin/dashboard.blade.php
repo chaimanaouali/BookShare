@@ -73,9 +73,9 @@
               <td>{{ $d->user->name ?? '—' }}</td>
               <td>{{ $d->created_at->diffForHumans() }}</td>
               <td>
-                <a href="{{ route('front.bibliotheques.show', $d->bibliotheque_id) }}#discussion-{{ $d->id }}" class="btn btn-sm btn-outline-info">
+                <button type="button" class="btn btn-sm btn-outline-info" data-bs-toggle="modal" data-bs-target="#discussionModal{{ $d->id }}">
                   <i class="bx bx-show"></i> Open
-                </a>
+                </button>
                 <form action="{{ route('admin.discussions.destroy', $d->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Delete this discussion?');">
                   @csrf
                   @method('DELETE')
@@ -94,4 +94,64 @@
     </div>
   </div>
 </div>
+
+<!-- Discussion Modals -->
+@foreach($latestDiscussions as $d)
+<div class="modal fade" id="discussionModal{{ $d->id }}" tabindex="-1" aria-labelledby="discussionModalLabel{{ $d->id }}" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="discussionModalLabel{{ $d->id }}">{{ $d->titre }}</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <strong>Library:</strong> {{ $d->bibliotheque->nom_bibliotheque ?? '—' }}
+          </div>
+          <div class="col-md-6">
+            <strong>Author:</strong> {{ $d->user->name ?? '—' }}
+          </div>
+        </div>
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <strong>Created:</strong> {{ $d->created_at->format('M d, Y H:i') }}
+          </div>
+          <div class="col-md-6">
+            <strong>Last Updated:</strong> {{ $d->updated_at->format('M d, Y H:i') }}
+          </div>
+        </div>
+        <hr>
+        <div class="discussion-content">
+          <h6>Discussion Content:</h6>
+          <p>{{ $d->contenu ?? 'No content available.' }}</p>
+        </div>
+        @if($d->comments && $d->comments->count() > 0)
+        <hr>
+        <div class="comments-section">
+          <h6>Comments ({{ $d->comments->count() }}):</h6>
+          @foreach($d->comments as $comment)
+          <div class="card mb-2">
+            <div class="card-body p-3">
+              <div class="d-flex justify-content-between align-items-start">
+                <div>
+                  <strong>{{ $comment->user->name ?? 'Anonymous' }}</strong>
+                  <small class="text-muted ms-2">{{ $comment->created_at->diffForHumans() }}</small>
+                </div>
+              </div>
+              <p class="mt-2 mb-0">{{ $comment->contenu }}</p>
+            </div>
+          </div>
+          @endforeach
+        </div>
+        @endif
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <a href="{{ route('admin.bibliotheques.discussions', $d->bibliotheque_id) }}" class="btn btn-primary">View All Discussions</a>
+      </div>
+    </div>
+  </div>
+</div>
+@endforeach
 @endsection

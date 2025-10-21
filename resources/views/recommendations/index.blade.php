@@ -60,11 +60,11 @@
                                     <small class="text-muted">
                                         {{ $recommendation->date_creation->format('M d, Y') }}
                                     </small>
-                                    <a href="{{ route('livres') }}?search={{ urlencode($recommendation->livre->title) }}" 
-                                       class="btn btn-sm px-3 py-2" 
-                                       style="background-color: #ff6b35; border: 1px solid #ff6b35; color: white; border-radius: 6px; font-weight: 500;">
-                                        View Book
-                                    </a>
+                                    <button onclick="readBook({{ $recommendation->livre->id }}, '{{ $recommendation->livre->title }}', '{{ $recommendation->livre->fichier_livre }}')" 
+                                            class="btn btn-sm px-3 py-2" 
+                                            style="background-color: #ff6b35; border: 1px solid #ff6b35; color: white; border-radius: 8px; font-weight: 500; box-shadow: 0 2px 4px rgba(255, 107, 53, 0.3);">
+                                        <i class="bx bx-book me-1"></i>Read Book
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -87,6 +87,33 @@
     </div>
 </div>
 
+<!-- Book Reading Modal -->
+<div class="modal fade" id="bookReadingModal" tabindex="-1" aria-labelledby="bookReadingModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="bookReadingModalLabel">Reading: <span id="readingBookTitle"></span></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="bookContent" style="height: 70vh; overflow-y: auto;">
+                    <div class="text-center">
+                        <div class="spinner-border" role="status">
+                            <span class="visually-hidden">Loading book content...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <a id="downloadBookBtn" href="#" class="btn btn-primary" download>
+                    <i class="bx bx-download me-1"></i> Download
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
 <style>
 .recommendation-card:hover {
     transform: translateY(-2px);
@@ -98,4 +125,125 @@
     transform: translateY(-1px);
 }
 </style>
+
+<!-- PDF.js for PDF viewing -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script>
+// Configure PDF.js
+pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+// Read book function
+function readBook(livreId, bookTitle, filePath) {
+    console.log('readBook called with:', { livreId, bookTitle, filePath });
+    
+    document.getElementById('readingBookTitle').textContent = bookTitle;
+    
+    // Set up download link
+    const downloadBtn = document.getElementById('downloadBookBtn');
+    downloadBtn.href = `/storage/${filePath}`;
+    downloadBtn.download = `${bookTitle}.${filePath.split('.').pop()}`;
+    
+    // Show modal
+    const modal = new bootstrap.Modal(document.getElementById('bookReadingModal'));
+    modal.show();
+    
+    // Load book content
+    loadBookContent(livreId, filePath);
+}
+
+// Load book content
+function loadBookContent(livreId, filePath) {
+    const bookContent = document.getElementById('bookContent');
+    bookContent.innerHTML = '<div class="text-center"><div class="spinner-border" role="status"><span class="visually-hidden">Loading book content...</span></div></div>';
+    
+    const fileExtension = filePath.split('.').pop().toLowerCase();
+    const fileUrl = `/storage/${filePath}`;
+    
+    switch(fileExtension) {
+        case 'pdf':
+            loadPDF(fileUrl, bookContent);
+            break;
+        case 'txt':
+            loadTextFile(fileUrl, bookContent);
+            break;
+        default:
+            bookContent.innerHTML = `
+                <div class="text-center py-5">
+                    <i class="bx bx-file display-4 text-muted mb-3"></i>
+                    <h5 class="text-muted">Preview not available</h5>
+                    <p class="text-muted">This file format cannot be previewed. Please download to view.</p>
+                    <a href="${fileUrl}" class="btn btn-primary" download>
+                        <i class="bx bx-download me-1"></i> Download File
+                    </a>
+                </div>
+            `;
+    }
+}
+
+// Load PDF
+function loadPDF(fileUrl, container) {
+    pdfjsLib.getDocument(fileUrl).promise.then(function(pdf) {
+        let pdfText = '';
+        let pagePromises = [];
+        
+        for (let i = 1; i <= Math.min(pdf.numPages, 10); i++) {
+            pagePromises.push(
+                pdf.getPage(i).then(function(page) {
+                    return page.getTextContent().then(function(textContent) {
+                        let pageText = textContent.items.map(function(item) {
+                            return item.str;
+                        }).join(' ');
+                        return `--- Page ${i} ---\n${pageText}\n\n`;
+                    });
+                })
+            );
+        }
+        
+        Promise.all(pagePromises).then(function(pages) {
+            pdfText = pages.join('');
+            container.innerHTML = `
+                <div class="pdf-content">
+                    <pre style="white-space: pre-wrap; font-family: Arial, sans-serif; line-height: 1.6; margin: 0;">${pdfText}</pre>
+                </div>
+            `;
+        });
+    }).catch(function(error) {
+        container.innerHTML = `
+            <div class="text-center py-5">
+                <i class="bx bx-error display-4 text-danger mb-3"></i>
+                <h5 class="text-danger">Error loading PDF</h5>
+                <p class="text-muted">Unable to load the PDF file. Please try downloading it instead.</p>
+                <a href="${fileUrl}" class="btn btn-primary" download>
+                    <i class="bx bx-download me-1"></i> Download PDF
+                </a>
+            </div>
+        `;
+    });
+}
+
+// Load text file
+function loadTextFile(fileUrl, container) {
+    fetch(fileUrl)
+        .then(response => response.text())
+        .then(text => {
+            container.innerHTML = `
+                <div class="text-content">
+                    <pre style="white-space: pre-wrap; font-family: Arial, sans-serif; line-height: 1.6; margin: 0;">${text}</pre>
+                </div>
+            `;
+        })
+        .catch(error => {
+            container.innerHTML = `
+                <div class="text-center py-5">
+                    <i class="bx bx-error display-4 text-danger mb-3"></i>
+                    <h5 class="text-danger">Error loading text file</h5>
+                    <p class="text-muted">Unable to load the text file. Please try downloading it instead.</p>
+                    <a href="${fileUrl}" class="btn btn-primary" download>
+                        <i class="bx bx-download me-1"></i> Download File
+                    </a>
+                </div>
+            `;
+        });
+}
+</script>
 @endsection
