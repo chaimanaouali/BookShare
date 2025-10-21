@@ -88,6 +88,19 @@ Route::post('/auth/register', [\App\Http\Controllers\authentications\LoginBasic:
 // Logout route (still needed)
 Route::post('/logout', [\App\Http\Controllers\authentications\LoginBasic::class, 'logout'])->name('logout');
 
+// Password Reset Routes
+Route::get('/password/forgot', [\App\Http\Controllers\authentications\ForgotPasswordBasic::class, 'index'])->name('password.request');
+Route::post('/password/email', [\App\Http\Controllers\authentications\ForgotPasswordBasic::class, 'sendResetLink'])->name('password.email');
+Route::get('/password/reset/{token}', [\App\Http\Controllers\authentications\ForgotPasswordBasic::class, 'showResetForm'])->name('password.reset');
+Route::post('/password/reset', [\App\Http\Controllers\authentications\ForgotPasswordBasic::class, 'reset'])->name('password.update');
+
+// Profile routes
+Route::middleware(['auth'])->group(function () {
+    Route::get('/profile', [\App\Http\Controllers\ProfileController::class, 'show'])->name('profile.show');
+    Route::get('/profile/edit', [\App\Http\Controllers\ProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('/profile', [\App\Http\Controllers\ProfileController::class, 'update'])->name('profile.update');
+});
+
 // Livres routes
 Route::get('/livres', [LivresController::class, 'index'])->name('livres');
 Route::get('/livres/{livreId}/avis', [LivresController::class, 'getAvis']);
@@ -132,9 +145,9 @@ Route::get('/', function () {
     return view('front.home', ['useCustomJs' => true], ['usePreloader' => true]);
 });
 
-// Admin Dashboard (list all bibliotheques)
+// Admin Dashboard (list all bibliotheques) - admin only
 Route::get('/admin', [\App\Http\Controllers\AdminController::class, 'dashboard'])->name('admin.dashboard')->middleware(['auth', 'admin']);
-// Admin view of a single bibliotheque
+// Admin view of a single bibliotheque - admin only
 Route::get('/admin/bibliotheques/{id}', [\App\Http\Controllers\AdminController::class, 'bibliothequeShow'])->name('admin.bibliotheques.show')->middleware(['auth', 'admin']);
 
 // Move the dashboard analytics to /dashboard
@@ -143,32 +156,32 @@ Route::get('/dashboard', [Analytics::class, 'index'])->name('dashboard-analytics
 // Contributor Dashboard (accessible to authenticated users)
 Route::get('/contributor', function () {
     return redirect()->route('contributor.dashboard');
-})->middleware(['auth', 'role:contributor']);
+})->middleware(['auth', 'role:contributor,user']);
 
 // Contributor Livres New (Book Metadata)
-Route::get('/contributor/livres/new', [\App\Http\Controllers\ContributorController::class, 'livresNew'])->name('contributor.livres.new')->middleware(['auth', 'role:contributor']);
-Route::post('/contributor/livres/new', [\App\Http\Controllers\ContributorController::class, 'livresStoreMetadata'])->name('contributor.livres.store-metadata')->middleware(['auth', 'role:contributor']);
+Route::get('/contributor/livres/new', [\App\Http\Controllers\ContributorController::class, 'livresNew'])->name('contributor.livres.new')->middleware(['auth', 'role:contributor,user']);
+Route::post('/contributor/livres/new', [\App\Http\Controllers\ContributorController::class, 'livresStoreMetadata'])->name('contributor.livres.store-metadata')->middleware(['auth', 'role:contributor,user']);
 
 // Contributor Livres Index
-Route::get('/contributor/livres', [\App\Http\Controllers\ContributorController::class, 'livresIndex'])->name('contributor.livres.index')->middleware(['auth', 'role:contributor']);
+Route::get('/contributor/livres', [\App\Http\Controllers\ContributorController::class, 'livresIndex'])->name('contributor.livres.index')->middleware(['auth', 'role:contributor,user']);
 
 Route::get('/contributor/livres/create', [\App\Http\Controllers\ContributorController::class, 'livresCreate'])
     ->name('contributor.livres.create')
-    ->middleware(['auth', 'role:contributor']);
+    ->middleware(['auth', 'role:contributor,user']);
 
 // Contributor Livres Show
-Route::get('/contributor/livres/{livre}', [\App\Http\Controllers\ContributorController::class, 'livresShow'])->name('contributor.livres.show')->middleware(['auth', 'role:contributor']);
+Route::get('/contributor/livres/{livre}', [\App\Http\Controllers\ContributorController::class, 'livresShow'])->name('contributor.livres.show')->middleware(['auth', 'role:contributor,user']);
 
 // Contributor Livres Edit
-Route::get('/contributor/livres/{livre}/edit', [\App\Http\Controllers\ContributorController::class, 'livresEdit'])->name('contributor.livres.edit')->middleware(['auth', 'role:contributor']);
+Route::get('/contributor/livres/{livre}/edit', [\App\Http\Controllers\ContributorController::class, 'livresEdit'])->name('contributor.livres.edit')->middleware(['auth', 'role:contributor,user']);
 
-Route::put('/contributor/livres/{livre}', [\App\Http\Controllers\ContributorController::class, 'livresUpdate'])->name('contributor.livres.update')->middleware(['auth', 'role:contributor']);
+Route::put('/contributor/livres/{livre}', [\App\Http\Controllers\ContributorController::class, 'livresUpdate'])->name('contributor.livres.update')->middleware(['auth', 'role:contributor,user']);
 
 // Contributor Livres Delete
-Route::delete('/contributor/livres/{livre}', [\App\Http\Controllers\ContributorController::class, 'livresDestroy'])->name('contributor.livres.destroy')->middleware(['auth', 'role:contributor']);
+Route::delete('/contributor/livres/{livre}', [\App\Http\Controllers\ContributorController::class, 'livresDestroy'])->name('contributor.livres.destroy')->middleware(['auth', 'role:contributor,user']);
 
 // Contributor Livres Create (AJAX)
-Route::post('/contributor/livres/create-book', [\App\Http\Controllers\ContributorController::class, 'createBook'])->name('contributor.livres.create-book')->middleware(['auth', 'role:contributor']);
+Route::post('/contributor/livres/create-book', [\App\Http\Controllers\ContributorController::class, 'createBook'])->name('contributor.livres.create-book')->middleware(['auth', 'role:contributor,user']);
 
 
 
@@ -269,10 +282,13 @@ Route::get('/tables/basic', [TablesBasic::class, 'index'])->name('tables-basic')
 Route::resource('emprunts', App\Http\Controllers\EmpruntController::class)->middleware('auth');
 Route::resource('historique-emprunts', App\Http\Controllers\HistoriqueEmpruntController::class)->middleware(['auth', 'admin']);
 
-// Contributor Routes (Protected)
+// Contributor Routes (Protected) - Accessible to contributors and users
 Route::middleware(['auth'])->prefix('contributor')->name('contributor.')->group(function () {
     // Dashboard
-    Route::get('/dashboard', [ContributorController::class, 'dashboard'])->name('dashboard')->middleware('role:contributor');
+    Route::get('/dashboard', [ContributorController::class, 'dashboard'])->name('dashboard')->middleware('role:contributor,user');
+
+    // My Reviews
+    Route::get('/my-reviews', [ContributorController::class, 'myReviews'])->name('my-reviews')->middleware('role:contributor,user');
 
     // Bibliotheques Management
     Route::get('/bibliotheques', [ContributorController::class, 'bibliothequesIndex'])->name('bibliotheques.index');
@@ -293,11 +309,12 @@ Route::middleware(['auth'])->prefix('contributor')->name('contributor.')->group(
     Route::post('/livres/create-book', [ContributorController::class, 'createBook'])->name('livres.create-book');
 });
 
-// Admin routes (read-only)
+// Admin-only routes
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(function () {
+    // Reviews Management (admin only)
     Route::get('avis', [AvisController::class, 'index'])->name('avis.index');
     Route::get('avis/{avis}', [AvisController::class, 'show'])->name('avis.show');
-    // Disabled routes for create, store, edit, update, destroy
+    // Disabled avis modification routes (admin can only read)
     Route::get('avis/create', [AvisController::class, 'create'])->name('avis.create');
     Route::post('avis', [AvisController::class, 'store'])->name('avis.store');
     Route::get('avis/{avis}/edit', [AvisController::class, 'edit'])->name('avis.edit');
@@ -307,10 +324,26 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     // Categories Management
     Route::resource('categories', CategorieController::class);
 
-    // Discussions (read + delete only)
+    // User Management
+    Route::resource('users', \App\Http\Controllers\Admin\UserController::class);
+
+    // Discussions (delete only - admin only)
     Route::delete('discussions/{discussion}', [\App\Http\Controllers\AdminController::class, 'deleteDiscussion'])->name('discussions.destroy');
-    Route::get('bibliotheques/{id}/discussions', [\App\Http\Controllers\AdminController::class, 'bibliothequeDiscussions'])->name('bibliotheques.discussions');
 });
+
+// Discussions view (admin only)
+Route::get('admin/bibliotheques/{id}/discussions', [\App\Http\Controllers\AdminController::class, 'bibliothequeDiscussions'])->name('admin.bibliotheques.discussions')->middleware(['auth', 'admin']);
+
+// User role upgrade route
+Route::post('/user/become-contributor', function() {
+    $user = Auth::user();
+    if ($user && $user->role === 'user') {
+        $user->role = 'contributor';
+        $user->save();
+        return response()->json(['success' => true, 'message' => 'You are now a contributor!']);
+    }
+    return response()->json(['success' => false, 'message' => 'Unable to update role.']);
+})->middleware('auth')->name('user.become-contributor');
 
 // Recommendation routes
 Route::middleware(['auth'])->prefix('recommendations')->name('recommendations.')->group(function () {

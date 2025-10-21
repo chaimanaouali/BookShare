@@ -93,17 +93,6 @@
                 <div class="invalid-feedback">{{ $message }}</div>
               @enderror
             </div>
-            <div class="col-md-6">
-              <label for="visibilite" class="form-label">Visibility <span class="text-danger">*</span></label>
-              <select class="form-select @error('visibilite') is-invalid @enderror" id="visibilite" name="visibilite" required>
-                <option value="">Select visibility</option>
-                <option value="public" {{ old('visibilite') == 'public' ? 'selected' : '' }}>Public</option>
-                <option value="private" {{ old('visibilite') == 'private' ? 'selected' : '' }}>Private</option>
-              </select>
-              @error('visibilite')
-                <div class="invalid-feedback">{{ $message }}</div>
-              @enderror
-            </div>
           </div>
 
           <!-- Book Information -->
@@ -376,37 +365,27 @@ function updateFileDisplay(file) {
   dropZone.appendChild(fileInput);
 }
 
-// Show/hide new book fields based on livre_id selection
-const livreSelect = document.getElementById('livre_id');
+// Show new book fields (always visible for new book creation)
 const newBookFields = document.getElementById('newBookFields');
-const newBookFields2 = document.getElementById('newBookFields2');
 
-function toggleNewBookFields() {
-  if (livreSelect.value === '') {
-    // No existing book selected, show new book fields
+function initializeNewBookFields() {
+  if (newBookFields) {
+    // Always show new book fields for new book creation
     newBookFields.style.display = 'block';
-    newBookFields2.style.display = 'block';
     // Make title and author required
-    document.getElementById('title').required = true;
-    document.getElementById('author').required = true;
-  } else {
-    // Existing book selected, hide new book fields
-    newBookFields.style.display = 'none';
-    newBookFields2.style.display = 'none';
-    // Make title and author not required
-    document.getElementById('title').required = false;
-    document.getElementById('author').required = false;
+    const titleInput = document.getElementById('title');
+    const authorInput = document.getElementById('author');
+    if (titleInput) titleInput.required = true;
+    if (authorInput) authorInput.required = true;
   }
 }
 
-livreSelect.addEventListener('change', toggleNewBookFields);
 // Initialize on page load
-toggleNewBookFields();
+initializeNewBookFields();
 
 // Form validation before submit
 function validateForm() {
   const fileInput = document.getElementById('fichier_livre');
-  const livreSelect = document.getElementById('livre_id');
   const titleInput = document.getElementById('title');
   const authorInput = document.getElementById('author');
 
@@ -416,18 +395,16 @@ function validateForm() {
     return false;
   }
 
-  // Check if creating new book and required fields are filled
-  if (!livreSelect.value) {
-    if (!titleInput.value.trim()) {
-      alert('Please enter a book title.');
-      titleInput.focus();
-      return false;
-    }
-    if (!authorInput.value.trim()) {
-      alert('Please enter an author name.');
-      authorInput.focus();
-      return false;
-    }
+  // Check if required fields are filled
+  if (!titleInput.value.trim()) {
+    alert('Please enter a book title.');
+    titleInput.focus();
+    return false;
+  }
+  if (!authorInput.value.trim()) {
+    alert('Please enter an author name.');
+    authorInput.focus();
+    return false;
   }
 
   return true;
@@ -449,19 +426,14 @@ document.getElementById('createBookForm').addEventListener('submit', function(e)
   .then(response => response.json())
   .then(data => {
     if (data.success) {
-      // Add new option to select
-      const select = document.getElementById('livre_id');
-      const option = document.createElement('option');
-      option.value = data.book.id;
-      option.textContent = `${data.book.title} - ${data.book.author}`;
-      option.selected = true;
-      select.appendChild(option);
-
       // Close modal
       bootstrap.Modal.getInstance(document.getElementById('createBookModal')).hide();
 
       // Reset form
       this.reset();
+      
+      // Show success message or redirect
+      alert('Book created successfully!');
     }
   })
   .catch(error => {

@@ -257,7 +257,24 @@ let currentLivreId = null;
 
 // Read book function
 function readBook(livreId, bookTitle, filePath) {
+    console.log('readBook called with:', { livreId, bookTitle, filePath });
+    
     document.getElementById('readingBookTitle').textContent = bookTitle;
+    
+    // Check if filePath is valid
+    if (!filePath || filePath === 'undefined' || filePath === '') {
+        console.error('Invalid file path:', filePath);
+        document.getElementById('bookContent').innerHTML = `
+            <div class="text-center py-5">
+                <i class="bx bx-error display-4 text-danger mb-3"></i>
+                <h5 class="text-danger">No file available</h5>
+                <p class="text-muted">This book doesn't have a file attached.</p>
+            </div>
+        `;
+        const modal = new bootstrap.Modal(document.getElementById('bookReadingModal'));
+        modal.show();
+        return;
+    }
     
     // Set up download link
     const downloadBtn = document.getElementById('downloadBookBtn');
@@ -777,11 +794,11 @@ function loadRecommendations() {
                                  <small class="text-muted" style="font-size: 0.7rem;">
                                      ${new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                                  </small>
-                                 <a href="{{ route('livres') }}?search=${encodeURIComponent(rec.livre?.title || '')}" 
-                                    class="btn btn-sm px-2 py-1" 
-                                    style="background-color: #ff6b35; border: 1px solid #ff6b35; color: white; border-radius: 4px; font-weight: 500; font-size: 0.7rem;">
-                                     View Book
-                                 </a>
+                                 <button onclick="readBook(${rec.livre?.id}, '${rec.livre?.title || ''}', '${rec.livre?.fichier_livre || ''}')" 
+                                         class="btn btn-sm px-2 py-1" 
+                                         style="background-color: #ff6b35; border: 1px solid #ff6b35; color: white; border-radius: 8px; font-weight: 500; font-size: 0.7rem; box-shadow: 0 2px 4px rgba(255, 107, 53, 0.3);">
+                                     <i class="bx bx-book me-1"></i>Read Book
+                                 </button>
                              </div>
                          </div>
                      </div>`;

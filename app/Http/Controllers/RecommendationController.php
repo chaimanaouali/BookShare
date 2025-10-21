@@ -108,7 +108,7 @@ class RecommendationController extends Controller
         $this->recommendationService->cleanupReviewedBooks($user);
         
         $items = Recommendation::where('user_id', $user->id)
-            ->with(['livre:id,title,author,categorie_id', 'livre.categorie:id,nom'])
+            ->with(['livre:id,title,author,categorie_id,fichier_livre', 'livre.categorie:id,nom'])
             ->orderBy('score', 'desc')
             ->limit(20)
             ->get();

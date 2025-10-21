@@ -180,11 +180,6 @@
         </a>
       </div>
       <div class="card-body">
-        <div class="mb-3 d-flex justify-content-end">
-          <a href="{{ route('contributor.livres.new') }}" class="btn btn-outline-primary">
-            <i class="bx bx-book-add me-1"></i> Add New Book Metadata
-          </a>
-        </div>
         @if($recentBooks->count() > 0)
           <div class="table-responsive">
             <table class="table">

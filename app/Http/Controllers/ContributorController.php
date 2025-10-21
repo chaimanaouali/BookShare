@@ -62,7 +62,7 @@ class ContributorController extends Controller
         $validated['nb_pages'] = $validated['nb_pages'] ?? 0;
         $validated['resume'] = $validated['resume'] ?? '';
         $validated['etat'] = $validated['etat'] ?? 'neuf';
-        $validated['utilisateur_id'] = Auth::id();
+        $validated['user_id'] = Auth::id();
         $livre = \App\Models\Livre::create($validated);
         return redirect()->route('contributor.livres.create')->with('success', 'Book created! You can now upload your file.');
     }
@@ -137,6 +137,32 @@ class ContributorController extends Controller
             'publicBooks',
             'recentBooks'
         ));
+    }
+
+    /**
+     * Display reviews for the contributor's books.
+     */
+    public function myReviews()
+    {
+        $user = Auth::user();
+        
+        // Get all reviews for the contributor's books
+        $avis = \App\Models\Avis::with(['utilisateur', 'livre'])
+            ->whereHas('livre', function($query) use ($user) {
+                $query->where('user_id', $user->id);
+            })
+            ->orderBy('created_at', 'desc')
+            ->paginate(15);
+        
+        // Calculate stats for contributor's books
+        $userBookIds = $user->livres()->pluck('id');
+        $stats = [
+            'total_reviews' => \App\Models\Avis::whereIn('livre_id', $userBookIds)->count(),
+            'total_books' => $user->livres()->count(),
+            'average_rating' => \App\Models\Avis::whereIn('livre_id', $userBookIds)->avg('note') ?? 0,
+        ];
+
+        return view('contributor.my-reviews', compact('avis', 'stats'));
     }
 
     /**
@@ -370,7 +396,7 @@ public function livresStore(Request $request)
                 'isbn' => $request->isbn,
                 'categorie_id' => $request->categorie_id,
                 'user_id' => Auth::id(),
-            'utilisateur_id' => Auth::id(),
+            'user_id' => Auth::id(),
                 'bibliotheque_id' => $request->bibliotheque_id,
                 'fichier_livre' => $filePath,
                 'format' => $request->format ?? $fileFormat,
@@ -421,7 +447,7 @@ public function livresStore(Request $request)
             'nb_pages' => $request->nb_pages ?? 0,
             'resume' => $request->resume ?? '',
             'etat' => $request->etat ?? 'neuf',
-            'utilisateur_id' => Auth::id(),
+            'user_id' => Auth::id(),
         ]);
 
         return response()->json([

@@ -31,7 +31,7 @@ class LoginBasic extends Controller
             return redirect('/contributor');
         }
         if ($user->role === 'user') {
-            return redirect('/explore');
+            return redirect('/');
         }
         return redirect('/');
     }
@@ -55,9 +55,9 @@ class LoginBasic extends Controller
                 return redirect('/contributor');
             }
             if ($user->role === 'user') {
-                return redirect('/explore');
+                return redirect('/');
             }
-            return redirect('/dashboard');
+            return redirect('/');
         }
         return back()->withErrors([
             'email' => 'Invalid credentials',

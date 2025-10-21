@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Auth;
 class AdminController extends Controller
 {
     /**
-     * Admin dashboard: list all bibliothèques.
+     * Admin dashboard: list all bibliothèques (admin only).
      */
     public function dashboard()
     {
@@ -18,6 +18,7 @@ class AdminController extends Controller
             ->latest()->get();
         $latestDiscussions = Discussion::with(['user', 'bibliotheque'])
             ->latest()->limit(10)->get();
+        
         return view('admin.dashboard', compact('bibliotheques', 'latestDiscussions'));
     }
 
@@ -32,17 +33,16 @@ class AdminController extends Controller
     }
 
     /**
-     * View a specific bibliothèque and all its uploaded books/files.
+     * View a specific bibliothèque and all its uploaded books/files (admin only).
      */
     public function bibliothequeShow($id)
     {
-        // Load books for this bibliotheque; books live in `livres` (not nested `livre` relation)
         $bibliotheque = BibliothequeVirtuelle::with(['livres', 'user'])->findOrFail($id);
         return view('admin.bibliotheques.show', compact('bibliotheque'));
     }
 
     /**
-     * Admin view: discussions for a specific bibliotheque (read-only + delete).
+     * Admin view: discussions for a specific bibliotheque (read-only + delete, admin only).
      */
     public function bibliothequeDiscussions($id)
     {

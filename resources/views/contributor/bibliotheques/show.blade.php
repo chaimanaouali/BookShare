@@ -12,11 +12,11 @@
         <p class="text-muted">{{ $bibliotheque->nb_livres }} books • Created {{ $bibliotheque->created_at->diffForHumans() }}</p>
       </div>
       <div class="d-flex gap-2">
+        <a href="{{ route('contributor.bibliotheques.add-books', $bibliotheque->id) }}" class="btn btn-primary">
+          <i class="bx bx-plus me-1"></i> Add Books
+        </a>
         <a href="{{ route('contributor.bibliotheques.edit', $bibliotheque->id) }}" class="btn btn-outline-primary">
           <i class="bx bx-edit me-1"></i> Edit Library
-        </a>
-        <a href="{{ route('contributor.bibliotheques.add-books', $bibliotheque->id) }}" class="btn btn-primary">
-          <i class="bx bx-plus me-1"></i> Add Book
         </a>
       </div>
     </div>

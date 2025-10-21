@@ -26,6 +26,16 @@
         </li>
       @else
 
+      {{-- Check role-based access --}}
+      @php
+      $hasAccess = true;
+      if (isset($menu->roles) && Auth::check()) {
+        $userRole = Auth::user()->role;
+        $hasAccess = in_array($userRole, $menu->roles);
+      }
+      @endphp
+
+      @if ($hasAccess)
       {{-- active menu method --}}
       @php
       $activeClass = null;
@@ -59,7 +69,11 @@
             $resolvedUrl = 'contributor/dashboard';
           }
         @endphp
-        <a href="{{ isset($resolvedUrl) ? url($resolvedUrl) : 'javascript:void(0);' }}" class="{{ isset($menu->submenu) ? 'menu-link menu-toggle' : 'menu-link' }}" @if (isset($menu->target) and !empty($menu->target)) target="_blank" @endif>
+        @if(isset($menu->slug) && $menu->slug === 'logout')
+          <a href="#" class="menu-link" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+        @else
+          <a href="{{ isset($resolvedUrl) ? url($resolvedUrl) : 'javascript:void(0);' }}" class="{{ isset($menu->submenu) ? 'menu-link menu-toggle' : 'menu-link' }}" @if (isset($menu->target) and !empty($menu->target)) target="_blank" @endif>
+        @endif
           @isset($menu->icon)
             <i class="{{ $menu->icon }}"></i>
           @endisset
@@ -75,7 +89,13 @@
         @endisset
       </li>
       @endif
+      @endif
     @endforeach
   </ul>
+
+  <!-- Logout Form (Hidden) -->
+  <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+    @csrf
+  </form>
 
 </aside>
