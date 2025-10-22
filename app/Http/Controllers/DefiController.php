@@ -29,16 +29,6 @@ class DefiController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'titre' => 'required|string|max:255',
-            'description' => 'required|string',
-            'date_debut' => 'required|date',
-            'date_fin' => 'required|date|after:date_debut',
-            'nombre_livres_requis' => 'required|integer|min:1',
-            'type_defi' => 'required|string|in:lecture,quiz,autre',
-            'actif' => 'boolean'
-        ]);
-
         Defi::create($request->all());
 
         return redirect()->route('defis.index')->with('success', 'Défi créé avec succès.');
@@ -66,16 +56,6 @@ class DefiController extends Controller
      */
     public function update(Request $request, Defi $defi)
     {
-        $request->validate([
-            'titre' => 'required|string|max:255',
-            'description' => 'required|string',
-            'date_debut' => 'required|date',
-            'date_fin' => 'required|date|after:date_debut',
-            'nombre_livres_requis' => 'required|integer|min:1',
-            'type_defi' => 'required|string|in:lecture,quiz,autre',
-            'actif' => 'boolean'
-        ]);
-
         $defi->update($request->all());
 
         return redirect()->route('defis.index')->with('success', 'Défi mis à jour avec succès.');

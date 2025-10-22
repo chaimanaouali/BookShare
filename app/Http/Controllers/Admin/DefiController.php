@@ -25,7 +25,7 @@ class DefiController extends Controller
 
     public function store(StoreDefiRequest $request)
     {
-        $data = $request->validated();
+        $data = $request->all();
 
         Defi::create($data);
         return redirect()->route('defis.index')->with('success', 'Défi créé avec succès.');
@@ -44,7 +44,7 @@ class DefiController extends Controller
 
     public function update(UpdateDefiRequest $request, Defi $defi)
     {
-        $data = $request->validated();
+        $data = $request->all();
 
         $defi->update($data);
         return redirect()->route('defis.index')->with('success', 'Défi mis à jour avec succès.');
@@ -133,5 +133,3 @@ class DefiController extends Controller
         return view('admin.defis.participants', compact('defi'));
     }
 }
-
-

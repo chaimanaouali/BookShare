@@ -42,7 +42,7 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <p><strong>Pages:</strong> {{ $livre->nb_pages ?? '-' }}</p>
-                                <p><strong>File Size:</strong> {{ $livre->taille ? number_format($livre->taille / 1024, 2) . ' KB' : '-' }}</p>
+                                <p><strong>File Size:</strong> {{ $livre->taille ?? '-' }}</p>
                             </div>
                             <div class="col-md-6">
                                 <p><strong>Visibility:</strong> 

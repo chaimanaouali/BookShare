@@ -149,8 +149,7 @@ Route::get('/', function () {
 
 // Admin Dashboard (list all bibliotheques) - admin only
 Route::get('/admin', [\App\Http\Controllers\AdminController::class, 'dashboard'])->name('admin.dashboard')->middleware(['auth', 'admin']);
-// Admin view of a single bibliotheque - admin only
-Route::get('/admin/bibliotheques/{id}', [\App\Http\Controllers\AdminController::class, 'bibliothequeShow'])->name('admin.bibliotheques.show')->middleware(['auth', 'admin']);
+// Admin view of a single bibliotheque - admin only (moved to admin group)
 
 // Move the dashboard analytics to /dashboard
 Route::get('/dashboard', [Analytics::class, 'index'])->name('dashboard-analytics')->middleware(['auth', 'admin']);

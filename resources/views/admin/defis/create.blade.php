@@ -189,22 +189,8 @@ document.addEventListener('DOMContentLoaded', function() {
   // Form submission validation
   if (form) {
     form.addEventListener('submit', function(e) {
-      e.preventDefault();
-      
-      let isValid = true;
-      
-      // Validate all fields
-      if (!validateTextField(titreInput)) isValid = false;
-      if (!validateTextField(descriptionTextarea)) isValid = false;
-      if (!validateDateField(dateDebutInput)) isValid = false;
-      if (!validateDateField(dateFinInput)) isValid = false;
-      if (!validateDateRange()) isValid = false;
-      
-      if (isValid) {
-        form.submit();
-      } else {
-        showValidationSummary();
-      }
+      // No validation - let form submit normally
+      return true;
     });
   }
   
@@ -271,41 +257,11 @@ document.addEventListener('DOMContentLoaded', function() {
   }
   
   function validateDateRange() {
-    if (!dateDebutInput.value || !dateFinInput.value) {
-      return true; // Let individual field validation handle empty fields
-    }
-    
-    const startDate = new Date(dateDebutInput.value);
-    const endDate = new Date(dateFinInput.value);
-    
-    if (endDate <= startDate) {
-      setFieldInvalid(dateFinInput, 'La date de fin doit être après la date de début.');
-      return false;
-    }
-    
-    const daysDiff = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24));
-    
-    if (daysDiff > 365) {
-      setFieldInvalid(dateFinInput, 'La durée du défi ne peut pas dépasser 365 jours.');
-      return false;
-    }
-    
-    if (daysDiff < 1) {
-      setFieldInvalid(dateFinInput, 'La durée du défi doit être d\'au moins 1 jour.');
-      return false;
-    }
-    
-    setFieldValid(dateFinInput);
-    return true;
+    return true; // No validation
   }
   
   function updateEndDateMin() {
-    if (dateDebutInput.value) {
-      const startDate = new Date(dateDebutInput.value);
-      const nextDay = new Date(startDate);
-      nextDay.setDate(nextDay.getDate() + 1);
-      dateFinInput.setAttribute('min', nextDay.toISOString().split('T')[0]);
-    }
+    // No constraints on dates
   }
   
   function setFieldInvalid(field, message) {
