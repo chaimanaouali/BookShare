@@ -452,10 +452,9 @@ Route::middleware(['auth'])->prefix('favoris')->name('favoris.')->group(function
 });
 
 // Reading Personality routes
-Route::middleware(['auth'])->prefix('reading-personality')->name('reading-personality.')->group(function () {
-    Route::get('/', [\App\Http\Controllers\ReadingPersonalityController::class, 'show'])->name('show');
-    Route::post('/generate', [\App\Http\Controllers\ReadingPersonalityController::class, 'generate'])->name('generate');
-    Route::post('/update', [\App\Http\Controllers\ReadingPersonalityController::class, 'update'])->name('update');
-    Route::get('/data', [\App\Http\Controllers\ReadingPersonalityController::class, 'getPersonalityData'])->name('data');
-    Route::get('/user/{user}', [\App\Http\Controllers\ReadingPersonalityController::class, 'showUser'])->name('show-user');
+Route::prefix('reading-personality')->name('reading-personality.')->group(function () {
+    Route::get('/{userId}/data', [\App\Http\Controllers\ReadingPersonalityController::class, 'getPersonalityData'])->name('data');
+    Route::post('/{userId}/generate', [\App\Http\Controllers\ReadingPersonalityController::class, 'generate'])->name('generate');
+    Route::post('/{userId}/update', [\App\Http\Controllers\ReadingPersonalityController::class, 'update'])->name('update');
 });
+

@@ -66,7 +66,9 @@ class ContributorController extends Controller
         $validated['etat'] = $validated['etat'] ?? 'neuf';
         $validated['user_id'] = Auth::id();
         $livre = \App\Models\Livre::create($validated);
-        return redirect()->route('contributor.livres.create')->with('success', 'Book created! You can now upload your file.');
+        // Redirect to edit page of the created book so the contributor can upload the file to THIS book
+        return redirect()->route('contributor.livres.edit', $livre->id)
+            ->with('success', 'Book created! Please upload your file to complete the book.');
     }
 
     /**

@@ -38,134 +38,39 @@ class ReadingPersonalityController extends Controller
     /**
      * Generate a new reading personality for the authenticated user
      */
-    public function generate(): JsonResponse
-    {
-        try {
-            $user = Auth::user();
-            
-            // Check if user has enough borrowing history
-            if (!$this->readingPersonalityService->hasEnoughHistory($user)) {
-                return response()->json([
-                    'success' => false,
-                    'error' => 'Pas assez d\'historique d\'emprunts pour générer un profil. Empruntez au moins 3 livres d\'abord!'
-                ], 400);
-            }
-
-            // Validate API configuration
-            if (!$this->readingPersonalityService->validateConfiguration()) {
-                return response()->json([
-                    'success' => false,
-                    'error' => 'Configuration API manquante. Veuillez contacter l\'administrateur.'
-                ], 500);
-            }
-
-            // Generate personality
-            $result = $this->readingPersonalityService->generateReadingPersonality($user);
-            
-            if ($result['success']) {
-                return response()->json([
-                    'success' => true,
-                    'personality' => $result['personality'],
-                    'books_analyzed' => $result['books_analyzed'],
-                    'message' => 'Profil de lecture généré avec succès!'
-                ]);
-            } else {
-                return response()->json([
-                    'success' => false,
-                    'error' => $result['error']
-                ], 500);
-            }
-
-        } catch (\Exception $e) {
-            Log::error('Reading Personality Generation Error: ' . $e->getMessage());
-            return response()->json([
-                'success' => false,
-                'error' => 'Erreur lors de la génération du profil. Veuillez réessayer plus tard.'
-            ], 500);
-        }
+    public function getPersonalityData($userId)
+{
+    $user = User::find($userId);
+    if (!$user) {
+        return response()->json(['success' => false, 'message' => 'User not found']);
     }
 
-    /**
-     * Update/refresh the reading personality for the authenticated user
-     */
-    public function update(): JsonResponse
-    {
-        try {
-            $user = Auth::user();
-            
-            // Check if user has enough borrowing history
-            if (!$this->readingPersonalityService->hasEnoughHistory($user)) {
-                return response()->json([
-                    'success' => false,
-                    'error' => 'Pas assez d\'historique d\'emprunts pour générer un profil. Empruntez au moins 3 livres d\'abord!'
-                ], 400);
-            }
+    $personality = $user->readingPersonality;
+    return response()->json([
+        'success' => $personality ? true : false,
+        'personality' => $personality
+    ]);
+}
 
-            // Generate new personality (this will update existing or create new)
-            $result = $this->readingPersonalityService->generateReadingPersonality($user);
-            
-            if ($result['success']) {
-                return response()->json([
-                    'success' => true,
-                    'personality' => $result['personality'],
-                    'books_analyzed' => $result['books_analyzed'],
-                    'message' => 'Profil de lecture mis à jour avec succès!'
-                ]);
-            } else {
-                return response()->json([
-                    'success' => false,
-                    'error' => $result['error']
-                ], 500);
-            }
-
-        } catch (\Exception $e) {
-            Log::error('Reading Personality Update Error: ' . $e->getMessage());
-            return response()->json([
-                'success' => false,
-                'error' => 'Erreur lors de la mise à jour du profil. Veuillez réessayer plus tard.'
-            ], 500);
-        }
+public function generate($userId)
+{
+    $user = User::find($userId);
+    if (!$user) {
+        return response()->json(['success' => false, 'message' => 'User not found']);
     }
 
-    /**
-     * Get reading personality data as JSON (for AJAX requests)
-     */
-    public function getPersonalityData(): JsonResponse
-    {
-        try {
-            $user = Auth::user();
-            $personality = $this->readingPersonalityService->getReadingPersonality($user);
-            $hasEnoughHistory = $this->readingPersonalityService->hasEnoughHistory($user);
-            
-            return response()->json([
-                'success' => true,
-                'personality' => $personality,
-                'has_enough_history' => $hasEnoughHistory,
-                'needs_update' => $personality ? $personality->needsUpdate() : true
-            ]);
+    $personality = $this->aiService->generateProfile($user);
+    return response()->json(['success' => true, 'personality' => $personality]);
+}
 
-        } catch (\Exception $e) {
-            Log::error('Reading Personality Data Error: ' . $e->getMessage());
-            return response()->json([
-                'success' => false,
-                'error' => 'Erreur lors de la récupération des données.'
-            ], 500);
-        }
+public function update($userId)
+{
+    $user = User::find($userId);
+    if (!$user) {
+        return response()->json(['success' => false, 'message' => 'User not found']);
     }
 
-    /**
-     * Display reading personality for a specific user (admin only)
-     */
-    public function showUser(User $user)
-    {
-        // Check if current user is admin or the user themselves
-        if (Auth::id() !== $user->id && !Auth::user()->isAdmin()) {
-            abort(403, 'Accès non autorisé.');
-        }
+    // logic to refresh or modify personality
+}
 
-        $personality = $this->readingPersonalityService->getReadingPersonality($user);
-        $hasEnoughHistory = $this->readingPersonalityService->hasEnoughHistory($user);
-        
-        return view('content.reading-personality.show-user', compact('personality', 'hasEnoughHistory', 'user'));
-    }
 }

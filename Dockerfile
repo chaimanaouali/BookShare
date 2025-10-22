@@ -1,8 +1,8 @@
 # syntax=docker/dockerfile:1
 
-ARG PHP_VERSION=php:8.3-fpm-alpine
+ARG PHP_VERSION=8.3-fpm-alpine
 
-FROM php:${PHP_VERSION}-fpm-alpine AS base
+FROM php:${PHP_VERSION} AS base
 
 RUN apk add --no-cache \
     git \

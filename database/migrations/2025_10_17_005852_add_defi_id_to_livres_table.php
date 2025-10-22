@@ -12,9 +12,17 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('livres', function (Blueprint $table) {
-            $table->unsignedBigInteger('defi_id')->nullable()->after('categorie_id');
-            $table->foreign('defi_id')->references('id')->on('defis')->onDelete('set null');
+            if (!Schema::hasColumn('livres', 'defi_id')) {
+                $table->unsignedBigInteger('defi_id')->nullable()->after('categorie_id');
+            }
         });
+        
+        // Add foreign key only if it doesn't exist
+        if (!Schema::hasColumn('livres', 'defi_id')) {
+            Schema::table('livres', function (Blueprint $table) {
+                $table->foreign('defi_id')->references('id')->on('defis')->onDelete('set null');
+            });
+        }
     }
 
     /**

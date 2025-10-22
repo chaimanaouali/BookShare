@@ -12,7 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('bibliotheque_virtuelles', function (Blueprint $table) {
-            $table->softDeletes();
+            if (!Schema::hasColumn('bibliotheque_virtuelles', 'deleted_at')) {
+                $table->softDeletes();
+            }
         });
     }
 

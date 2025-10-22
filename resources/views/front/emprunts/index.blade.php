@@ -149,21 +149,15 @@
 </div>
 
 <script>
+    const userId = {{ auth()->id() ?? 'null' }};
 // Load personality data when page loads
 document.addEventListener('DOMContentLoaded', function() {
     loadPersonalityData();
 });
 
 function loadPersonalityData() {
-    fetch('{{ route("reading-personality.data") }}')
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                displayPersonality(data.personality);
-            } else {
-                displayNoPersonality();
-            }
-        })
+    fetch(`/reading-personality/${userId}/data`)
+
         .catch(error => {
             console.error('Error loading personality:', error);
             displayNoPersonality();
@@ -255,13 +249,12 @@ function generatePersonality() {
     button.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Génération...';
     button.disabled = true;
     
-    fetch('{{ route("reading-personality.generate") }}', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-        }
-    })
+    fetch(`/reading-personality/${userId}/generate`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+})
+
+
     .then(response => response.json())
     .then(data => {
         if (data.success) {
@@ -287,13 +280,12 @@ function updatePersonality() {
     button.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Mise à jour...';
     button.disabled = true;
     
-    fetch('{{ route("reading-personality.update") }}', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-        }
-    })
+    fetch(`/reading-personality/${userId}/generate`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+})
+
+
     .then(response => response.json())
     .then(data => {
         if (data.success) {

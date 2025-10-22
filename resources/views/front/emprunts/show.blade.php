@@ -95,6 +95,11 @@
                                     </tr>
                                     @endif
                                 </table>
+                                @if($emprunt->statut === 'emprunté' && !empty($emprunt->livre->fichier_livre))
+                                    <a href="{{ Storage::url($emprunt->livre->fichier_livre) }}" target="_blank" class="btn btn-success mt-3">
+                                        <i class="fa fa-book-open"></i> Read Book
+                                    </a>
+                                @endif
                             </div>
                             <div class="col-md-6">
                                 <h6>Historique des Actions</h6>

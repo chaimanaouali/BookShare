@@ -42,6 +42,14 @@ class Avis extends Model
     }
 
     /**
+     * Alias for the utilisateur relationship to support `$avis->user` access.
+     */
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+    /**
      * Get the livre that owns the avis.
      */
     public function livre(): BelongsTo
@@ -49,4 +57,3 @@ class Avis extends Model
         return $this->belongsTo(Livre::class, 'livre_id');
     }
 }
-
